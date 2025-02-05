@@ -1,0 +1,593 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		287A0B952D52F2090049E06D /* QuranCarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0B942D52F2090049E06D /* QuranCarApp.swift */; };
+		287A0B972D52F2090049E06D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0B962D52F2090049E06D /* ContentView.swift */; };
+		287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 287A0B982D52F20C0049E06D /* Assets.xcassets */; };
+		287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 287A0B9B2D52F20C0049E06D /* Preview Assets.xcassets */; };
+		287A0BA62D52F20D0049E06D /* QuranCarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BA52D52F20D0049E06D /* QuranCarTests.swift */; };
+		287A0BB02D52F20D0049E06D /* QuranCarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */; };
+		287A0BB22D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		287A0BA22D52F20D0049E06D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 287A0B892D52F2080049E06D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 287A0B902D52F2090049E06D;
+			remoteInfo = QuranCar;
+		};
+		287A0BAC2D52F20D0049E06D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 287A0B892D52F2080049E06D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 287A0B902D52F2090049E06D;
+			remoteInfo = QuranCar;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		287A0B912D52F2090049E06D /* QuranCar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuranCar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		287A0B942D52F2090049E06D /* QuranCarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarApp.swift; sourceTree = "<group>"; };
+		287A0B962D52F2090049E06D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		287A0B982D52F20C0049E06D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		287A0B9B2D52F20C0049E06D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		287A0BA12D52F20D0049E06D /* QuranCarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuranCarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		287A0BA52D52F20D0049E06D /* QuranCarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarTests.swift; sourceTree = "<group>"; };
+		287A0BAB2D52F20D0049E06D /* QuranCarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuranCarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarUITests.swift; sourceTree = "<group>"; };
+		287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		287A0B8E2D52F2090049E06D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0B9E2D52F20D0049E06D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0BA82D52F20D0049E06D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		287A0B882D52F2080049E06D = {
+			isa = PBXGroup;
+			children = (
+				287A0B932D52F2090049E06D /* QuranCar */,
+				287A0BA42D52F20D0049E06D /* QuranCarTests */,
+				287A0BAE2D52F20D0049E06D /* QuranCarUITests */,
+				287A0B922D52F2090049E06D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		287A0B922D52F2090049E06D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				287A0B912D52F2090049E06D /* QuranCar.app */,
+				287A0BA12D52F20D0049E06D /* QuranCarTests.xctest */,
+				287A0BAB2D52F20D0049E06D /* QuranCarUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		287A0B932D52F2090049E06D /* QuranCar */ = {
+			isa = PBXGroup;
+			children = (
+				287A0B942D52F2090049E06D /* QuranCarApp.swift */,
+				287A0B962D52F2090049E06D /* ContentView.swift */,
+				287A0B982D52F20C0049E06D /* Assets.xcassets */,
+				287A0B9A2D52F20C0049E06D /* Preview Content */,
+			);
+			path = QuranCar;
+			sourceTree = "<group>";
+		};
+		287A0B9A2D52F20C0049E06D /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				287A0B9B2D52F20C0049E06D /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		287A0BA42D52F20D0049E06D /* QuranCarTests */ = {
+			isa = PBXGroup;
+			children = (
+				287A0BA52D52F20D0049E06D /* QuranCarTests.swift */,
+			);
+			path = QuranCarTests;
+			sourceTree = "<group>";
+		};
+		287A0BAE2D52F20D0049E06D /* QuranCarUITests */ = {
+			isa = PBXGroup;
+			children = (
+				287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */,
+				287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */,
+			);
+			path = QuranCarUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		287A0B902D52F2090049E06D /* QuranCar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCar" */;
+			buildPhases = (
+				287A0B8D2D52F2090049E06D /* Sources */,
+				287A0B8E2D52F2090049E06D /* Frameworks */,
+				287A0B8F2D52F2090049E06D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuranCar;
+			productName = QuranCar;
+			productReference = 287A0B912D52F2090049E06D /* QuranCar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		287A0BA02D52F20D0049E06D /* QuranCarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 287A0BB82D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCarTests" */;
+			buildPhases = (
+				287A0B9D2D52F20D0049E06D /* Sources */,
+				287A0B9E2D52F20D0049E06D /* Frameworks */,
+				287A0B9F2D52F20D0049E06D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				287A0BA32D52F20D0049E06D /* PBXTargetDependency */,
+			);
+			name = QuranCarTests;
+			productName = QuranCarTests;
+			productReference = 287A0BA12D52F20D0049E06D /* QuranCarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		287A0BAA2D52F20D0049E06D /* QuranCarUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 287A0BBB2D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCarUITests" */;
+			buildPhases = (
+				287A0BA72D52F20D0049E06D /* Sources */,
+				287A0BA82D52F20D0049E06D /* Frameworks */,
+				287A0BA92D52F20D0049E06D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				287A0BAD2D52F20D0049E06D /* PBXTargetDependency */,
+			);
+			name = QuranCarUITests;
+			productName = QuranCarUITests;
+			productReference = 287A0BAB2D52F20D0049E06D /* QuranCarUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		287A0B892D52F2080049E06D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					287A0B902D52F2090049E06D = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					287A0BA02D52F20D0049E06D = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 287A0B902D52F2090049E06D;
+					};
+					287A0BAA2D52F20D0049E06D = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = 287A0B902D52F2090049E06D;
+					};
+				};
+			};
+			buildConfigurationList = 287A0B8C2D52F2080049E06D /* Build configuration list for PBXProject "QuranCar" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 287A0B882D52F2080049E06D;
+			productRefGroup = 287A0B922D52F2090049E06D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				287A0B902D52F2090049E06D /* QuranCar */,
+				287A0BA02D52F20D0049E06D /* QuranCarTests */,
+				287A0BAA2D52F20D0049E06D /* QuranCarUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		287A0B8F2D52F2090049E06D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */,
+				287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0B9F2D52F20D0049E06D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0BA92D52F20D0049E06D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		287A0B8D2D52F2090049E06D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				287A0B972D52F2090049E06D /* ContentView.swift in Sources */,
+				287A0B952D52F2090049E06D /* QuranCarApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0B9D2D52F20D0049E06D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				287A0BA62D52F20D0049E06D /* QuranCarTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		287A0BA72D52F20D0049E06D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				287A0BB22D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift in Sources */,
+				287A0BB02D52F20D0049E06D /* QuranCarUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		287A0BA32D52F20D0049E06D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 287A0B902D52F2090049E06D /* QuranCar */;
+			targetProxy = 287A0BA22D52F20D0049E06D /* PBXContainerItemProxy */;
+		};
+		287A0BAD2D52F20D0049E06D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 287A0B902D52F2090049E06D /* QuranCar */;
+			targetProxy = 287A0BAC2D52F20D0049E06D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		287A0BB32D52F20D0049E06D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		287A0BB42D52F20D0049E06D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		287A0BB62D52F20D0049E06D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"QuranCar/Preview Content\"";
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		287A0BB72D52F20D0049E06D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"QuranCar/Preview Content\"";
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		287A0BB92D52F20D0049E06D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuranCar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuranCar";
+			};
+			name = Debug;
+		};
+		287A0BBA2D52F20D0049E06D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuranCar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuranCar";
+			};
+			name = Release;
+		};
+		287A0BBC2D52F20D0049E06D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = QuranCar;
+			};
+			name = Debug;
+		};
+		287A0BBD2D52F20D0049E06D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6BC9DD938Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = QuranCar;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		287A0B8C2D52F2080049E06D /* Build configuration list for PBXProject "QuranCar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				287A0BB32D52F20D0049E06D /* Debug */,
+				287A0BB42D52F20D0049E06D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				287A0BB62D52F20D0049E06D /* Debug */,
+				287A0BB72D52F20D0049E06D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		287A0BB82D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				287A0BB92D52F20D0049E06D /* Debug */,
+				287A0BBA2D52F20D0049E06D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		287A0BBB2D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCarUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				287A0BBC2D52F20D0049E06D /* Debug */,
+				287A0BBD2D52F20D0049E06D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 287A0B892D52F2080049E06D /* Project object */;
+}
