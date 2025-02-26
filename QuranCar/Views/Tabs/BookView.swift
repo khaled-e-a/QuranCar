@@ -4,7 +4,6 @@ import UIKit
 import FeaturesSupport
 import AppDependencies
 import AppStructureFeature
-import QuranViewFeature
 import NoorUI
 import QuranContentFeature
 import Combine
@@ -21,51 +20,204 @@ class NavigatorHolder: ObservableObject {
 
 struct BookView: View {
     @StateObject private var viewModel = BookViewModel()
-    @StateObject private var navigatorHolder = NavigatorHolder(navigator: QuranNavigatorImpl())
-
-
-    // Store cancellable to maintain subscription
-    @State private var cancellable: AnyCancellable?
+    @State private var selectedSurah: String = "Al-Fatiha (The Opening)"
+    @State private var selectedVerse: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
+    @State private var numberOfVerses: Int = 5
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                if viewModel.isLoading {
-                    LoadingView()
-                        .onAppear { print("BookView: Showing loading state") }
-                } else if let error = viewModel.error {
-                    ErrorView(error: error, retryAction: viewModel.loadHome)
-                        .onAppear { print("BookView: Showing error state - \(error.localizedDescription)") }
-                } else {
-                    HomeViewRepresentable(
-                        authToken: viewModel.authToken ?? "",
-                        navigator: navigatorHolder.navigator
-                    )
-                    .onAppear { print("BookView: Showing HomeViewRepresentable") }
+        VStack(spacing: 20) {
+            // Surah Selection
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Select Surah")
+                    .foregroundColor(.secondary)
+
+                Menu {
+                    // Add surah options here
+                    Button("Al-Fatiha") { selectedSurah = "Al-Fatiha (The Opening)" }
+                } label: {
+                    HStack {
+                        Text(selectedSurah)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.05), radius: 2)
                 }
             }
-            .navigationTitle("Quran")
+
+            // Starting Verse
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Starting Verse")
+                    .foregroundColor(.secondary)
+
+                Menu {
+                    // Add verse options here
+                    Button("1. Bismillah") { selectedVerse = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" }
+                } label: {
+                    HStack {
+                        Text(selectedVerse)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.05), radius: 2)
+                }
+            }
+
+            // Number of Verses
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Number of Verses")
+                    .foregroundColor(.secondary)
+
+                HStack(spacing: 15) {
+                    ForEach([1, 3, 5, 7], id: \.self) { number in
+                        NumberButton(number: number, isSelected: numberOfVerses == number) {
+                            numberOfVerses = number
+                        }
+                    }
+
+                    Button(action: {
+                        // Add custom number action
+                    }) {
+                        Image(systemName: "plus")
+                            .frame(width: 40, height: 40)
+                            .background(Color(.systemBackground))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.05), radius: 2)
+                    }
+                }
+            }
+
+            // Preview Section
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Preview")
+                    .foregroundColor(.secondary)
+
+                VStack(alignment: .center, spacing: 8) {
+                    Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")
+                        .font(.title)
+
+                    Text("In the name of Allah, the Entirely Merciful, the Especially Merciful")
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
+                .shadow(color: .black.opacity(0.05), radius: 2)
+            }
+
+            Spacer()
+
+            // Play Button
+            Button(action: {
+                // Add play action
+            }) {
+                Image(systemName: "play.fill")
+                    .font(.title2)
+                    .frame(width: 60, height: 60)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .clipShape(Circle())
+                    .shadow(color: .blue.opacity(0.3), radius: 10)
+            }
+
+            // Settings Row
+            HStack(spacing: 30) {
+                SettingsButton(title: "Reciter", value: "Mishary Rashid")
+                SettingsButton(title: "Repeats", value: "3 times")
+                SettingsButton(title: "Mode", value: "Continuous")
+            }
+            .padding(.bottom)
         }
-        .onAppear {
-            print("BookView: View appeared, loading home")
-            viewModel.loadHome()
+        .padding()
+        .navigationTitle("Memorize")
+    }
+}
+
+struct NumberButton: View {
+    let number: Int
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("\(number)")
+                .frame(width: 40, height: 40)
+                .background(isSelected ? Color.blue : Color(.systemBackground))
+                .foregroundColor(isSelected ? .white : .primary)
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.05), radius: 2)
         }
     }
 }
 
-class QuranNavigatorImpl: NSObject, FeaturesSupport.QuranNavigator {
-    func navigateTo(page: Page, lastPage: Page?, highlightingSearchAyah: AyahNumber?) {
-        print("QuranNavigator: Navigating to page \(page), lastPage: \(String(describing: lastPage)), highlightAyah: \(String(describing: highlightingSearchAyah))")
+struct SettingsButton: View {
+    let title: String
+    let value: String
 
-        DispatchQueue.main.async {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first,
-                  let rootViewController = window.rootViewController else {
-                print("QuranNavigator: Failed to get window hierarchy")
-                return
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Menu {
+                // Add options here
+            } label: {
+                Text(value)
+                    .font(.subheadline)
             }
-
         }
+    }
+}
+
+// Floating section component
+struct FloatingSection: View {
+    let title: String
+    let subtitle: String
+    let buttonTitle: String
+    var isCompact: Bool = false
+    let action: () -> Void
+
+    var body: some View {
+        VStack {
+            ZStack {
+                // Card background
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(title)
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Button(action: action) {
+                        Text(buttonTitle)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                    }
+                }
+                .padding()
+            }
+        }
+        .frame(height: isCompact ? 140 : 180)
     }
 }
 
@@ -86,28 +238,11 @@ extension UIViewController {
 
 struct HomeViewRepresentable: UIViewControllerRepresentable {
     let authToken: String
-    // Store navigator as a property to maintain strong reference
     let navigator: QuranNavigator
 
     func makeUIViewController(context: Context) -> UIViewController {
         print("HomeViewRepresentable: Creating HomeViewController")
-
-        // Create a simple placeholder view controller
-        let placeholderVC = UIViewController()
-        placeholderVC.view.backgroundColor = .systemBackground
-
-        let label = UILabel()
-        label.text = "Home View Coming Soon"
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-
-        placeholderVC.view.addSubview(label)
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: placeholderVC.view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: placeholderVC.view.centerYAnchor)
-        ])
-
-        return placeholderVC
+        return QuranViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
@@ -124,31 +259,6 @@ struct LoadingView: View {
             Text("Loading...")
                 .foregroundColor(.gray)
         }
-    }
-}
-
-class BookViewModel: ObservableObject {
-    @Published var isLoading = false
-    @Published var error: Error?
-    @Published var authToken: String?
-
-    func loadHome() {
-        print("BookViewModel: Loading home")
-        guard let accessToken = TokenManager.shared.getAccessToken(),
-              let tokenType = TokenManager.shared.getTokenType() else {
-            print("BookViewModel: No auth tokens found")
-            self.error = QuranError.unauthorized
-            return
-        }
-
-        print("BookViewModel: Found tokens, setting up auth")
-        isLoading = true
-        error = nil
-
-        // Set the auth token
-        authToken = "\(tokenType) \(accessToken)"
-        print("BookViewModel: Auth token set")
-        isLoading = false
     }
 }
 

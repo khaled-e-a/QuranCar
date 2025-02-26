@@ -2,25 +2,51 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
             List {
                 Section("Account") {
-                    Text("Profile")
-                    Text("Preferences")
+                    NavigationLink("Profile") {
+                        Text("Profile Details")
+                    }
+                    NavigationLink("Preferences") {
+                        Text("User Preferences")
+                    }
                 }
 
                 Section("App Settings") {
-                    Text("Theme")
-                    Text("Language")
-                    Text("Notifications")
+                    NavigationLink("Theme") {
+                        Text("Theme Settings")
+                    }
+                    NavigationLink("Language") {
+                        Text("Language Settings")
+                    }
+                    NavigationLink("Notifications") {
+                        Text("Notification Settings")
+                    }
                 }
 
                 Section("About") {
-                    Text("Version 1.0")
-                    Text("Help & Support")
-                    Text("Privacy Policy")
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("1.0")
+                            .foregroundColor(.secondary)
+                    }
+                    NavigationLink("Help & Support") {
+                        Text("Help & Support")
+                    }
+                    NavigationLink("Privacy Policy") {
+                        Text("Privacy Policy")
+                    }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
         }
+    }
+}
+
+#Preview {
+    NavigationView {
+        SettingsView()
     }
 }
