@@ -24,174 +24,277 @@ struct BookView: View {
     @State private var numberOfVerses: Int = 5
     @State private var showingVersesList = false
     @State private var showingChaptersList = false
+    @State private var showingNumberSelector = false
+    @State private var numberSelectorOpacity: Double = 0
+
+    private var toVerse: String {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        let targetVerseNumber = currentVerseNumber + numberOfVerses - 1
+
+        return viewModel.currentVerses
+            .first(where: { $0.verseNumber == targetVerseNumber })?
+            .textUthmani.map { "\(targetVerseNumber). \($0)" } ?? ""
+    }
+
+    private var presetNumbers: [Int] {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+        let remainingVerses = maxVerses - currentVerseNumber + 1
+
+        // Start with standard small numbers, but only include those that fit
+        var numbers = [1, 3, 5].filter { $0 <= remainingVerses }
+
+        // Add remaining verses if it's different from already included numbers
+        if remainingVerses > 0 && !numbers.contains(remainingVerses) {
+            if remainingVerses > 7 {
+                numbers.append(7)
+            } else {
+                numbers.append(remainingVerses)
+            }
+        }
+
+        return numbers
+    }
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Surah Selection
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Select Surah")
-                    .foregroundColor(.secondary)
-
-                Button(action: {
-                    showingChaptersList = true
-                }) {
-                    HStack {
-                        if let chapter = viewModel.selectedChapter {
-                            HStack {
-                                Text(chapter.nameSimple ?? "")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(chapter.nameArabic ?? "")
-                                    .environment(\.layoutDirection, .rightToLeft)
-                            }
-                        } else {
-                            Text("Select a Surah")
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.down")
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(8)
-                    .shadow(color: .black.opacity(0.05), radius: 2)
-                }
-            }
-
-            // Starting Verse Selection
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Starting Verse")
-                    .foregroundColor(.secondary)
-
-                Button(action: {
-                    showingVersesList = true
-                }) {
-                    HStack {
-                        Text(selectedVerse)
-                            .multilineTextAlignment(.trailing)
-                            .environment(\.layoutDirection, .rightToLeft)
-                        Spacer()
-                        Image(systemName: "chevron.down")
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(8)
-                    .shadow(color: .black.opacity(0.05), radius: 2)
-                }
-            }
-
-            // Number of Verses
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Number of Verses")
-                    .foregroundColor(.secondary)
-
-                HStack(spacing: 15) {
-                    ForEach([1, 3, 5, 7], id: \.self) { number in
-                        NumberButton(number: number, isSelected: numberOfVerses == number) {
-                            numberOfVerses = number
-                        }
-                    }
+        ZStack {
+            VStack(spacing: 20) {
+                // Surah Selection
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Select Surah")
+                        .foregroundColor(.secondary)
 
                     Button(action: {
-                        // Add custom number action
+                        showingChaptersList = true
                     }) {
-                        Image(systemName: "plus")
-                            .frame(width: 40, height: 40)
-                            .background(Color(.systemBackground))
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.05), radius: 2)
+                        HStack {
+                            if let chapter = viewModel.selectedChapter {
+                                HStack {
+                                    Text(chapter.nameSimple ?? "")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(chapter.nameArabic ?? "")
+                                        .environment(\.layoutDirection, .rightToLeft)
+                                }
+                            } else {
+                                Text("Select a Surah")
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(8)
+                        .shadow(color: .black.opacity(0.05), radius: 2)
                     }
                 }
-            }
 
-            // Preview Section
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Preview")
-                    .foregroundColor(.secondary)
-
-                VStack(alignment: .center, spacing: 8) {
-                    Text("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")
-                        .font(.title)
-
-                    Text("In the name of Allah, the Entirely Merciful, the Especially Merciful")
+                // Starting Verse Selection
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Starting Verse")
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+
+                    Button(action: {
+                        showingVersesList = true
+                    }) {
+                        HStack {
+                            Text(selectedVerse)
+                                .multilineTextAlignment(.trailing)
+                                .environment(\.layoutDirection, .rightToLeft)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(8)
+                        .shadow(color: .black.opacity(0.05), radius: 2)
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.05), radius: 2)
-            }
 
-            Spacer()
+                // Number of Verses
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Number of Verses")
+                        .foregroundColor(.secondary)
 
-            // Play Button
-            Button(action: {
-                // Add play action
-            }) {
-                Image(systemName: "play.fill")
-                    .font(.title2)
-                    .frame(width: 60, height: 60)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .clipShape(Circle())
-                    .shadow(color: .blue.opacity(0.3), radius: 10)
-            }
+                    HStack(spacing: 15) {
+                        // Preset numbers
+                        ForEach(presetNumbers, id: \.self) { number in
+                            NumberButton(number: number, isSelected: numberOfVerses == number) {
+                                numberOfVerses = number
+                            }
+                        }
 
-            // Settings Row
-            HStack(spacing: 30) {
-                SettingsButton(title: "Reciter", value: "Mishary Rashid")
-                SettingsButton(title: "Repeats", value: "3 times")
-                SettingsButton(title: "Mode", value: "Continuous")
-            }
-            .padding(.bottom)
-        }
-        .padding()
-        .navigationTitle("Memorize")
-        .task {
-            await viewModel.loadChapters()
-        }
-        .overlay {
-            if viewModel.isLoading {
-                ProgressView()
-            }
-        }
-        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
-            Button("Retry") {
-                Task {
-                    await viewModel.loadChapters()
-                }
-            }
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
-            }
-        }
-        .sheet(isPresented: $showingChaptersList) {
-            ChaptersListView(
-                chapters: viewModel.chapters,
-                selectedChapter: viewModel.selectedChapter,
-                onChapterSelected: { chapter in
-                    Task {
-                        viewModel.selectedChapter = chapter
-                        await viewModel.loadVersesForSelectedChapter()
+                        // Show custom number if it's not one of the presets
+                        if !(presetNumbers.contains(numberOfVerses)) {
+                            NumberButton(number: numberOfVerses, isSelected: true) {
+                                showingNumberSelector = true
+                            }
+                        }
 
-                        if let firstVerse = viewModel.currentVerses.first,
-                           let text = firstVerse.textUthmani {
-                            selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                        // Plus button
+                        Button(action: {
+                            showingNumberSelector = true
+                        }) {
+                            Image(systemName: "plus")
+                                .frame(width: 40, height: 40)
+                                .background(Color(.systemBackground))
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.05), radius: 2)
                         }
                     }
                 }
-            )
-        }
-        .sheet(isPresented: $showingVersesList) {
-            VersesListView(
-                verses: viewModel.currentVerses,
-                onVerseSelected: { verse in
-                    if let text = verse.textUthmani {
-                        selectedVerse = "\(verse.verseNumber). \(text)"
+
+                // Memorization Loop Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Memorization Loop")
+                        .foregroundColor(.secondary)
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        // From verse
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("From")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            Text(selectedVerse)
+                                .font(.title3)
+                                .multilineTextAlignment(.trailing)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .environment(\.layoutDirection, .rightToLeft)
+                        }
+
+                        Divider()
+
+                        // To verse
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("To")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            Text(toVerse)
+                                .font(.title3)
+                                .multilineTextAlignment(.trailing)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .environment(\.layoutDirection, .rightToLeft)
+                        }
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.05), radius: 2)
+                }
+
+                Spacer()
+
+                // Play Button
+                Button(action: {
+                    // Add play action
+                }) {
+                    Image(systemName: "play.fill")
+                        .font(.title2)
+                        .frame(width: 60, height: 60)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .clipShape(Circle())
+                        .shadow(color: .blue.opacity(0.3), radius: 10)
+                }
+
+                // Settings Row
+                HStack(spacing: 30) {
+                    SettingsButton(title: "Reciter", value: "Mishary Rashid")
+                    SettingsButton(title: "Repeats", value: "3 times")
+                    SettingsButton(title: "Mode", value: "Continuous")
+                }
+                .padding(.bottom)
+            }
+            .padding()
+            .navigationTitle("Memorize")
+            .task {
+                await viewModel.loadChapters()
+            }
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                }
+            }
+            .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+                Button("Retry") {
+                    Task {
+                        await viewModel.loadChapters()
                     }
                 }
-            )
+            } message: {
+                if let error = viewModel.error {
+                    Text(error.localizedDescription)
+                }
+            }
+            .sheet(isPresented: $showingChaptersList) {
+                ChaptersListView(
+                    chapters: viewModel.chapters,
+                    selectedChapter: viewModel.selectedChapter,
+                    onChapterSelected: { chapter in
+                        Task {
+                            viewModel.selectedChapter = chapter
+                            await viewModel.loadVersesForSelectedChapter()
+
+                            // Reset number of verses to 3 when changing chapters
+                            numberOfVerses = 3
+
+                            if let firstVerse = viewModel.currentVerses.first,
+                               let text = firstVerse.textUthmani {
+                                selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                            }
+                        }
+                    }
+                )
+            }
+            .sheet(isPresented: $showingVersesList) {
+                VersesListView(
+                    verses: viewModel.currentVerses,
+                    onVerseSelected: { verse in
+                        if let text = verse.textUthmani {
+                            selectedVerse = "\(verse.verseNumber). \(text)"
+
+                            // Check if current numberOfVerses is valid for the new starting verse
+                            let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+                            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
+
+                            // If current numberOfVerses exceeds remaining verses, reset to 1
+                            if numberOfVerses >= remainingVerses {
+                                numberOfVerses = 1
+                            }
+                        }
+                    }
+                )
+            }
+            .blur(radius: showingNumberSelector ? 3 : 0)
+
+            // Number Selector Popup
+            if showingNumberSelector {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showingNumberSelector = false
+                        }
+                    }
+
+                NumberSelectorView(
+                    maxNumber: Int(viewModel.selectedChapter?.versesCount ?? 1),
+                    currentNumber: numberOfVerses,
+                    onNumberSelected: { number in
+                        numberOfVerses = number
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showingNumberSelector = false
+                        }
+                    }
+                )
+                .opacity(numberSelectorOpacity)
+            }
+        }
+        .onChange(of: showingNumberSelector) { show in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                numberSelectorOpacity = show ? 1 : 0
+            }
         }
     }
 }
