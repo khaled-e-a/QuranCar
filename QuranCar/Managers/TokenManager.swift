@@ -5,15 +5,20 @@ class TokenManager {
     static let shared = TokenManager()
 
     private let accessTokenKey = "com.qurancar.accessToken"
+    private let clientIdKey = "com.qurancar.clientId"
     private let idTokenKey = "com.qurancar.idToken"
     private let tokenTypeKey = "com.qurancar.tokenType"
     private let expiresInKey = "com.qurancar.expiresIn"
 
     private init() {}
 
-    func saveTokens(accessToken: String, idToken: String?, tokenType: String, expiresIn: Int) {
+    func saveTokens(accessToken: String, clientId: String, idToken: String?, tokenType: String, expiresIn: Int) {
         // Store access token
         saveToKeychain(key: accessTokenKey, value: accessToken)
+
+        // Store client ID
+        saveToKeychain(key: clientIdKey, value: clientId)
+        print("TokenManager: Saved client ID: \(clientId)")
 
         // Store ID token if available
         if let idToken = idToken {
@@ -30,6 +35,11 @@ class TokenManager {
 
     func getAccessToken() -> String? {
         return retrieveFromKeychain(key: accessTokenKey)
+    }
+
+    func getClientId() -> String? {
+        print("TokenManager: Getting client ID: \(retrieveFromKeychain(key: clientIdKey) ?? "NOT_FOUND")")
+        return retrieveFromKeychain(key: clientIdKey)
     }
 
     func getIdToken() -> String? {
@@ -50,6 +60,7 @@ class TokenManager {
 
     func clearTokens() {
         deleteFromKeychain(key: accessTokenKey)
+        deleteFromKeychain(key: clientIdKey)
         deleteFromKeychain(key: idTokenKey)
         deleteFromKeychain(key: tokenTypeKey)
         UserDefaults.standard.removeObject(forKey: expiresInKey)

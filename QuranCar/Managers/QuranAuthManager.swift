@@ -2,76 +2,19 @@ import Foundation
 import AuthenticationServices
 import QuranKit
 
-class QuranAuthManager: NSObject, ASWebAuthenticationPresentationContextProviding {
+class QuranAuthManager: NSObject {
     static let shared = QuranAuthManager()
 
     private let clientId = "f84a40d4-ee4f-4765-b8c8-4e67f6c1ca6b"
     private let clientSecret = ".UxR7PBtDfKfefe.bkzmoZrXgP"
-    private let redirectUri = "qurancar://oauth/callback"
     private let tokenHost = "https://prelive-oauth2.quran.foundation"
-    private let scopes = ["openid"]
-    private let state = "veimvfgqexjicockrwsgcb333o3a"
-
-    private var webAuthSession: ASWebAuthenticationSession?
-    private var completionHandler: ((Result<String, Error>) -> Void)?
+    private let scopes = ["content"]
 
     func authenticate(completion: @escaping (Result<String, Error>) -> Void) {
-        self.completionHandler = completion
-
-        // Construct the authorization URL
-        var components = URLComponents(string: "\(tokenHost)/oauth2/auth")!
-        components.queryItems = [
-            URLQueryItem(name: "client_id", value: clientId),
-            URLQueryItem(name: "redirect_uri", value: redirectUri),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: scopes.joined(separator: " ")),
-            URLQueryItem(name: "state", value: state)
-        ]
-
-        guard let authURL = components.url else {
-            completion(.failure(QuranAuthError.invalidURL))
-            return
-        }
-
-        print("Auth URL: \(authURL)") // For debugging
-
-        webAuthSession = ASWebAuthenticationSession(
-            url: authURL,
-            callbackURLScheme: "qurancar",
-            completionHandler: { [weak self] callbackURL, error in
-                if let error = error {
-                    print("Auth Error: \(error)") // For debugging
-                    self?.completionHandler?(.failure(error))
-                    return
-                }
-
-                guard let callbackURL = callbackURL else {
-                    self?.completionHandler?(.failure(QuranAuthError.missingCallbackURL))
-                    return
-                }
-
-                print("Callback URL: \(callbackURL)") // For debugging
-                self?.handleCallback(url: callbackURL)
-            }
-        )
-
-        webAuthSession?.presentationContextProvider = self
-        webAuthSession?.start()
+        getClientCredentialsToken(completion: completion)
     }
 
-    private func handleCallback(url: URL) {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let code = components.queryItems?.first(where: { $0.name == "code" })?.value
-        else {
-            completionHandler?(.failure(QuranAuthError.missingAuthCode))
-            return
-        }
-
-        print("Got code: \(code)") // For debugging
-        exchangeCodeForToken(code: code)
-    }
-
-    private func exchangeCodeForToken(code: String) {
+    private func getClientCredentialsToken(completion: @escaping (Result<String, Error>) -> Void) {
         var request = URLRequest(url: URL(string: "\(tokenHost)/oauth2/token")!)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -83,11 +26,10 @@ class QuranAuthManager: NSObject, ASWebAuthenticationPresentationContextProvidin
             request.setValue("Basic \(base64Credentials)", forHTTPHeaderField: "Authorization")
         }
 
-        // Remove client credentials from POST body
+        // Use client_credentials grant type
         let parameters = [
-            "code": code,
-            "redirect_uri": redirectUri,
-            "grant_type": "authorization_code"
+            "grant_type": "client_credentials",
+            "scope": scopes.joined(separator: " ")
         ]
 
         request.httpBody = parameters
@@ -95,29 +37,15 @@ class QuranAuthManager: NSObject, ASWebAuthenticationPresentationContextProvidin
             .joined(separator: "&")
             .data(using: .utf8)
 
-        print("Token request: \(request)") // For debugging
-        if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
-            print("Request body: \(bodyString)")
-        }
-
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Token Error: \(error)") // For debugging
-                self?.completionHandler?(.failure(error))
+                completion(.failure(error))
                 return
-            }
-
-            if let httpResponse = response as? HTTPURLResponse {
-                print("Token Response Status: \(httpResponse.statusCode)") // For debugging
             }
 
             guard let data = data else {
-                self?.completionHandler?(.failure(QuranAuthError.noData))
+                completion(.failure(QuranAuthError.noData))
                 return
-            }
-
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("Token Response: \(responseString)") // For debugging
             }
 
             do {
@@ -126,27 +54,17 @@ class QuranAuthManager: NSObject, ASWebAuthenticationPresentationContextProvidin
                 // Save tokens securely
                 TokenManager.shared.saveTokens(
                     accessToken: tokenResponse.accessToken,
+                    clientId: self.clientId,
                     idToken: tokenResponse.idToken,
                     tokenType: tokenResponse.tokenType,
                     expiresIn: tokenResponse.expiresIn
                 )
 
-                self?.completionHandler?(.success(tokenResponse.accessToken))
+                completion(.success(tokenResponse.accessToken))
             } catch {
-                print("Token Decode Error: \(error)") // For debugging
-                self?.completionHandler?(.failure(error))
+                completion(.failure(error))
             }
         }.resume()
-    }
-
-    // MARK: - ASWebAuthenticationPresentationContextProviding
-
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            fatalError("No window available")
-        }
-        return window
     }
 }
 

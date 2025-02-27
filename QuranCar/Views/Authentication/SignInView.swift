@@ -108,6 +108,7 @@ class SignInViewModel: ObservableObject {
     private func handleSuccess(token: String) {
         TokenManager.shared.saveTokens(
             accessToken: token,
+            clientId: TokenManager.shared.getClientId() ?? "",
             idToken: nil,
             tokenType: "Bearer",
             expiresIn: 3600

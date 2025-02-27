@@ -20,41 +20,46 @@ class NavigatorHolder: ObservableObject {
 
 struct BookView: View {
     @StateObject private var viewModel = BookViewModel()
-    @State private var selectedSurah: String = "Al-Fatiha (The Opening)"
     @State private var selectedVerse: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     @State private var numberOfVerses: Int = 5
 
     var body: some View {
         VStack(spacing: 20) {
             // Surah Selection
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Select Surah")
-                    .foregroundColor(.secondary)
+            ChapterSelectionView(
+                selectedChapter: viewModel.selectedChapter,
+                chapters: viewModel.chapters,
+                onChapterSelected: { chapter in
+                    Task {
+                        viewModel.selectedChapter = chapter
+                        await viewModel.loadVersesForSelectedChapter()
 
-                Menu {
-                    // Add surah options here
-                    Button("Al-Fatiha") { selectedSurah = "Al-Fatiha (The Opening)" }
-                } label: {
-                    HStack {
-                        Text(selectedSurah)
-                        Spacer()
-                        Image(systemName: "chevron.down")
+                        // Update the selected verse when verses are loaded
+                        if let firstVerse = viewModel.currentVerses.first,
+                           let text = firstVerse.textUthmani {
+                            selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                        }
                     }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(8)
-                    .shadow(color: .black.opacity(0.05), radius: 2)
                 }
-            }
+            )
 
-            // Starting Verse
+            // Starting Verse Menu
             VStack(alignment: .leading, spacing: 8) {
                 Text("Starting Verse")
                     .foregroundColor(.secondary)
 
                 Menu {
-                    // Add verse options here
-                    Button("1. Bismillah") { selectedVerse = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" }
+                    ForEach(viewModel.currentVerses, id: \.id) { verse in
+                        Button(action: {
+                            if let text = verse.textUthmani {
+                                selectedVerse = "\(verse.verseNumber). \(text)"
+                            }
+                        }) {
+                            if let text = verse.textUthmani {
+                                Text("\(verse.verseNumber). \(text)")
+                            }
+                        }
+                    }
                 } label: {
                     HStack {
                         Text(selectedVerse)
@@ -137,6 +142,57 @@ struct BookView: View {
         }
         .padding()
         .navigationTitle("Memorize")
+        .task {
+            await viewModel.loadChapters()
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+            Button("Retry") {
+                Task {
+                    await viewModel.loadChapters()
+                }
+            }
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
+            }
+        }
+    }
+}
+
+// MARK: - Chapter Selection View
+struct ChapterSelectionView: View {
+    let selectedChapter: ChapterEntity?
+    let chapters: [ChapterEntity]
+    let onChapterSelected: (ChapterEntity) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Surah")
+                .foregroundColor(.secondary)
+
+            Menu {
+                ForEach(chapters, id: \.id) { chapter in
+                    Button(action: { onChapterSelected(chapter) }) {
+                        Text("\(chapter.nameSimple ?? "") (\(chapter.nameArabic ?? ""))")
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(selectedChapter?.nameSimple ?? "Select a Surah")
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(8)
+                .shadow(color: .black.opacity(0.05), radius: 2)
+            }
+        }
     }
 }
 
