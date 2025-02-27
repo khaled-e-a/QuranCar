@@ -22,47 +22,52 @@ struct BookView: View {
     @StateObject private var viewModel = BookViewModel()
     @State private var selectedVerse: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     @State private var numberOfVerses: Int = 5
+    @State private var showingVersesList = false
+    @State private var showingChaptersList = false
 
     var body: some View {
         VStack(spacing: 20) {
             // Surah Selection
-            ChapterSelectionView(
-                selectedChapter: viewModel.selectedChapter,
-                chapters: viewModel.chapters,
-                onChapterSelected: { chapter in
-                    Task {
-                        viewModel.selectedChapter = chapter
-                        await viewModel.loadVersesForSelectedChapter()
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Select Surah")
+                    .foregroundColor(.secondary)
 
-                        // Update the selected verse when verses are loaded
-                        if let firstVerse = viewModel.currentVerses.first,
-                           let text = firstVerse.textUthmani {
-                            selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                Button(action: {
+                    showingChaptersList = true
+                }) {
+                    HStack {
+                        if let chapter = viewModel.selectedChapter {
+                            HStack {
+                                Text(chapter.nameSimple ?? "")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(chapter.nameArabic ?? "")
+                                    .environment(\.layoutDirection, .rightToLeft)
+                            }
+                        } else {
+                            Text("Select a Surah")
                         }
+                        Spacer()
+                        Image(systemName: "chevron.down")
                     }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.05), radius: 2)
                 }
-            )
+            }
 
-            // Starting Verse Menu
+            // Starting Verse Selection
             VStack(alignment: .leading, spacing: 8) {
                 Text("Starting Verse")
                     .foregroundColor(.secondary)
 
-                Menu {
-                    ForEach(viewModel.currentVerses, id: \.id) { verse in
-                        Button(action: {
-                            if let text = verse.textUthmani {
-                                selectedVerse = "\(verse.verseNumber). \(text)"
-                            }
-                        }) {
-                            if let text = verse.textUthmani {
-                                Text("\(verse.verseNumber). \(text)")
-                            }
-                        }
-                    }
-                } label: {
+                Button(action: {
+                    showingVersesList = true
+                }) {
                     HStack {
                         Text(selectedVerse)
+                            .multilineTextAlignment(.trailing)
+                            .environment(\.layoutDirection, .rightToLeft)
                         Spacer()
                         Image(systemName: "chevron.down")
                     }
@@ -160,6 +165,33 @@ struct BookView: View {
             if let error = viewModel.error {
                 Text(error.localizedDescription)
             }
+        }
+        .sheet(isPresented: $showingChaptersList) {
+            ChaptersListView(
+                chapters: viewModel.chapters,
+                selectedChapter: viewModel.selectedChapter,
+                onChapterSelected: { chapter in
+                    Task {
+                        viewModel.selectedChapter = chapter
+                        await viewModel.loadVersesForSelectedChapter()
+
+                        if let firstVerse = viewModel.currentVerses.first,
+                           let text = firstVerse.textUthmani {
+                            selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                        }
+                    }
+                }
+            )
+        }
+        .sheet(isPresented: $showingVersesList) {
+            VersesListView(
+                verses: viewModel.currentVerses,
+                onVerseSelected: { verse in
+                    if let text = verse.textUthmani {
+                        selectedVerse = "\(verse.verseNumber). \(text)"
+                    }
+                }
+            )
         }
     }
 }
