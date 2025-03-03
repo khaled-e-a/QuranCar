@@ -22,4 +22,17 @@
         <attribute name="textUthmani" optional="YES" attributeType="String"/>
         <relationship name="chapter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChapterEntity" inverseName="verses" inverseEntity="ChapterEntity"/>
     </entity>
+    <entity name="ReciterEntity" representedClassName="ReciterEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0"/>
+        <attribute name="reciterName" attributeType="String"/>
+        <attribute name="style" optional="YES" attributeType="String"/>
+        <attribute name="translatedName" attributeType="String"/>
+        <attribute name="languageName" attributeType="String"/>
+    </entity>
+    <entity name="AudioFileEntity" representedClassName="AudioFileEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="url" attributeType="String"/>
+        <attribute name="verseKey" attributeType="String"/>
+        <relationship name="chapter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChapterEntity"/>
+        <relationship name="reciter" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ReciterEntity"/>
+    </entity>
 </model>

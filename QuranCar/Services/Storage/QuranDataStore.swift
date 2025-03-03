@@ -101,4 +101,81 @@ class QuranDataStore {
 
         try context.save()
     }
+
+    func saveReciters(_ reciters: [Reciter]) async throws {
+        let context = container.viewContext
+
+        // Clear existing reciters
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = ReciterEntity.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        try context.execute(deleteRequest)
+
+        // Save new reciters
+        for reciter in reciters {
+            let entity = ReciterEntity(context: context)
+            entity.id = Int32(reciter.id)
+            entity.reciterName = reciter.reciterName
+            entity.style = reciter.style
+            entity.translatedName = reciter.translatedName.name
+            entity.languageName = reciter.translatedName.languageName
+        }
+
+        try context.save()
+    }
+
+    func fetchReciters() async throws -> [ReciterEntity] {
+        let context = container.viewContext
+        let request = ReciterEntity.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \ReciterEntity.reciterName, ascending: true)]
+        return try context.fetch(request)
+    }
+
+    func fetchReciter(byId id: Int) async throws -> ReciterEntity? {
+        let context = container.viewContext
+        let request = ReciterEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %d", id)
+        return try context.fetch(request).first
+    }
+
+    func saveAudioFiles(_ audioFiles: [AudioFile], chapterId: Int, reciterId: Int) async throws {
+        let context = container.viewContext
+
+        // Fetch chapter and reciter
+        let chapterRequest = ChapterEntity.fetchRequest()
+        chapterRequest.predicate = NSPredicate(format: "id == %d", chapterId)
+        guard let chapter = try context.fetch(chapterRequest).first else {
+            throw NSError(domain: "QuranDataStore", code: -1, userInfo: [NSLocalizedDescriptionKey: "Chapter not found"])
+        }
+
+        let reciterRequest = ReciterEntity.fetchRequest()
+        reciterRequest.predicate = NSPredicate(format: "id == %d", reciterId)
+        guard let reciter = try context.fetch(reciterRequest).first else {
+            throw NSError(domain: "QuranDataStore", code: -1, userInfo: [NSLocalizedDescriptionKey: "Reciter not found"])
+        }
+
+        // Clear existing audio files for this chapter and reciter
+        let deleteRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AudioFileEntity")
+        deleteRequest.predicate = NSPredicate(format: "chapter.id == %d AND reciter.id == %d", chapterId, reciterId)
+        let deleteResult = NSBatchDeleteRequest(fetchRequest: deleteRequest)
+        try context.execute(deleteResult)
+
+        // Save new audio files
+        for audioFile in audioFiles {
+            let entity = AudioFileEntity(context: context)
+            entity.verseKey = audioFile.verseKey
+            entity.url = audioFile.url
+            entity.chapter = chapter
+            entity.reciter = reciter
+        }
+
+        try context.save()
+    }
+
+    func fetchAudioFiles(chapterId: Int, reciterId: Int) async throws -> [AudioFileEntity] {
+        let context = container.viewContext
+        let request = AudioFileEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "chapter.id == %d AND reciter.id == %d", chapterId, reciterId)
+        request.sortDescriptors = [NSSortDescriptor(key: "verseKey", ascending: true)]
+        return try context.fetch(request)
+    }
 }

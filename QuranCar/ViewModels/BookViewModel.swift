@@ -14,9 +14,15 @@ class BookViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: Error?
     @Published var chapters: [ChapterEntity] = []
+    @Published var reciters: [ReciterEntity] = []
+    @Published var selectedReciter: ReciterEntity?
+    @Published var currentAudioFiles: [AudioFileEntity] = []
+    @Published var isPlaying = false
 
     private let apiService: QuranAPIService
     private let dataStore: QuranDataStore
+    private let audioManager = AudioManager()
+    private var cancellables = Set<AnyCancellable>()
 
     init(apiService: QuranAPIService = QuranAPIService(
         clientId: TokenManager.shared.getClientId() ?? "NOT_FOUND",
@@ -24,10 +30,39 @@ class BookViewModel: ObservableObject {
     )) {
         self.apiService = apiService
         self.dataStore = QuranDataStore.shared
+
+        // Add notification observer
+        NotificationCenter.default
+            .publisher(for: .audioPlaybackCompleted)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("BookViewModel: Received playback completed notification")
+                self?.isPlaying = false
+            }
+            .store(in: &cancellables)
+
         print("BookViewModel: Initialized with apiService: \(apiService) and dataStore: \(dataStore)")
         print("BookViewModel: Client ID: \(TokenManager.shared.getClientId() ?? "NOT_FOUND")")
         print("BookViewModel: Access Token: \(TokenManager.shared.getAccessToken() ?? "NOT_FOUND")")
         print("BookViewModel: called from \(Thread.callStackSymbols[1])")
+
+        // Load initial data
+        Task {
+            await loadChapters()
+            await loadReciters()
+            // If first chapter is selected (default), load its verses
+            if let chapter = selectedChapter, chapter.id == 1 {
+                await loadVersesForSelectedChapter()
+            }
+        }
+    }
+
+    var audioLoadingProgress: Double {
+        audioManager.downloadProgress
+    }
+
+    var currentVerseIndex: Int {
+        audioManager.currentVerseIndex
     }
 
     func loadChapters() async {
@@ -123,7 +158,116 @@ class BookViewModel: ObservableObject {
     }
 
     func loadVersesForSelectedChapter() async {
-        guard let chapterId = selectedChapter?.id else { return }
-        await loadVersesByChapter(Int(chapterId))
+        await loadVersesByChapter(Int(selectedChapter?.id ?? 1))
+        await loadAudioFiles()  // Load audio files after verses
+    }
+
+    func loadReciters() async {
+        isLoading = true
+        error = nil
+
+        do {
+            // Try to fetch from local storage first
+            let localReciters = try await dataStore.fetchReciters()
+
+            if localReciters.isEmpty {
+                // If no local data, fetch from API
+                let apiReciters = try await apiService.fetchReciters()
+                try await dataStore.saveReciters(apiReciters)
+                // Fetch again from local storage to get managed objects
+                self.reciters = try await dataStore.fetchReciters()
+                // Set first reciter as default if none selected
+                if selectedReciter == nil {
+                    selectedReciter = reciters.first
+                }
+            } else {
+                // Use local data
+                self.reciters = localReciters
+                if selectedReciter == nil {
+                    selectedReciter = reciters.first
+                }
+            }
+        } catch {
+            self.error = error
+        }
+
+        isLoading = false
+    }
+
+    func loadAudioFiles() async {
+        guard let chapterId = selectedChapter?.id,
+              let reciterId = selectedReciter?.id else { return }
+
+        isLoading = true
+        error = nil
+
+        do {
+            // Try to fetch from local storage first
+            let localAudioFiles = try await dataStore.fetchAudioFiles(
+                chapterId: Int(chapterId),
+                reciterId: Int(reciterId)
+            )
+
+            if localAudioFiles.isEmpty {
+                // If no local data, fetch from API
+                let apiAudioFiles = try await apiService.fetchVerseAudio(
+                    recitationId: Int(reciterId),
+                    chapterNumber: Int(chapterId)
+                )
+                try await dataStore.saveAudioFiles(
+                    apiAudioFiles,
+                    chapterId: Int(chapterId),
+                    reciterId: Int(reciterId)
+                )
+                // Fetch again from local storage to get managed objects
+                self.currentAudioFiles = try await dataStore.fetchAudioFiles(
+                    chapterId: Int(chapterId),
+                    reciterId: Int(reciterId)
+                )
+            } else {
+                // Use local data
+                self.currentAudioFiles = localAudioFiles
+            }
+        } catch {
+            self.error = error
+        }
+
+        isLoading = false
+    }
+
+    func togglePlayback(selectedVerse: String, numberOfVerses: Int) async {
+        print("BookViewModel: Toggle playback called")
+        print("BookViewModel: Selected verse: \(selectedVerse)")
+        print("BookViewModel: Number of verses: \(numberOfVerses)")
+        print("BookViewModel: Current audio files available: \(currentAudioFiles.count)")
+
+        if audioManager.isPlaying {
+            print("BookViewModel: Stopping playback")
+            audioManager.stopPlayback()
+            isPlaying = false
+        } else {
+            do {
+                let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+                let endVerseNumber = currentVerseNumber + numberOfVerses - 1
+                print("BookViewModel: Playing verses from \(currentVerseNumber) to \(endVerseNumber)")
+
+                // Prepare audio if not already prepared
+                if !audioManager.isPlaying {
+                    print("BookViewModel: Preparing audio files")
+                    try await audioManager.prepareAudio(
+                        audioFiles: currentAudioFiles,
+                        startVerse: currentVerseNumber,
+                        endVerse: endVerseNumber
+                    )
+                }
+
+                print("BookViewModel: Starting playback")
+                audioManager.startPlayback()
+                isPlaying = true
+            } catch {
+                print("BookViewModel: Error during playback: \(error)")
+                self.error = error
+            }
+        }
     }
 }

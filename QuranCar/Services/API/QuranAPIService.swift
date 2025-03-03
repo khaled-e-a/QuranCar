@@ -150,6 +150,81 @@ class QuranAPIService {
             throw QuranAPIError.networkError(error)
         }
     }
+
+    func fetchReciters() async throws -> [Reciter] {
+        let url = URL(string: "\(baseURL)/resources/recitations")!
+        var request = URLRequest(url: url)
+
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
+        request.addValue(clientId, forHTTPHeaderField: "x-client-id")
+
+        print("QuranAPIService: Fetching reciters")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            print("QuranAPIService: Reciters Response data: \(String(data: data, encoding: .utf8) ?? "")")
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw QuranAPIError.invalidResponse
+            }
+            print("QuranAPIService: Reciters Response status code: \(httpResponse.statusCode)")
+
+            switch httpResponse.statusCode {
+            case 200:
+                let response = try JSONDecoder().decode(RecitersResponse.self, from: data)
+                print("QuranAPIService: Successfully fetched \(response.recitations.count) reciters")
+                return response.recitations
+            case 401:
+                print("QuranAPIService: Reciters Unauthorized")
+                throw QuranAPIError.unauthorized
+            default:
+                print("QuranAPIService: Reciters Unexpected status code: \(httpResponse.statusCode)")
+                throw QuranAPIError.invalidResponse
+            }
+        } catch {
+            print("QuranAPIService: Network error: \(error)")
+            throw QuranAPIError.networkError(error)
+        }
+    }
+
+    func fetchVerseAudio(recitationId: Int, chapterNumber: Int) async throws -> [AudioFile] {
+        let url = URL(string: "\(baseURL)/recitations/\(recitationId)/by_chapter/\(chapterNumber)")!
+        var request = URLRequest(url: url)
+
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
+        request.addValue(clientId, forHTTPHeaderField: "x-client-id")
+
+        print("QuranAPIService: Fetching audio files for reciter \(recitationId) chapter \(chapterNumber)")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            print("QuranAPIService: Audio files Response data: \(String(data: data, encoding: .utf8) ?? "")")
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw QuranAPIError.invalidResponse
+            }
+
+            switch httpResponse.statusCode {
+            case 200:
+                let response = try JSONDecoder().decode(AudioFilesResponse.self, from: data)
+                print("QuranAPIService: Successfully fetched \(response.audioFiles.count) audio files")
+                return response.audioFiles
+            case 401:
+                print("QuranAPIService: Audio files Unauthorized")
+                throw QuranAPIError.unauthorized
+            default:
+                print("QuranAPIService: Audio files Unexpected status code: \(httpResponse.statusCode)")
+                throw QuranAPIError.invalidResponse
+            }
+        } catch {
+            print("QuranAPIService: Network error: \(error)")
+            throw QuranAPIError.networkError(error)
+        }
+    }
 }
 
 // API Response Models
@@ -239,5 +314,53 @@ struct UthmaniVerse: Codable {
         case id
         case verseKey = "verse_key"
         case textUthmani = "text_uthmani"
+    }
+}
+
+struct Reciter: Codable {
+    let id: Int
+    let reciterName: String
+    let style: String?
+    let translatedName: TranslatedName
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case reciterName = "reciter_name"
+        case style
+        case translatedName = "translated_name"
+    }
+}
+
+struct TranslatedName: Codable {
+    let name: String
+    let languageName: String
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case languageName = "language_name"
+    }
+}
+
+struct RecitersResponse: Codable {
+    let recitations: [Reciter]
+}
+
+struct AudioFile: Codable {
+    let verseKey: String
+    let url: String
+
+    enum CodingKeys: String, CodingKey {
+        case verseKey = "verse_key"
+        case url
+    }
+}
+
+struct AudioFilesResponse: Codable {
+    let audioFiles: [AudioFile]
+    let pagination: Pagination
+
+    enum CodingKeys: String, CodingKey {
+        case audioFiles = "audio_files"
+        case pagination
     }
 }

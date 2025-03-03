@@ -26,6 +26,7 @@ struct BookView: View {
     @State private var showingChaptersList = false
     @State private var showingNumberSelector = false
     @State private var numberSelectorOpacity: Double = 0
+    @State private var showingRecitersList = false
 
     private var toVerse: String {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
@@ -57,7 +58,7 @@ struct BookView: View {
     }
 
     var body: some View {
-        ZStack {
+            ZStack {
             VStack(spacing: 20) {
                 // Surah Selection
                 VStack(alignment: .leading, spacing: 8) {
@@ -97,7 +98,8 @@ struct BookView: View {
                         showingVersesList = true
                     }) {
                         HStack {
-                            Text(selectedVerse)
+                            Text(selectedVerse.truncated(to: 50))
+                                .lineLimit(1)
                                 .multilineTextAlignment(.trailing)
                                 .environment(\.layoutDirection, .rightToLeft)
                             Spacer()
@@ -114,8 +116,12 @@ struct BookView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Number of Verses")
                         .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
+                    // Center the number buttons
                     HStack(spacing: 15) {
+                        Spacer()  // This will push the buttons to the center
+
                         // Preset numbers
                         ForEach(presetNumbers, id: \.self) { number in
                             NumberButton(number: number, isSelected: numberOfVerses == number) {
@@ -140,6 +146,8 @@ struct BookView: View {
                                 .clipShape(Circle())
                                 .shadow(color: .black.opacity(0.05), radius: 2)
                         }
+
+                        Spacer()  // This will push the buttons to the center
                     }
                 }
 
@@ -185,31 +193,58 @@ struct BookView: View {
 
                 Spacer()
 
-                // Play Button
-                Button(action: {
-                    // Add play action
-                }) {
-                    Image(systemName: "play.fill")
-                        .font(.title2)
-                        .frame(width: 60, height: 60)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
-                        .shadow(color: .blue.opacity(0.3), radius: 10)
-                }
+                // Reciter Selection with Play Button
+                HStack(spacing: 12) {
+                    Button(action: {
+                        showingRecitersList = true
+                    }) {
+                        HStack {
+                            Image(systemName: "person.wave.2")
+                                .foregroundColor(.secondary)
+                            Text(viewModel.selectedReciter?.translatedName ?? "Select Reciter")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                    }
+                    .frame(maxWidth: .infinity)
 
-                // Settings Row
-                HStack(spacing: 30) {
-                    SettingsButton(title: "Reciter", value: "Mishary Rashid")
-                    SettingsButton(title: "Repeats", value: "3 times")
-                    SettingsButton(title: "Mode", value: "Continuous")
+                    // Play Button
+                    Button(action: {
+                        Task {
+                            await viewModel.togglePlayback(
+                                selectedVerse: selectedVerse,
+                                numberOfVerses: numberOfVerses
+                            )
+                        }
+                    }) {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .frame(width: 44, height: 44)
+                                .background(Color.blue)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.body)
+                                .frame(width: 44, height: 44)
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .clipShape(Circle())
+                        }
+                    }
+                    .shadow(color: .blue.opacity(0.3), radius: 8)
                 }
+                .shadow(color: .black.opacity(0.05), radius: 2)
                 .padding(.bottom)
             }
             .padding()
             .navigationTitle("Memorize")
             .task {
                 await viewModel.loadChapters()
+                await viewModel.loadReciters()
             }
             .overlay {
                 if viewModel.isLoading {
@@ -263,6 +298,15 @@ struct BookView: View {
                                 numberOfVerses = 1
                             }
                         }
+                    }
+                )
+            }
+            .sheet(isPresented: $showingRecitersList) {
+                RecitersListView(
+                    reciters: viewModel.reciters,
+                    selectedReciter: viewModel.selectedReciter,
+                    onReciterSelected: { reciter in
+                        viewModel.selectedReciter = reciter
                     }
                 )
             }

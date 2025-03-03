@@ -9,24 +9,14 @@ struct VersesListView: View {
         NavigationView {
             List(verses, id: \.id) { verse in
                 Button(action: {
-                    if let text = verse.textUthmani {
-                        onVerseSelected(verse)
-                        dismiss()
-                    }
+                    onVerseSelected(verse)
+                    dismiss()
                 }) {
                     if let text = verse.textUthmani {
-                        VStack(alignment: .trailing) {
-                            Text("\(verse.verseNumber). \(text)")
-                                .font(.title2)
-                                .multilineTextAlignment(.trailing)
-                                .environment(\.layoutDirection, .rightToLeft)
-
-                            Text("Verse \(verse.verseNumber)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.vertical, 8)
+                        Text("\(verse.verseNumber). \(text)".truncated(to: 50))
+                            .lineLimit(1)
+                            .multilineTextAlignment(.trailing)
+                            .environment(\.layoutDirection, .rightToLeft)
                     }
                 }
             }
