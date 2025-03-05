@@ -143,41 +143,74 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     private func setupPlayerObservers() {
-        // Remove existing observer
+        print("AudioManager: Setting up observers for \(playerItems.count) items")
+
+        // Remove existing observers
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)
         }
+        NotificationCenter.default.removeObserver(self)
 
-        // Observe item completion
+        // Observe ALL player items for completion
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(playerItemDidFinish),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: player?.currentItem
+            object: nil  // Changed from player?.currentItem to nil to observe all items
         )
+
+        // Add periodic time observer for debugging
+        timeObserver = player?.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 0.5, preferredTimescale: 600),
+            queue: .main
+        ) { [weak self] time in
+            if let currentItem = self?.player?.currentItem,
+               currentItem.duration.isValid && currentItem.duration != .indefinite,
+               currentItem.duration.seconds > 0 {
+                let progress = time.seconds / currentItem.duration.seconds
+                print("AudioManager: Playback progress: \(Int(progress * 100))% of current item")
+            }
+        }
+
+        // Print the queue for debugging
+        print("AudioManager: Audio queue:")
+        for (index, item) in playerItems.enumerated() {
+            if let urlAsset = item.asset as? AVURLAsset {
+                print("AudioManager: Item \(index): \(urlAsset.url.lastPathComponent)")
+            }
+        }
     }
 
-    @objc private func playerItemDidFinish() {
-        print("AudioManager: Item \(currentVerseIndex) finished playing")
-        currentVerseIndex += 1
+    @objc private func playerItemDidFinish(_ notification: Notification) {
+        guard let playerItem = notification.object as? AVPlayerItem,
+              let currentIndex = playerItems.firstIndex(of: playerItem) else {
+            print("AudioManager: Could not identify completed item")
+            return
+        }
 
-        if currentVerseIndex >= audioFiles.count {
+        print("AudioManager: Item \(currentIndex) finished playing")
+        currentVerseIndex = currentIndex + 1
+
+        if currentVerseIndex >= playerItems.count {
             print("AudioManager: Reached end of playlist, resetting state")
             currentVerseIndex = 0
-            isPlaying = false  // Reset playing state
-            player?.pause()    // Ensure player is paused
+            isPlaying = false
+            player?.pause()
 
-            // Post notification for playlist completion
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .audioPlaybackCompleted, object: nil)
             }
-            return  // Don't automatically start over
+            return
         }
 
         print("AudioManager: Playing next item at index: \(currentVerseIndex)")
         if let nextItem = playerItems[safe: currentVerseIndex] {
             player?.replaceCurrentItem(with: nextItem)
             player?.play()
+
+            if let urlAsset = nextItem.asset as? AVURLAsset {
+                print("AudioManager: Now playing: \(urlAsset.url.lastPathComponent)")
+            }
         }
     }
 
