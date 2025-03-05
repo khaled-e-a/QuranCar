@@ -20,8 +20,8 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     func prepareAudio(audioFiles: [AudioFileEntity], startVerse: Int, endVerse: Int) async throws {
-        print("AudioManager: Preparing audio for verses \(startVerse) to \(endVerse)")
-        print("AudioManager: Total available audio files: \(audioFiles.count)")
+        // Clean up existing player and observers before creating new ones
+        cleanupCurrentPlayer()
 
         isLoading = true
         self.startVerse = startVerse
@@ -142,12 +142,38 @@ class AudioManager: NSObject, ObservableObject {
         }
     }
 
+    private func cleanupCurrentPlayer() {
+        // Remove time observer from current player
+        if let observer = timeObserver {
+            player?.removeTimeObserver(observer)
+            timeObserver = nil
+        }
+
+        // Remove notification observers
+        NotificationCenter.default.removeObserver(self)
+
+        // Stop and clear current player
+        player?.pause()
+        player = nil
+
+        // Clear items
+        playerItems.removeAll()
+        audioFiles.removeAll()
+    }
+
     private func setupPlayerObservers() {
         print("AudioManager: Setting up observers for \(playerItems.count) items")
 
-        // Remove existing observers
+        // Make sure we have a valid player
+        guard let player = player else {
+            print("AudioManager: No player available to setup observers")
+            return
+        }
+
+        // Remove existing observers without clearing the player
         if let observer = timeObserver {
-            player?.removeTimeObserver(observer)
+            player.removeTimeObserver(observer)
+            timeObserver = nil
         }
         NotificationCenter.default.removeObserver(self)
 
@@ -156,11 +182,11 @@ class AudioManager: NSObject, ObservableObject {
             self,
             selector: #selector(playerItemDidFinish),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: nil  // Changed from player?.currentItem to nil to observe all items
+            object: nil
         )
 
-        // Add periodic time observer for debugging
-        timeObserver = player?.addPeriodicTimeObserver(
+        // Add periodic time observer to the current player
+        timeObserver = player.addPeriodicTimeObserver(
             forInterval: CMTime(seconds: 0.5, preferredTimescale: 600),
             queue: .main
         ) { [weak self] time in
@@ -215,10 +241,7 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     deinit {
-        if let observer = timeObserver {
-            player?.removeTimeObserver(observer)
-        }
-        NotificationCenter.default.removeObserver(self)
+        cleanupCurrentPlayer()
     }
 }
 
