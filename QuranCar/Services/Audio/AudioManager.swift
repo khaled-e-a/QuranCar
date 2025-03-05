@@ -82,8 +82,7 @@ class AudioManager: NSObject, ObservableObject {
         print("AudioManager: Cache directory: \(cacheDirectory.path)")
 
         for (index, urlString) in urls.enumerated() {
-            // Format URL if it's from mirrors.quranicaudio
-            let formattedUrlString = urlString.contains("mirrors.quranicaudio") ? "https:\(urlString)" : urlString
+            let formattedUrlString = urlString.contains("mirrors.quranicaudio") ? "https:\(urlString)" : "https://verses.quran.foundation/\(urlString)"
             print("AudioManager: Processing URL [\(index + 1)/\(urls.count)]: \(formattedUrlString)")
 
             guard let url = URL(string: formattedUrlString) else {
@@ -91,10 +90,21 @@ class AudioManager: NSObject, ObservableObject {
                 continue
             }
 
-            // Create a filesystem-safe filename from the entire URL
-            let fileName = url.absoluteString
-                .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)?
-                .replacingOccurrences(of: ".", with: "_") ?? UUID().uuidString
+            // Create filename from last 3 path components while preserving extension
+            let pathComponents = url.pathComponents.filter { $0 != "/" }
+            let lastThreeComponents = pathComponents.suffix(3)
+            let urlExtension = url.pathExtension
+
+            // Join components without the last component's extension
+            let fileNameWithoutExtension = lastThreeComponents
+                .dropLast()
+                .joined(separator: "_")
+                .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? UUID().uuidString
+
+            // Add the last component and extension back
+            let fileName = "\(fileNameWithoutExtension)_\(lastThreeComponents.last?.components(separatedBy: ".").first ?? "").\(urlExtension)"
+
+            print("AudioManager: Generated filename: \(fileName)")
             let fileURL = cacheDirectory.appendingPathComponent(fileName)
 
             if fileManager.fileExists(atPath: fileURL.path) {
@@ -148,7 +158,7 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     @objc private func playerItemDidFinish() {
-        print("AudioManager: Item finished playing")
+        print("AudioManager: Item \(currentVerseIndex) finished playing")
         currentVerseIndex += 1
 
         if currentVerseIndex >= audioFiles.count {

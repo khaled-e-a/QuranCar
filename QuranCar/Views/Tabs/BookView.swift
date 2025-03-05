@@ -243,8 +243,7 @@ struct BookView: View {
             .padding()
             .navigationTitle("Memorize")
             .task {
-                await viewModel.loadChapters()
-                await viewModel.loadReciters()
+                await viewModel.loadQuranData()
             }
             .overlay {
                 if viewModel.isLoading {
@@ -254,7 +253,7 @@ struct BookView: View {
             .alert("Error", isPresented: .constant(viewModel.error != nil)) {
                 Button("Retry") {
                     Task {
-                        await viewModel.loadChapters()
+                        await viewModel.loadQuranData()
                     }
                 }
             } message: {
@@ -269,7 +268,7 @@ struct BookView: View {
                     onChapterSelected: { chapter in
                         Task {
                             viewModel.selectedChapter = chapter
-                            await viewModel.loadVersesForSelectedChapter()
+                            await viewModel.loadQuranData()
 
                             // Reset number of verses to 3 when changing chapters
                             numberOfVerses = 3
@@ -307,6 +306,9 @@ struct BookView: View {
                     selectedReciter: viewModel.selectedReciter,
                     onReciterSelected: { reciter in
                         viewModel.selectedReciter = reciter
+                        Task {
+                            await viewModel.loadQuranData()
+                        }
                     }
                 )
             }

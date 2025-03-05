@@ -48,12 +48,7 @@ class BookViewModel: ObservableObject {
 
         // Load initial data
         Task {
-            await loadChapters()
-            await loadReciters()
-            // If first chapter is selected (default), load its verses
-            if let chapter = selectedChapter, chapter.id == 1 {
-                await loadVersesForSelectedChapter()
-            }
+            await loadQuranData()
         }
     }
 
@@ -63,6 +58,13 @@ class BookViewModel: ObservableObject {
 
     var currentVerseIndex: Int {
         audioManager.currentVerseIndex
+    }
+
+    func loadQuranData() async {
+        await loadChapters()
+        await loadVersesByChapter(Int(selectedChapter?.id ?? 1))
+        await loadReciters()
+        await loadAudioFiles()
     }
 
     func loadChapters() async {
@@ -157,10 +159,6 @@ class BookViewModel: ObservableObject {
         isLoading = false
     }
 
-    func loadVersesForSelectedChapter() async {
-        await loadVersesByChapter(Int(selectedChapter?.id ?? 1))
-        await loadAudioFiles()  // Load audio files after verses
-    }
 
     func loadReciters() async {
         isLoading = true
