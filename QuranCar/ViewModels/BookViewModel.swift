@@ -61,10 +61,33 @@ class BookViewModel: ObservableObject {
     }
 
     func loadQuranData() async {
-        await loadChapters()
-        await loadVersesByChapter(Int(selectedChapter?.id ?? 1))
-        await loadReciters()
-        await loadAudioFiles()
+        // Prevent multiple simultaneous loading operations
+        guard !isLoading else { return }
+
+        isLoading = true
+        error = nil
+
+        do {
+            // Ensure we have a valid token
+            await QuranAuthManager.shared.refreshTokenIfNeeded()
+
+            // Load data sequentially to avoid merge conflicts
+            await loadChapters()
+            // Only load verses after chapters are fully loaded
+            if let chapter = selectedChapter {
+                await loadVersesByChapter(Int(chapter.id))
+            }
+            // Load reciters after verses are done
+            await loadReciters()
+            // Finally load audio files
+            if selectedReciter != nil {
+                await loadAudioFiles()
+            }
+        } catch {
+            self.error = error
+        }
+
+        isLoading = false
     }
 
     func loadChapters() async {

@@ -8,28 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("isAuthenticated") private var isAuthenticated = false
     @State private var showingSplash = true
 
     var body: some View {
         ZStack {
             if showingSplash {
                 SplashView {
-                    showingSplash = false
+                    withAnimation {
+                        showingSplash = false
+                    }
                 }
                 .transition(.opacity)
             } else {
-                if isAuthenticated {
-                    MainView()
-                        .transition(.opacity)
-                } else {
-                    SignInView(isAuthenticated: $isAuthenticated)
-                        .transition(.opacity)
-                }
+                MainView()
+                    .transition(.opacity)
             }
         }
         .animation(.easeOut(duration: 0.3), value: showingSplash)
-        .animation(.easeOut(duration: 0.3), value: isAuthenticated)
+        .task {
+            // Get token when app launches
+            await QuranAuthManager.shared.refreshTokenIfNeeded()
+        }
     }
 }
 

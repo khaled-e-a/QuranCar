@@ -18,7 +18,7 @@ enum QuranAPIError: Error {
 class QuranAPIService {
     private let baseURL = "https://apis-prelive.quran.foundation/content/api/v4"
     private let clientId: String
-    private let authToken: String
+    private var authToken: String  // Changed to var since we'll update it
 
     init(clientId: String, authToken: String) {
         self.clientId = clientId
@@ -26,14 +26,25 @@ class QuranAPIService {
         print("QuranAPIService: Initialized with clientId: \(clientId) and authToken: \(authToken)")
     }
 
-    func fetchChapters() async throws -> [Chapter] {
-        let url = URL(string: "\(baseURL)/chapters")!
+    private func prepareRequest(_ url: URL) async throws -> URLRequest {
+        // Ensure we have a valid token
+        await QuranAuthManager.shared.refreshTokenIfNeeded()
+        // Update our authToken with the latest one
+        self.authToken = TokenManager.shared.getAccessToken() ?? self.authToken
+
         var request = URLRequest(url: url)
 
-        // Add headers
+        // Keep using the same headers as before
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
         request.addValue(clientId, forHTTPHeaderField: "x-client-id")
+
+        return request
+    }
+
+    func fetchChapters() async throws -> [Chapter] {
+        let url = URL(string: "\(baseURL)/chapters")!
+        let request = try await prepareRequest(url)
 
         // Enhanced request logging
         print("""

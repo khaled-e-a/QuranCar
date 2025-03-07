@@ -15,5 +15,9 @@
 			<string>Editor</string>
 		</dict>
 	</array>
+	<key>QURAN_CLIENT_ID</key>
+	<string>$(QURAN_CLIENT_ID)</string>
+	<key>QURAN_CLIENT_SECRET</key>
+	<string>$(QURAN_CLIENT_SECRET)</string>
 </dict>
 </plist>

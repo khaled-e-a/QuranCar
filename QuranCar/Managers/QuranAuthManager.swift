@@ -1,20 +1,29 @@
 import Foundation
-import AuthenticationServices
 import QuranKit
 
-class QuranAuthManager: NSObject {
+class QuranAuthManager {
     static let shared = QuranAuthManager()
 
-    private let clientId = "f84a40d4-ee4f-4765-b8c8-4e67f6c1ca6b"
-    private let clientSecret = ".UxR7PBtDfKfefe.bkzmoZrXgP"
+    private let clientId = Configuration.clientId
+    private let clientSecret = Configuration.clientSecret
     private let tokenHost = "https://prelive-oauth2.quran.foundation"
     private let scopes = ["content"]
 
-    func authenticate(completion: @escaping (Result<String, Error>) -> Void) {
-        getClientCredentialsToken(completion: completion)
+    private init() {}
+
+    func refreshTokenIfNeeded() async {
+        // Check if we need a new token
+        if !TokenManager.shared.isTokenValid() {
+            do {
+                let token = try await getNewToken()
+                print("Successfully obtained new token")
+            } catch {
+                print("Error refreshing token: \(error)")
+            }
+        }
     }
 
-    private func getClientCredentialsToken(completion: @escaping (Result<String, Error>) -> Void) {
+    private func getNewToken() async throws -> String {
         var request = URLRequest(url: URL(string: "\(tokenHost)/oauth2/token")!)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -37,34 +46,20 @@ class QuranAuthManager: NSObject {
             .joined(separator: "&")
             .data(using: .utf8)
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
+        let (data, _) = try await URLSession.shared.data(for: request)
 
-            guard let data = data else {
-                completion(.failure(QuranAuthError.noData))
-                return
-            }
+        let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
 
-            do {
-                let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+        // Save tokens securely
+        TokenManager.shared.saveTokens(
+            accessToken: tokenResponse.accessToken,
+            clientId: self.clientId,
+            idToken: tokenResponse.idToken,
+            tokenType: tokenResponse.tokenType,
+            expiresIn: tokenResponse.expiresIn
+        )
 
-                // Save tokens securely
-                TokenManager.shared.saveTokens(
-                    accessToken: tokenResponse.accessToken,
-                    clientId: self.clientId,
-                    idToken: tokenResponse.idToken,
-                    tokenType: tokenResponse.tokenType,
-                    expiresIn: tokenResponse.expiresIn
-                )
-
-                completion(.success(tokenResponse.accessToken))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+        return tokenResponse.accessToken
     }
 }
 
@@ -72,9 +67,8 @@ class QuranAuthManager: NSObject {
 
 enum QuranAuthError: Error {
     case invalidURL
-    case missingCallbackURL
-    case missingAuthCode
     case noData
+    case invalidResponse
 }
 
 struct TokenResponse: Codable {
