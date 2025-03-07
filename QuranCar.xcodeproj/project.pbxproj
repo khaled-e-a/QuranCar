@@ -7,13 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		287A0B952D52F2090049E06D /* QuranCarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0B942D52F2090049E06D /* QuranCarApp.swift */; };
-		287A0B972D52F2090049E06D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0B962D52F2090049E06D /* ContentView.swift */; };
+		2811BABA2D66D68200A39CA3 /* AppDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BAB92D66D68200A39CA3 /* AppDependencies */; };
+		2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BACC2D66E27D00A39CA3 /* BookView.swift */; };
+		2811BACF2D66E30300A39CA3 /* AppStructureFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BACE2D66E30300A39CA3 /* AppStructureFeature */; };
+		2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */; };
+		2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD12D66E48A00A39CA3 /* TokenManager.swift */; };
+		2811BADE2D6AC7CD00A39CA3 /* QuranViewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */; };
+		2811BAE02D6ACCEE00A39CA3 /* QuranContentFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */; };
+		2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAED2D6D4B0400A39CA3 /* MainView.swift */; };
+		2811BAF02D6D71CC00A39CA3 /* ReadingService in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BAEF2D6D71CC00A39CA3 /* ReadingService */; };
+		2811BFB32D6D82CE00A39CA3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFB02D6D82CE00A39CA3 /* AppDelegate.swift */; };
+		2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFB12D6D82CE00A39CA3 /* QuranCarApp.swift */; };
+		2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFBB2D6EA5AE00A39CA3 /* QuranViewController.swift */; };
+		2811BFC42D6EAA9900A39CA3 /* QuranAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFBD2D6EAA9800A39CA3 /* QuranAPIService.swift */; };
+		2811BFC52D6EAA9900A39CA3 /* QuranDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFBF2D6EAA9800A39CA3 /* QuranDataStore.swift */; };
+		2811BFC92D6EAAAA00A39CA3 /* BookViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFC72D6EAAAA00A39CA3 /* BookViewModel.swift */; };
+		2811BFCC2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFCA2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld */; };
+		282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */; };
+		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
+		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
+		284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55542D546C1C00AE2A23 /* SettingsView.swift */; };
+		286A9AD92D7A0149003600D9 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286A9AD82D7A0149003600D9 /* SplashView.swift */; };
+		286A9ADF2D7A8FF7003600D9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286A9ADE2D7A8FF7003600D9 /* Configuration.swift */; };
 		287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 287A0B982D52F20C0049E06D /* Assets.xcassets */; };
 		287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 287A0B9B2D52F20C0049E06D /* Preview Assets.xcassets */; };
 		287A0BA62D52F20D0049E06D /* QuranCarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BA52D52F20D0049E06D /* QuranCarTests.swift */; };
 		287A0BB02D52F20D0049E06D /* QuranCarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */; };
 		287A0BB22D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */; };
+		287A0BD82D52FEF90049E06D /* QuranKit in Frameworks */ = {isa = PBXBuildFile; productRef = 287A0BD72D52FEF90049E06D /* QuranKit */; };
+		2894A9982D70D5E000BEA2CD /* VersesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9962D70D5E000BEA2CD /* VersesListView.swift */; };
+		2894A99B2D70D6E900BEA2CD /* ChaptersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9992D70D6E900BEA2CD /* ChaptersListView.swift */; };
+		2894A99E2D70DD5C00BEA2CD /* NumberSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */; };
+		2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99F2D736BC500BEA2CD /* RecitersListView.swift */; };
+		2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */; };
+		2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */; };
+		28C447662D55C1F5004A9011 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 28C447652D55C1F5004A9011 /* HomeFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +62,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2811BACC2D66E27D00A39CA3 /* BookView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookView.swift; sourceTree = "<group>"; };
+		2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QuranAuthManager.swift; path = QuranCar/Managers/QuranAuthManager.swift; sourceTree = SOURCE_ROOT; };
+		2811BAD12D66E48A00A39CA3 /* TokenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TokenManager.swift; path = QuranCar/Managers/TokenManager.swift; sourceTree = SOURCE_ROOT; };
+		2811BAED2D6D4B0400A39CA3 /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		2811BFB02D6D82CE00A39CA3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2811BFB12D6D82CE00A39CA3 /* QuranCarApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuranCarApp.swift; sourceTree = "<group>"; };
+		2811BFBB2D6EA5AE00A39CA3 /* QuranViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuranViewController.swift; sourceTree = "<group>"; };
+		2811BFBD2D6EAA9800A39CA3 /* QuranAPIService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuranAPIService.swift; sourceTree = "<group>"; };
+		2811BFBF2D6EAA9800A39CA3 /* QuranDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuranDataStore.swift; sourceTree = "<group>"; };
+		2811BFC72D6EAAAA00A39CA3 /* BookViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookViewModel.swift; sourceTree = "<group>"; };
+		2811BFCB2D6EABCF00A39CA3 /* QuranModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QuranModel.xcdatamodel; sourceTree = "<group>"; };
+		282C40A62D7A9FFE00E531FD /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
+		284E55542D546C1C00AE2A23 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		286A9AD82D7A0149003600D9 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		286A9ADE2D7A8FF7003600D9 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		287A0B912D52F2090049E06D /* QuranCar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuranCar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		287A0B942D52F2090049E06D /* QuranCarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarApp.swift; sourceTree = "<group>"; };
-		287A0B962D52F2090049E06D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		287A0B982D52F20C0049E06D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		287A0B9B2D52F20C0049E06D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		287A0BA12D52F20D0049E06D /* QuranCarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuranCarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +87,13 @@
 		287A0BAB2D52F20D0049E06D /* QuranCarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuranCarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarUITests.swift; sourceTree = "<group>"; };
 		287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCarUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		287A0BD92D530CC40049E06D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2894A9962D70D5E000BEA2CD /* VersesListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersesListView.swift; sourceTree = "<group>"; };
+		2894A9992D70D6E900BEA2CD /* ChaptersListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChaptersListView.swift; sourceTree = "<group>"; };
+		2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberSelectorView.swift; sourceTree = "<group>"; };
+		2894A99F2D736BC500BEA2CD /* RecitersListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecitersListView.swift; sourceTree = "<group>"; };
+		2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +101,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2811BADE2D6AC7CD00A39CA3 /* QuranViewFeature in Frameworks */,
+				28C447662D55C1F5004A9011 /* HomeFeature in Frameworks */,
+				2811BACF2D66E30300A39CA3 /* AppStructureFeature in Frameworks */,
+				2811BABA2D66D68200A39CA3 /* AppDependencies in Frameworks */,
+				2811BAF02D6D71CC00A39CA3 /* ReadingService in Frameworks */,
+				287A0BD82D52FEF90049E06D /* QuranKit in Frameworks */,
+				2811BAE02D6ACCEE00A39CA3 /* QuranContentFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +128,86 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2811BABD2D66DF3100A39CA3 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */,
+				2811BAD12D66E48A00A39CA3 /* TokenManager.swift */,
+			);
+			name = Managers;
+			path = ../Managers;
+			sourceTree = "<group>";
+		};
+		2811BAC12D66E0F700A39CA3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				286A9AD82D7A0149003600D9 /* SplashView.swift */,
+				2894A9A02D736BC500BEA2CD /* Reciters */,
+				2894A99D2D70DD5C00BEA2CD /* Components */,
+				2894A99A2D70D6E900BEA2CD /* Chapters */,
+				2894A9972D70D5E000BEA2CD /* Verses */,
+				2811BFBB2D6EA5AE00A39CA3 /* QuranViewController.swift */,
+				2811BAED2D6D4B0400A39CA3 /* MainView.swift */,
+				2811BACB2D66E25800A39CA3 /* Tabs */,
+				284E55522D546C1B00AE2A23 /* CarView.swift */,
+				284E55542D546C1C00AE2A23 /* SettingsView.swift */,
+				283B7A892D54617A00E7E6E6 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2811BACB2D66E25800A39CA3 /* Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				2811BACC2D66E27D00A39CA3 /* BookView.swift */,
+			);
+			path = Tabs;
+			sourceTree = "<group>";
+		};
+		2811BFB22D6D82CE00A39CA3 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2811BFB02D6D82CE00A39CA3 /* AppDelegate.swift */,
+				2811BFB12D6D82CE00A39CA3 /* QuranCarApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2811BFBE2D6EAA9800A39CA3 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				2811BFBD2D6EAA9800A39CA3 /* QuranAPIService.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		2811BFC12D6EAA9800A39CA3 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				2811BFBF2D6EAA9800A39CA3 /* QuranDataStore.swift */,
+				2811BFCA2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		2811BFC22D6EAA9800A39CA3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2894A9A62D73BF3B00BEA2CD /* Audio */,
+				2811BFBE2D6EAA9800A39CA3 /* API */,
+				2811BFC12D6EAA9800A39CA3 /* Storage */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2811BFC82D6EAAAA00A39CA3 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				2811BFC72D6EAAAA00A39CA3 /* BookViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		287A0B882D52F2080049E06D = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +215,7 @@
 				287A0BA42D52F20D0049E06D /* QuranCarTests */,
 				287A0BAE2D52F20D0049E06D /* QuranCarUITests */,
 				287A0B922D52F2090049E06D /* Products */,
+				28C447642D55C1F5004A9011 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -94,10 +232,17 @@
 		287A0B932D52F2090049E06D /* QuranCar */ = {
 			isa = PBXGroup;
 			children = (
-				287A0B942D52F2090049E06D /* QuranCarApp.swift */,
-				287A0B962D52F2090049E06D /* ContentView.swift */,
+				286A9ADE2D7A8FF7003600D9 /* Configuration.swift */,
+				2894A9A32D73AD3800BEA2CD /* Extensions */,
+				2811BFC82D6EAAAA00A39CA3 /* ViewModels */,
+				2811BFC22D6EAA9800A39CA3 /* Services */,
+				2811BFB22D6D82CE00A39CA3 /* App */,
+				2811BAC12D66E0F700A39CA3 /* Views */,
+				2811BABD2D66DF3100A39CA3 /* Managers */,
+				287A0BD92D530CC40049E06D /* Info.plist */,
 				287A0B982D52F20C0049E06D /* Assets.xcassets */,
 				287A0B9A2D52F20C0049E06D /* Preview Content */,
+				282C40A62D7A9FFE00E531FD /* Config.xcconfig */,
 			);
 			path = QuranCar;
 			sourceTree = "<group>";
@@ -127,6 +272,61 @@
 			path = QuranCarUITests;
 			sourceTree = "<group>";
 		};
+		2894A9972D70D5E000BEA2CD /* Verses */ = {
+			isa = PBXGroup;
+			children = (
+				2894A9962D70D5E000BEA2CD /* VersesListView.swift */,
+			);
+			path = Verses;
+			sourceTree = "<group>";
+		};
+		2894A99A2D70D6E900BEA2CD /* Chapters */ = {
+			isa = PBXGroup;
+			children = (
+				2894A9992D70D6E900BEA2CD /* ChaptersListView.swift */,
+			);
+			path = Chapters;
+			sourceTree = "<group>";
+		};
+		2894A99D2D70DD5C00BEA2CD /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		2894A9A02D736BC500BEA2CD /* Reciters */ = {
+			isa = PBXGroup;
+			children = (
+				2894A99F2D736BC500BEA2CD /* RecitersListView.swift */,
+			);
+			path = Reciters;
+			sourceTree = "<group>";
+		};
+		2894A9A32D73AD3800BEA2CD /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2894A9A62D73BF3B00BEA2CD /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		28C447642D55C1F5004A9011 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +343,15 @@
 			dependencies = (
 			);
 			name = QuranCar;
+			packageProductDependencies = (
+				287A0BD72D52FEF90049E06D /* QuranKit */,
+				28C447652D55C1F5004A9011 /* HomeFeature */,
+				2811BAB92D66D68200A39CA3 /* AppDependencies */,
+				2811BACE2D66E30300A39CA3 /* AppStructureFeature */,
+				2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */,
+				2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */,
+				2811BAEF2D6D71CC00A39CA3 /* ReadingService */,
+			);
 			productName = QuranCar;
 			productReference = 287A0B912D52F2090049E06D /* QuranCar.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +424,9 @@
 				Base,
 			);
 			mainGroup = 287A0B882D52F2080049E06D;
+			packageReferences = (
+				287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */,
+			);
 			productRefGroup = 287A0B922D52F2090049E06D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -232,6 +444,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */,
+				282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */,
 				287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -257,8 +470,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				287A0B972D52F2090049E06D /* ContentView.swift in Sources */,
-				287A0B952D52F2090049E06D /* QuranCarApp.swift in Sources */,
+				2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */,
+				286A9AD92D7A0149003600D9 /* SplashView.swift in Sources */,
+				2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */,
+				2811BFCC2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld in Sources */,
+				2811BFC92D6EAAAA00A39CA3 /* BookViewModel.swift in Sources */,
+				2811BFC52D6EAA9900A39CA3 /* QuranDataStore.swift in Sources */,
+				2811BFB32D6D82CE00A39CA3 /* AppDelegate.swift in Sources */,
+				283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */,
+				2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */,
+				2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */,
+				286A9ADF2D7A8FF7003600D9 /* Configuration.swift in Sources */,
+				284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */,
+				2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */,
+				2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */,
+				2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */,
+				2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */,
+				2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */,
+				2811BFC42D6EAA9900A39CA3 /* QuranAPIService.swift in Sources */,
+				2894A9982D70D5E000BEA2CD /* VersesListView.swift in Sources */,
+				284E55552D546C1C00AE2A23 /* CarView.swift in Sources */,
+				2894A99E2D70DD5C00BEA2CD /* NumberSelectorView.swift in Sources */,
+				2894A99B2D70D6E900BEA2CD /* ChaptersListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,6 +530,7 @@
 /* Begin XCBuildConfiguration section */
 		287A0BB32D52F20D0049E06D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -360,6 +594,7 @@
 		};
 		287A0BB42D52F20D0049E06D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -416,6 +651,7 @@
 		};
 		287A0BB62D52F20D0049E06D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -425,6 +661,9 @@
 				DEVELOPMENT_TEAM = 6BC9DD938Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuranCar/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -445,6 +684,7 @@
 		};
 		287A0BB72D52F20D0049E06D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -454,6 +694,9 @@
 				DEVELOPMENT_TEAM = 6BC9DD938Z;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = QuranCar/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -588,6 +831,69 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/quran/quran-ios";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2811BAB92D66D68200A39CA3 /* AppDependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = AppDependencies;
+		};
+		2811BACE2D66E30300A39CA3 /* AppStructureFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = AppStructureFeature;
+		};
+		2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = QuranViewFeature;
+		};
+		2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = QuranContentFeature;
+		};
+		2811BAEF2D6D71CC00A39CA3 /* ReadingService */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = ReadingService;
+		};
+		287A0BD72D52FEF90049E06D /* QuranKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = QuranKit;
+		};
+		28C447652D55C1F5004A9011 /* HomeFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
+			productName = HomeFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		2811BFCA2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				2811BFCB2D6EABCF00A39CA3 /* QuranModel.xcdatamodel */,
+			);
+			currentVersion = 2811BFCB2D6EABCF00A39CA3 /* QuranModel.xcdatamodel */;
+			name = QuranModel.xcdatamodeld;
+			path = /Users/khaledea/data/QuranCar/iOS/QuranCar/QuranCar/Services/Storage/QuranModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 287A0B892D52F2080049E06D /* Project object */;
 }
