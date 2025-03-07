@@ -8,36 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isAuthenticated = false
-    @State private var showMainView = false  // New state for animation
+    @AppStorage("isAuthenticated") private var isAuthenticated = false
+    @State private var showingSplash = true
 
     var body: some View {
         ZStack {
-            if showMainView {
-                MainView()
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            if showingSplash {
+                SplashView {
+                    showingSplash = false
+                }
+                .transition(.opacity)
             } else {
-                SignInView(isAuthenticated: $isAuthenticated)
-                    .transition(.move(edge: .leading).combined(with: .opacity))
-            }
-        }
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: showMainView)
-        .onAppear {
-            // Check if user is already authenticated
-            if TokenManager.shared.isTokenValid() {
-                withAnimation {
-                    isAuthenticated = true
-                    showMainView = true
+                if isAuthenticated {
+                    MainView()
+                        .transition(.opacity)
+                } else {
+                    SignInView(isAuthenticated: $isAuthenticated)
+                        .transition(.opacity)
                 }
             }
         }
-        .onChange(of: isAuthenticated) { newValue in
-            if newValue {
-                withAnimation {
-                    showMainView = true
-                }
-            }
-        }
+        .animation(.easeOut(duration: 0.3), value: showingSplash)
+        .animation(.easeOut(duration: 0.3), value: isAuthenticated)
     }
 }
 

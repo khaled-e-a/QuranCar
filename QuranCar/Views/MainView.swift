@@ -82,7 +82,7 @@ struct TabButton: View {
 struct CarPlayStatusBar: View {
     var body: some View {
         HStack {
-            Text("logo")
+            Text("Quran Car")
                 .font(.title2)
                 .fontWeight(.bold)
 

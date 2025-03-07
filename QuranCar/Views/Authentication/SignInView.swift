@@ -15,7 +15,7 @@ struct SignInView: View {
         VStack(spacing: 30) {
             // Logo and Title Section
             VStack(spacing: 10) {
-                Text("logo")
+                Text("Quran Car")
                     .font(.system(size: 40))
                     .fontWeight(.bold)
 
