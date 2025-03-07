@@ -6,7 +6,7 @@ class QuranAuthManager {
 
     private let clientId = Configuration.clientId
     private let clientSecret = Configuration.clientSecret
-    private let tokenHost = "https://prelive-oauth2.quran.foundation"
+    private let tokenHost = "https://oauth2.quran.foundation"
     private let scopes = ["content"]
 
     private init() {}
@@ -30,6 +30,7 @@ class QuranAuthManager {
 
         // Add Basic Authentication header
         let credentials = "\(clientId):\(clientSecret)"
+        print("QuranAuthManager: Credentials: \(credentials)")
         if let credentialsData = credentials.data(using: .utf8) {
             let base64Credentials = credentialsData.base64EncodedString()
             request.setValue("Basic \(base64Credentials)", forHTTPHeaderField: "Authorization")
@@ -48,7 +49,10 @@ class QuranAuthManager {
 
         let (data, _) = try await URLSession.shared.data(for: request)
 
+        print("QuranAuthManager: Data: \(data)")
+
         let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+        print("QuranAuthManager: Token response: \(tokenResponse)")
 
         // Save tokens securely
         TokenManager.shared.saveTokens(

@@ -13,6 +13,7 @@ class TokenManager {
     private init() {}
 
     func saveTokens(accessToken: String, clientId: String, idToken: String?, tokenType: String, expiresIn: Int) {
+        print("TokenManager: Saving tokens")
         // Store access token
         saveToKeychain(key: accessTokenKey, value: accessToken)
 
@@ -51,10 +52,21 @@ class TokenManager {
     }
 
     func isTokenValid() -> Bool {
+        // First check if we have an access token
+        print("TokenManager: Checking if token is valid")
+        guard let _ = getAccessToken() else {
+            print("TokenManager: No access token found")
+            return false
+        }
+        print("TokenManager: Access token found")
+
+        // Then check expiration
         guard let expirationTimeInterval = UserDefaults.standard.object(forKey: expiresInKey) as? TimeInterval else {
+            print("TokenManager: No expiration time interval found")
             return false
         }
         let expirationDate = Date(timeIntervalSince1970: expirationTimeInterval)
+        print("TokenManager: Expiration date: \(expirationDate)")
         return Date() < expirationDate
     }
 

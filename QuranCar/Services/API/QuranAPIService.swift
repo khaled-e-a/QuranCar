@@ -16,7 +16,8 @@ enum QuranAPIError: Error {
 }
 
 class QuranAPIService {
-    private let baseURL = "https://apis-prelive.quran.foundation/content/api/v4"
+    // private let baseURL = "https://apis-prelive.quran.foundation/content/api/v4"
+    private let baseURL = "https://apis.quran.foundation/content/api/v4"
     private let clientId: String
     private var authToken: String  // Changed to var since we'll update it
 

@@ -90,19 +90,19 @@ class AudioManager: NSObject, ObservableObject {
                 continue
             }
 
-            // Create filename from last 3 path components while preserving extension
+            // Create filename from last 4 path components while preserving extension, if 4 components are not available, use the last 3
             let pathComponents = url.pathComponents.filter { $0 != "/" }
-            let lastThreeComponents = pathComponents.suffix(3)
+            let lastComponents = pathComponents.count >= 4 ? pathComponents.suffix(4) : pathComponents.suffix(3)
             let urlExtension = url.pathExtension
 
             // Join components without the last component's extension
-            let fileNameWithoutExtension = lastThreeComponents
+            let fileNameWithoutExtension = lastComponents
                 .dropLast()
                 .joined(separator: "_")
                 .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? UUID().uuidString
 
             // Add the last component and extension back
-            let fileName = "\(fileNameWithoutExtension)_\(lastThreeComponents.last?.components(separatedBy: ".").first ?? "").\(urlExtension)"
+            let fileName = "\(fileNameWithoutExtension)_\(lastComponents.last?.components(separatedBy: ".").first ?? "").\(urlExtension)"
 
             print("AudioManager: Generated filename: \(fileName)")
             let fileURL = cacheDirectory.appendingPathComponent(fileName)

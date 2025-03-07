@@ -5,19 +5,19 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>academy.elm.qurancar</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>qurancar</string>
 			</array>
-			<key>CFBundleURLName</key>
-			<string>academy.elm.qurancar</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
 		</dict>
 	</array>
-	<key>QURAN_CLIENT_ID</key>
-	<string>$(QURAN_CLIENT_ID)</string>
 	<key>QURAN_CLIENT_SECRET</key>
 	<string>$(QURAN_CLIENT_SECRET)</string>
+	<key>QURAN_CLIENT_ID</key>
+	<string>$(QURAN_CLIENT_ID)</string>
 </dict>
 </plist>
