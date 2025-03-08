@@ -77,7 +77,7 @@ struct BookView: View {
             startingVerseSection
             numberOfVersesSection
             memorizationLoopSection
-            Spacer()
+            // Spacer()
             reciterAndPlaySection
         }
         .padding(24)
@@ -254,7 +254,7 @@ extension BookView {
             Text("Memorization Loop")
                 .foregroundColor(.secondary)
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From")
                         .font(.subheadline)
@@ -289,7 +289,8 @@ extension BookView {
     }
 
     private var reciterAndPlaySection: some View {
-        HStack(spacing: 12) {
+        VStack(spacing: 8) {
+            // Reciter selection button
             Button(action: {
                 showingRecitersList = true
             }) {
@@ -304,34 +305,64 @@ extension BookView {
                 .padding()
                 .background(Color(.systemBackground))
                 .cornerRadius(12)
+                .shadow(color: .black.opacity(0.05), radius: 2)
             }
-            .frame(maxWidth: .infinity)
 
-            Button(action: {
-                Task {
-                    await viewModel.togglePlayback(
-                        selectedVerse: selectedVerse,
-                        numberOfVerses: numberOfVerses
-                    )
-                }
-            }) {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(width: 48, height: 48)
-                        .background(Color.primaryNormal)
-                        .clipShape(Circle())
-                } else {
-                    Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.body)
-                        .frame(width: 48, height: 48)
-                        .background(Color.primaryNormal)
+            // Playback controls
+            HStack(spacing: 24) {
+                // Previous button
+                Button(action: {
+                    // Add previous verse action
+                }) {
+                    Image(systemName: "backward.fill")
+                        .font(.title2)
                         .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.primaryNormal)
                         .clipShape(Circle())
+                        .shadow(radius: 8, y: 2)
+                }
+
+                // Play/Pause button
+                Button(action: {
+                    Task {
+                        await viewModel.togglePlayback(
+                            selectedVerse: selectedVerse,
+                            numberOfVerses: numberOfVerses
+                        )
+                    }
+                }) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .frame(width: 56, height: 56)
+                            .background(Color.primaryNormal)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.title)
+                            .frame(width: 56, height: 56)
+                            .background(Color.primaryNormal)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
+                }
+                .shadow(radius: 8, y: 2)
+
+                // Next button
+                Button(action: {
+                    // Add next verse action
+                }) {
+                    Image(systemName: "forward.fill")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.primaryNormal)
+                        .clipShape(Circle())
+                        .shadow(radius: 8, y: 2)
                 }
             }
-            .shadow(radius: 8, y: 2)
+            .padding(.vertical, 8)
         }
-        .shadow(color: .black.opacity(0.05), radius: 2)
         .padding(.bottom)
     }
 }
