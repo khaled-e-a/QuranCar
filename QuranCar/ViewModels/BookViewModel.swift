@@ -18,6 +18,7 @@ class BookViewModel: ObservableObject {
     @Published var selectedReciter: ReciterEntity?
     @Published var currentAudioFiles: [AudioFileEntity] = []
     @Published var isPlaying = false
+    @Published var currentVerseNumber: Int = 1
 
     private let apiService: QuranAPIService
     private let dataStore: QuranDataStore
@@ -288,6 +289,52 @@ class BookViewModel: ObservableObject {
             } catch {
                 print("BookViewModel: Error during playback: \(error)")
                 self.error = error
+            }
+        }
+    }
+
+    public func handlePreviousVerse() async {
+        guard let currentVerse = currentVerses.first(where: { $0.verseNumber == currentVerseNumber }),
+              currentVerseNumber > 1 else { return }
+
+        let previousVerseNumber = currentVerseNumber - 1
+        if let previousVerse = currentVerses.first(where: { $0.verseNumber == previousVerseNumber }) {
+            currentVerseNumber = previousVerseNumber
+            // Stop current playback if any
+            if isPlaying {
+                audioManager.stopPlayback()
+                isPlaying = false
+            }
+
+            // Start new playback
+            if let text = previousVerse.textUthmani {
+                await togglePlayback(
+                    selectedVerse: "\(previousVerseNumber). \(text)",
+                    numberOfVerses: 1
+                )
+            }
+        }
+    }
+
+    public func handleNextVerse() async {
+        guard let chapter = selectedChapter,
+              currentVerseNumber < chapter.versesCount else { return }
+
+        let nextVerseNumber = currentVerseNumber + 1
+        if let nextVerse = currentVerses.first(where: { $0.verseNumber == nextVerseNumber }) {
+            currentVerseNumber = nextVerseNumber
+            // Stop current playback if any
+            if isPlaying {
+                audioManager.stopPlayback()
+                isPlaying = false
+            }
+
+            // Start new playback
+            if let text = nextVerse.textUthmani {
+                await togglePlayback(
+                    selectedVerse: "\(nextVerseNumber). \(text)",
+                    numberOfVerses: 1
+                )
             }
         }
     }
