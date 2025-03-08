@@ -27,6 +27,8 @@ struct BookView: View {
     @State private var showingNumberSelector = false
     @State private var numberSelectorOpacity: Double = 0
     @State private var showingRecitersList = false
+    @State private var isLooping: Bool = true
+    @State private var currentPlaybackTask: Task<Void, Never>?
 
     private var toVerse: String {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
@@ -312,25 +314,21 @@ extension BookView {
             HStack(spacing: 24) {
                 // Previous button
                 Button(action: {
-                    // Add previous verse action
+                    handlePreviousVerse()
                 }) {
                     Image(systemName: "backward.fill")
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundColor(isFirstVerse ? .gray : .white)
                         .frame(width: 44, height: 44)
-                        .background(Color.primaryNormal)
+                        .background(isFirstVerse ? Color.gray.opacity(0.3) : Color.primaryNormal)
                         .clipShape(Circle())
                         .shadow(radius: 8, y: 2)
                 }
+                .disabled(isFirstVerse)
 
                 // Play/Pause button
                 Button(action: {
-                    Task {
-                        await viewModel.togglePlayback(
-                            selectedVerse: selectedVerse,
-                            numberOfVerses: numberOfVerses
-                        )
-                    }
+                    togglePlayback()
                 }) {
                     if viewModel.isLoading {
                         ProgressView()
@@ -350,20 +348,142 @@ extension BookView {
 
                 // Next button
                 Button(action: {
-                    // Add next verse action
+                    handleNextVerse()
                 }) {
                     Image(systemName: "forward.fill")
                         .font(.title2)
-                        .foregroundColor(.white)
+                        .foregroundColor(isLastPossibleStartVerse ? .gray : .white)
                         .frame(width: 44, height: 44)
-                        .background(Color.primaryNormal)
+                        .background(isLastPossibleStartVerse ? Color.gray.opacity(0.3) : Color.primaryNormal)
                         .clipShape(Circle())
                         .shadow(radius: 8, y: 2)
                 }
+                .disabled(isLastPossibleStartVerse)
             }
             .padding(.vertical, 8)
         }
         .padding(.bottom)
+    }
+
+    private var isFirstVerse: Bool {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        return currentVerseNumber == 1
+    }
+
+    private var isLastPossibleStartVerse: Bool {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+        return currentVerseNumber >= maxVerses
+    }
+
+    private func handlePreviousVerse() {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        let targetVerseNumber = max(currentVerseNumber - numberOfVerses, 1)
+
+        if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
+           let text = targetVerse.textUthmani {
+            selectedVerse = "\(targetVerseNumber). \(text)"
+
+            // Stop current playback if any
+            isLooping = false
+            currentPlaybackTask?.cancel()
+            currentPlaybackTask = nil
+
+            // Start new playback
+            currentPlaybackTask = Task {
+                await playWithLooping(
+                    verse: "\(targetVerseNumber). \(text)",
+                    numberOfVerses: numberOfVerses
+                )
+            }
+        }
+    }
+
+    private func handleNextVerse() {
+        let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
+        let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+
+        let targetVerseNumber = min(currentVerseNumber + numberOfVerses, maxVerses)
+        let remainingVerses = maxVerses - targetVerseNumber + 1
+
+        if numberOfVerses > remainingVerses {
+            numberOfVerses = remainingVerses
+        }
+
+        if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
+           let text = targetVerse.textUthmani {
+            selectedVerse = "\(targetVerseNumber). \(text)"
+
+            // Stop current playback if any
+            isLooping = false
+            currentPlaybackTask?.cancel()
+            currentPlaybackTask = nil
+
+            // Start new playback
+            currentPlaybackTask = Task {
+                await playWithLooping(
+                    verse: "\(targetVerseNumber). \(text)",
+                    numberOfVerses: numberOfVerses
+                )
+            }
+        }
+    }
+
+    private func togglePlayback() {
+        if viewModel.isPlaying {
+            // Stop the loop and playback
+            isLooping = false
+            currentPlaybackTask?.cancel()
+            currentPlaybackTask = nil
+
+            Task {
+                await viewModel.togglePlayback(
+                    selectedVerse: selectedVerse,
+                    numberOfVerses: numberOfVerses
+                )
+            }
+        } else {
+            // Start new playback loop
+            currentPlaybackTask?.cancel()
+            currentPlaybackTask = Task {
+                await playWithLooping(
+                    verse: selectedVerse,
+                    numberOfVerses: numberOfVerses
+                )
+            }
+        }
+    }
+
+    private func playWithLooping(verse: String, numberOfVerses: Int) async {
+        // Force stop any current playback
+        if viewModel.isPlaying {
+            await viewModel.togglePlayback(
+                selectedVerse: selectedVerse,
+                numberOfVerses: numberOfVerses
+            )
+        }
+
+        isLooping = true
+
+        while isLooping {
+            if Task.isCancelled { return }
+
+            // Start new playback
+            await viewModel.togglePlayback(
+                selectedVerse: verse,
+                numberOfVerses: numberOfVerses
+            )
+
+            // Wait for playback to complete
+            while viewModel.isPlaying && !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+
+            if Task.isCancelled { return }
+
+            // Half second pause between loops
+            try? await Task.sleep(for: .milliseconds(500))
+        }
     }
 }
 
