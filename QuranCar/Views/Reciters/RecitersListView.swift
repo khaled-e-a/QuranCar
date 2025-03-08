@@ -16,20 +16,23 @@ struct RecitersListView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(reciter.translatedName ?? "")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
                             Text(reciter.reciterName ?? "")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .font(.system(size: 15, weight: .regular))
+                                .foregroundColor(Color.textBodySubtle)
                         }
 
                         Spacer()
 
                         if reciter.id == selectedReciter?.id {
                             Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color.primaryNormal)
                         }
                     }
                 }
             }
+            .background(Color.background1)
             .navigationTitle("Select Reciter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -37,6 +40,8 @@ struct RecitersListView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(Color.primaryNormal)
                 }
             }
         }

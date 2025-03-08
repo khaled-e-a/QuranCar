@@ -14,12 +14,15 @@ struct VersesListView: View {
                 }) {
                     if let text = verse.textUthmani {
                         Text("\(verse.verseNumber). \(text)".truncated(to: 50))
+                            .font(.custom("SF Arabic", size: 17))
+                            .foregroundColor(Color.textBody)
                             .lineLimit(1)
                             .multilineTextAlignment(.trailing)
                             .environment(\.layoutDirection, .rightToLeft)
                     }
                 }
             }
+            .background(Color.background1)
             .navigationTitle("Select Verse")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -27,6 +30,8 @@ struct VersesListView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(Color.primaryNormal)
                 }
             }
         }

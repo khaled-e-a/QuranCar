@@ -12,9 +12,9 @@ struct SplashView: View {
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
 
-            // Semi-transparent overlay to ensure text readability
-            Color.blue
-                .opacity(0.1)
+            // Semi-transparent overlay
+            Color.primaryNormal
+                .opacity(0.15)
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 30) {
@@ -28,27 +28,25 @@ struct SplashView: View {
 
                 // App Name
                 Text("Quran Car")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(.system(size: 34, weight: .bold))
                     .foregroundColor(.white)
                     .opacity(isAnimating ? 1 : 0)
                     .offset(y: isAnimating ? 0 : 20)
 
                 // Tagline
                 Text("Memorize while you drive")
-                    .font(.title3)
-                    .foregroundColor(.white.opacity(0.8))
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundColor(Color.background1)
                     .opacity(isAnimating ? 1 : 0)
                     .offset(y: isAnimating ? 0 : 20)
             }
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 1.2)) {
+            withAnimation(.easeOut(duration: 0.5)) {
                 isAnimating = true
             }
 
-            // Dismiss splash screen after delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 withAnimation {
                     completion()
                 }

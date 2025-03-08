@@ -58,263 +58,73 @@ struct BookView: View {
     }
 
     var body: some View {
-            ZStack {
-            VStack(spacing: 20) {
-                // Surah Selection
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Select Surah")
-                        .foregroundColor(.secondary)
+        ZStack {
+            mainContent
+                .blur(radius: showingNumberSelector ? 3 : 0)
 
-                    Button(action: {
-                        showingChaptersList = true
-                    }) {
-                        HStack {
-                            if let chapter = viewModel.selectedChapter {
-                                HStack {
-                                    Text(chapter.nameSimple ?? "")
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text(chapter.nameArabic ?? "")
-                                        .environment(\.layoutDirection, .rightToLeft)
-                                }
-                            } else {
-                                Text("Select a Surah")
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                        }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(8)
-                        .shadow(color: .black.opacity(0.05), radius: 2)
-                    }
-                }
-
-                // Starting Verse Selection
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Starting Verse")
-                        .foregroundColor(.secondary)
-
-                    Button(action: {
-                        showingVersesList = true
-                    }) {
-                        HStack {
-                            Text(selectedVerse.truncated(to: 50))
-                                .lineLimit(1)
-                                .multilineTextAlignment(.trailing)
-                                .environment(\.layoutDirection, .rightToLeft)
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                        }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(8)
-                        .shadow(color: .black.opacity(0.05), radius: 2)
-                    }
-                }
-
-                // Number of Verses
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Number of Verses")
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    // Center the number buttons
-                    HStack(spacing: 15) {
-                        Spacer()  // This will push the buttons to the center
-
-                        // Preset numbers
-                        ForEach(presetNumbers, id: \.self) { number in
-                            NumberButton(number: number, isSelected: numberOfVerses == number) {
-                                numberOfVerses = number
-                            }
-                        }
-
-                        // Show custom number if it's not one of the presets
-                        if !(presetNumbers.contains(numberOfVerses)) {
-                            NumberButton(number: numberOfVerses, isSelected: true) {
-                                showingNumberSelector = true
-                            }
-                        }
-
-                        // Plus button
-                        Button(action: {
-                            showingNumberSelector = true
-                        }) {
-                            Image(systemName: "plus")
-                                .frame(width: 40, height: 40)
-                                .background(Color(.systemBackground))
-                                .clipShape(Circle())
-                                .shadow(color: .black.opacity(0.05), radius: 2)
-                        }
-
-                        Spacer()  // This will push the buttons to the center
-                    }
-                }
-
-                // Memorization Loop Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Memorization Loop")
-                        .foregroundColor(.secondary)
-
-                    VStack(alignment: .leading, spacing: 16) {
-                        // From verse
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("From")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-
-                            Text(selectedVerse)
-                                .font(.title3)
-                                .multilineTextAlignment(.trailing)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .environment(\.layoutDirection, .rightToLeft)
-                        }
-
-                        Divider()
-
-                        // To verse
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("To")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-
-                            Text(toVerse)
-                                .font(.title3)
-                                .multilineTextAlignment(.trailing)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .environment(\.layoutDirection, .rightToLeft)
-                        }
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.05), radius: 2)
-                }
-
-                Spacer()
-
-                // Reciter Selection with Play Button
-                HStack(spacing: 12) {
-                    Button(action: {
-                        showingRecitersList = true
-                    }) {
-                        HStack {
-                            Image(systemName: "person.wave.2")
-                                .foregroundColor(.secondary)
-                            Text(viewModel.selectedReciter?.translatedName ?? "Select Reciter")
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    // Play Button
-                    Button(action: {
-                        Task {
-                            await viewModel.togglePlayback(
-                                selectedVerse: selectedVerse,
-                                numberOfVerses: numberOfVerses
-                            )
-                        }
-                    }) {
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .frame(width: 44, height: 44)
-                                .background(Color.blue)
-                                .clipShape(Circle())
-                        } else {
-                            Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.body)
-                                .frame(width: 44, height: 44)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .clipShape(Circle())
-                        }
-                    }
-                    .shadow(color: .blue.opacity(0.3), radius: 8)
-                }
-                .shadow(color: .black.opacity(0.05), radius: 2)
-                .padding(.bottom)
+            numberSelectorOverlay
+        }
+        .onChange(of: showingNumberSelector) { show in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                numberSelectorOpacity = show ? 1 : 0
             }
-            .padding()
-            .navigationTitle("Memorize")
-            .task {
-                await viewModel.loadQuranData()
+        }
+    }
+
+    private var mainContent: some View {
+        VStack(spacing: 20) {
+            surahSelectionSection
+            startingVerseSection
+            numberOfVersesSection
+            memorizationLoopSection
+            Spacer()
+            reciterAndPlaySection
+        }
+        .padding(24)
+        .navigationTitle("Memorize")
+        .task {
+            await viewModel.loadQuranData()
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
             }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
+        }
+        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+            Button("Retry") {
+                Task {
+                    await viewModel.loadQuranData()
                 }
             }
-            .alert("Error", isPresented: .constant(viewModel.error != nil)) {
-                Button("Retry") {
-                    Task {
-                        await viewModel.loadQuranData()
-                    }
-                }
-            } message: {
-                if let error = viewModel.error {
-                    Text(error.localizedDescription)
-                }
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
             }
-            .sheet(isPresented: $showingChaptersList) {
-                ChaptersListView(
-                    chapters: viewModel.chapters,
-                    selectedChapter: viewModel.selectedChapter,
-                    onChapterSelected: { chapter in
-                        Task {
-                            viewModel.selectedChapter = chapter
-                            await viewModel.loadQuranData()
+        }
+        .sheet(isPresented: $showingChaptersList) {
+            ChaptersListView(
+                chapters: viewModel.chapters,
+                selectedChapter: viewModel.selectedChapter,
+                onChapterSelected: handleChapterSelection
+            )
+        }
+        .sheet(isPresented: $showingVersesList) {
+            VersesListView(
+                verses: viewModel.currentVerses,
+                onVerseSelected: handleVerseSelection
+            )
+        }
+        .sheet(isPresented: $showingRecitersList) {
+            RecitersListView(
+                reciters: viewModel.reciters,
+                selectedReciter: viewModel.selectedReciter,
+                onReciterSelected: handleReciterSelection
+            )
+        }
+    }
 
-                            // Reset number of verses to 3 when changing chapters
-                            numberOfVerses = 3
-
-                            if let firstVerse = viewModel.currentVerses.first,
-                               let text = firstVerse.textUthmani {
-                                selectedVerse = "\(firstVerse.verseNumber). \(text)"
-                            }
-                        }
-                    }
-                )
-            }
-            .sheet(isPresented: $showingVersesList) {
-                VersesListView(
-                    verses: viewModel.currentVerses,
-                    onVerseSelected: { verse in
-                        if let text = verse.textUthmani {
-                            selectedVerse = "\(verse.verseNumber). \(text)"
-
-                            // Check if current numberOfVerses is valid for the new starting verse
-                            let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
-                            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
-
-                            // If current numberOfVerses exceeds remaining verses, reset to 1
-                            if numberOfVerses >= remainingVerses {
-                                numberOfVerses = 1
-                            }
-                        }
-                    }
-                )
-            }
-            .sheet(isPresented: $showingRecitersList) {
-                RecitersListView(
-                    reciters: viewModel.reciters,
-                    selectedReciter: viewModel.selectedReciter,
-                    onReciterSelected: { reciter in
-                        viewModel.selectedReciter = reciter
-                        Task {
-                            await viewModel.loadQuranData()
-                        }
-                    }
-                )
-            }
-            .blur(radius: showingNumberSelector ? 3 : 0)
-
-            // Number Selector Popup
+    private var numberSelectorOverlay: some View {
+        Group {
             if showingNumberSelector {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
@@ -337,10 +147,227 @@ struct BookView: View {
                 .opacity(numberSelectorOpacity)
             }
         }
-        .onChange(of: showingNumberSelector) { show in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                numberSelectorOpacity = show ? 1 : 0
+    }
+}
+
+// MARK: - BookView Sections
+extension BookView {
+    private var surahSelectionSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Surah")
+                .foregroundColor(Color.textBodySubtle)
+                .font(.system(size: 17, weight: .regular))
+
+            Button(action: {
+                showingChaptersList = true
+            }) {
+                HStack {
+                    if let chapter = viewModel.selectedChapter {
+                        HStack {
+                            Text(chapter.nameSimple ?? "")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(chapter.nameArabic ?? "")
+                                .font(.custom("SF Arabic", size: 17))
+                                .foregroundColor(Color.textBody)
+                                .environment(\.layoutDirection, .rightToLeft)
+                        }
+                    } else {
+                        Text("Select a Surah")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color.textBodySubtle)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(Color.textBodySubtle)
+                }
+                .padding(.vertical, 16)
+                .padding(.horizontal, 16)
+                .background(Color.background1)
+                .cornerRadius(8)
+                .shadow(radius: 8, y: 2)
             }
+        }
+    }
+
+    private var startingVerseSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Starting Verse")
+                .foregroundColor(.secondary)
+
+            Button(action: {
+                showingVersesList = true
+            }) {
+                HStack {
+                    Text(selectedVerse.truncated(to: 50))
+                        .lineLimit(1)
+                        .multilineTextAlignment(.trailing)
+                        .environment(\.layoutDirection, .rightToLeft)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(8)
+                .shadow(color: .black.opacity(0.05), radius: 2)
+            }
+        }
+    }
+
+    private var numberOfVersesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Number of Verses")
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 15) {
+                Spacer()
+                ForEach(presetNumbers, id: \.self) { number in
+                    NumberButton(number: number, isSelected: numberOfVerses == number) {
+                        numberOfVerses = number
+                    }
+                }
+
+                if !(presetNumbers.contains(numberOfVerses)) {
+                    NumberButton(number: numberOfVerses, isSelected: true) {
+                        showingNumberSelector = true
+                    }
+                }
+
+                Button(action: {
+                    showingNumberSelector = true
+                }) {
+                    Image(systemName: "plus")
+                        .frame(width: 40, height: 40)
+                        .background(Color(.systemBackground))
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.05), radius: 2)
+                }
+                Spacer()
+            }
+        }
+    }
+
+    private var memorizationLoopSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Memorization Loop")
+                .foregroundColor(.secondary)
+
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("From")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    Text(selectedVerse)
+                        .font(.title3)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .environment(\.layoutDirection, .rightToLeft)
+                }
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("To")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+
+                    Text(toVerse)
+                        .font(.title3)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .environment(\.layoutDirection, .rightToLeft)
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.05), radius: 2)
+        }
+    }
+
+    private var reciterAndPlaySection: some View {
+        HStack(spacing: 12) {
+            Button(action: {
+                showingRecitersList = true
+            }) {
+                HStack {
+                    Image(systemName: "person.wave.2")
+                        .foregroundColor(.secondary)
+                    Text(viewModel.selectedReciter?.translatedName ?? "Select Reciter")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
+            }
+            .frame(maxWidth: .infinity)
+
+            Button(action: {
+                Task {
+                    await viewModel.togglePlayback(
+                        selectedVerse: selectedVerse,
+                        numberOfVerses: numberOfVerses
+                    )
+                }
+            }) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(width: 48, height: 48)
+                        .background(Color.primaryNormal)
+                        .clipShape(Circle())
+                } else {
+                    Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                        .font(.body)
+                        .frame(width: 48, height: 48)
+                        .background(Color.primaryNormal)
+                        .foregroundColor(.white)
+                        .clipShape(Circle())
+                }
+            }
+            .shadow(radius: 8, y: 2)
+        }
+        .shadow(color: .black.opacity(0.05), radius: 2)
+        .padding(.bottom)
+    }
+}
+
+// MARK: - BookView Actions
+extension BookView {
+    private func handleChapterSelection(_ chapter: ChapterEntity) {
+        Task {
+            viewModel.selectedChapter = chapter
+            await viewModel.loadQuranData()
+            numberOfVerses = 3
+
+            if let firstVerse = viewModel.currentVerses.first,
+               let text = firstVerse.textUthmani {
+                selectedVerse = "\(firstVerse.verseNumber). \(text)"
+            }
+        }
+    }
+
+    private func handleVerseSelection(_ verse: VerseEntity) {
+        if let text = verse.textUthmani {
+            selectedVerse = "\(verse.verseNumber). \(text)"
+
+            let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
+
+            if numberOfVerses >= remainingVerses {
+                numberOfVerses = 1
+            }
+        }
+    }
+
+    private func handleReciterSelection(_ reciter: ReciterEntity) {
+        viewModel.selectedReciter = reciter
+        Task {
+            await viewModel.loadQuranData()
         }
     }
 }
@@ -385,11 +412,12 @@ struct NumberButton: View {
     var body: some View {
         Button(action: action) {
             Text("\(number)")
+                .font(.system(size: 17, weight: .medium))
                 .frame(width: 40, height: 40)
-                .background(isSelected ? Color.blue : Color(.systemBackground))
-                .foregroundColor(isSelected ? .white : .primary)
+                .background(isSelected ? Color.primaryNormal : Color.background1)
+                .foregroundColor(isSelected ? .white : Color.textBody)
                 .clipShape(Circle())
-                .shadow(color: .black.opacity(0.05), radius: 2)
+                .shadow(radius: 8, y: 2)
         }
     }
 }

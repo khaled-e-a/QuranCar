@@ -21,6 +21,8 @@ struct NumberSelectorView: View {
             Picker("Number of Verses", selection: $selectedNumber) {
                 ForEach(1...maxNumber, id: \.self) { number in
                     Text("\(number)")
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(Color(Color.textBody))
                         .tag(number)
                 }
             }
@@ -33,16 +35,16 @@ struct NumberSelectorView: View {
                 dismiss()
             }) {
                 Text("Done")
-                    .fontWeight(.medium)
+                    .font(.system(size: 17, weight: .medium))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 44)
-                    .background(Color.blue)
+                    .frame(height: 48)
+                    .background(Color(Color.primaryNormal))
             }
         }
-        .frame(width: 100)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(radius: 10)
+        .frame(width: 120)
+        .background(Color(Color.background1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 8, y: 2)
     }
 }

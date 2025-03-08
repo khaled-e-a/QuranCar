@@ -15,15 +15,18 @@ struct SettingsView: View {
                 Link(destination: URL(string: "https://elm.academy/qurancar/privacy")!) {
                     HStack {
                         Text("Privacy Policy")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color.textBody)
                         Spacer()
                         Image(systemName: "arrow.up.right")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textBodySubtle)
                     }
                 }
             }
         }
         .navigationTitle("Settings")
         .listStyle(.insetGrouped)
+        .background(Color.background1)
     }
 }
 
@@ -32,14 +35,13 @@ struct ComingSoonCard: View {
         VStack(spacing: 16) {
             // Icon
             Image(systemName: "sparkles")
-                .font(.system(size: 40))
-                .foregroundColor(.white)
+                .font(.system(size: 44))
+                .foregroundColor(Color(Color.textBody))
 
             // Title
             Text("More Features Coming Soon!")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(Color(Color.textBody))
                 .multilineTextAlignment(.center)
 
             // Features list
@@ -54,13 +56,16 @@ struct ComingSoonCard: View {
         .padding(24)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
+                gradient: Gradient(colors: [
+                    Color.primaryNormal,
+                    Color.primaryHover
+                ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(20)
-        .shadow(color: Color.blue.opacity(0.3), radius: 10, x: 0, y: 5)
+        .cornerRadius(12)
+        .shadow(radius: 8, y: 2)
         .padding()
     }
 }
@@ -72,10 +77,11 @@ struct FeatureRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(.white.opacity(0.9))
+                .foregroundColor(Color(Color.background1))
 
             Text(text)
-                .foregroundColor(.white)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundColor(Color(Color.textBody))
         }
     }
 }

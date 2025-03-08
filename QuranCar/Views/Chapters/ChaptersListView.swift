@@ -17,10 +17,14 @@ struct ChaptersListView: View {
                         }) {
                             HStack {
                                 Text("\(chapter.id). \(chapter.nameSimple ?? "")")
+                                    .font(.system(size: 17, weight: .regular))
+                                    .foregroundColor(Color.textBody)
 
                                 Spacer()
 
                                 Text(chapter.nameArabic ?? "")
+                                    .font(.custom("SF Arabic", size: 17))
+                                    .foregroundColor(Color.textBody)
                                     .environment(\.layoutDirection, .rightToLeft)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -28,16 +32,18 @@ struct ChaptersListView: View {
                             .padding(.horizontal, 16)
                             .background(
                                 chapter.id == selectedChapter?.id ?
-                                    Color.blue.opacity(0.1) : Color.clear
+                                    Color.primarySubtle : Color.clear
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
 
                         Divider()
+                            .background(Color.stroke1)
                             .padding(.horizontal)
                     }
                 }
             }
+            .background(Color.background1)
             .navigationTitle("Select Surah")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -45,6 +51,8 @@ struct ChaptersListView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(Color.primaryNormal)
                 }
             }
         }

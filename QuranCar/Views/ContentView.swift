@@ -24,7 +24,7 @@ struct ContentView: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeOut(duration: 0.3), value: showingSplash)
+        .animation(.easeOut(duration: 0.5), value: showingSplash)
         .task {
             // Get token when app launches
             await QuranAuthManager.shared.refreshTokenIfNeeded()
