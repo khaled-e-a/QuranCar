@@ -168,11 +168,11 @@ extension BookView {
                         HStack {
                             Text(chapter.nameSimple ?? "")
                                 .font(.system(size: 17, weight: .regular))
-                                .foregroundColor(Color.textBody)
+                                .foregroundColor(Color.infoNormal)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(chapter.nameArabic ?? "")
                                 .font(.custom("SF Arabic", size: 17))
-                                .foregroundColor(Color.textBody)
+                                .foregroundColor(Color.infoNormal)
                                 .environment(\.layoutDirection, .rightToLeft)
                         }
                     } else {
@@ -196,23 +196,28 @@ extension BookView {
     private var startingVerseSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Starting Verse")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textBodySubtle)
+                .font(.system(size: 17, weight: .regular))
 
             Button(action: {
                 showingVersesList = true
             }) {
                 HStack {
-                    Text(selectedVerse.truncated(to: 50))
+                    Text(selectedVerse)
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(Color.infoNormal)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
                         .environment(\.layoutDirection, .rightToLeft)
-                    Spacer()
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     Image(systemName: "chevron.down")
+                        .foregroundColor(Color.textBodySubtle)
                 }
-                .padding()
-                .background(Color(.systemBackground))
+                .padding(.vertical, 16)
+                .padding(.horizontal, 16)
+                .background(Color.background1)
                 .cornerRadius(8)
-                .shadow(color: .black.opacity(0.05), radius: 2)
+                .shadow(radius: 8, y: 2)
             }
         }
     }
@@ -220,7 +225,7 @@ extension BookView {
     private var numberOfVersesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Number of Verses")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textBodySubtle)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 15) {
@@ -242,7 +247,7 @@ extension BookView {
                 }) {
                     Image(systemName: "plus")
                         .frame(width: 40, height: 40)
-                        .background(Color(.systemBackground))
+                        .background(Color.background1)
                         .clipShape(Circle())
                         .shadow(color: .black.opacity(0.05), radius: 2)
                 }
@@ -254,19 +259,20 @@ extension BookView {
     private var memorizationLoopSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Memorization Loop")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textBodySubtle)
 
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("From")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textBodySubtle)
 
                     Text(selectedVerse)
                         .font(.title3)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .environment(\.layoutDirection, .rightToLeft)
+                        .foregroundColor(Color.infoNormal)
                 }
 
                 Divider()
@@ -274,40 +280,50 @@ extension BookView {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("To")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.textBodySubtle)
 
                     Text(toVerse)
                         .font(.title3)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .environment(\.layoutDirection, .rightToLeft)
+                        .foregroundColor(Color.infoNormal)
                 }
             }
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.background1)
             .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 2)
+            .shadow(color: Color.black.opacity(0.05), radius: 10)
         }
     }
 
     private var reciterAndPlaySection: some View {
         VStack(spacing: 8) {
             // Reciter selection button
-            Button(action: {
-                showingRecitersList = true
-            }) {
-                HStack {
-                    Image(systemName: "person.wave.2")
-                        .foregroundColor(.secondary)
-                    Text(viewModel.selectedReciter?.translatedName ?? "Select Reciter")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Reciter")
+                    .foregroundColor(Color.textBodySubtle)
+                    .font(.system(size: 17, weight: .regular))
+
+                Button(action: {
+                    showingRecitersList = true
+                }) {
+                    HStack {
+                        Image(systemName: "person.wave.2")
+                            .foregroundColor(Color.textBodySubtle)
+                        Text(viewModel.selectedReciter?.translatedName ?? "Select Reciter")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color.infoNormal)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(Color.textBodySubtle)
+                    }
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 16)
+                    .background(Color.background1)
+                    .cornerRadius(8)
+                    .shadow(radius: 8, y: 2)
                 }
-                .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.05), radius: 2)
             }
 
             // Playback controls
@@ -532,7 +548,7 @@ struct ChapterSelectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Select Surah")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textBodySubtle)
 
             Menu {
                 ForEach(chapters, id: \.id) { chapter in
@@ -547,7 +563,7 @@ struct ChapterSelectionView: View {
                     Image(systemName: "chevron.down")
                 }
                 .padding()
-                .background(Color(.systemBackground))
+                .background(Color.background1)
                 .cornerRadius(8)
                 .shadow(color: .black.opacity(0.05), radius: 2)
             }
@@ -581,7 +597,7 @@ struct SettingsButton: View {
         VStack(spacing: 4) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.textBodySubtle)
 
             Menu {
                 // Add options here
@@ -606,7 +622,7 @@ struct FloatingSection: View {
             ZStack {
                 // Card background
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.systemBackground))
+                    .fill(Color.background1)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -617,16 +633,16 @@ struct FloatingSection: View {
 
                         Text(subtitle)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.textBodySubtle)
                     }
 
                     Button(action: action) {
                         Text(buttonTitle)
                             .fontWeight(.semibold)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.textBody)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.blue)
+                            .background(Color.primaryNormal)
                             .cornerRadius(12)
                     }
                 }

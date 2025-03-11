@@ -7,10 +7,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var interfaceController: CPInterfaceController?
     private var nowPlayingTemplate: CPNowPlayingTemplate?
     private var rootTemplate: CPTabBarTemplate?
-
-    // Keep reference to view model to sync state
     private var bookViewModel: BookViewModel?
     private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Required CPTemplateApplicationSceneDelegate Methods
 
     func templateApplicationScene(
         _ templateApplicationScene: CPTemplateApplicationScene,
@@ -32,6 +32,32 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Setup state observation
         observePlaybackState()
+    }
+
+    func templateApplicationScene(
+        _ templateApplicationScene: CPTemplateApplicationScene,
+        didDisconnect interfaceController: CPInterfaceController
+    ) {
+        self.interfaceController = nil
+        cancellables.removeAll()
+    }
+
+    // MARK: - Scene Lifecycle Methods
+
+    func sceneDidBecomeActive(_ scene: CPTemplateApplicationScene) {
+        // Handle scene becoming active
+    }
+
+    func sceneWillResignActive(_ scene: CPTemplateApplicationScene) {
+        // Handle scene resigning active
+    }
+
+    func sceneDidEnterBackground(_ scene: CPTemplateApplicationScene) {
+        // Handle scene entering background
+    }
+
+    func sceneWillEnterForeground(_ scene: CPTemplateApplicationScene) {
+        // Handle scene entering foreground
     }
 
     private func setupNowPlayingTemplate() {
@@ -159,5 +185,29 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         Task {
             await bookViewModel?.handleNextVerse()
         }
+    }
+
+    func templateApplicationScene(
+        _ templateApplicationScene: CPTemplateApplicationScene,
+        didSelect nowPlayingTemplate: CPNowPlayingTemplate
+    ) {
+        // Handle when now playing template is selected
+        self.nowPlayingTemplate = nowPlayingTemplate
+        updateNowPlayingInfo()
+    }
+
+    func templateApplicationScene(
+        _ templateApplicationScene: CPTemplateApplicationScene,
+        willDisconnectInterfaceController interfaceController: CPInterfaceController
+    ) {
+        // Prepare for disconnect
+        // Save any state if needed
+    }
+
+    func templateApplicationScene(
+        _ templateApplicationScene: CPTemplateApplicationScene,
+        didFailToLoadInterfaceController error: Error
+    ) {
+        print("CarPlay failed to load: \(error.localizedDescription)")
     }
 }
