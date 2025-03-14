@@ -18,6 +18,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var currentVerse: String = ""
     private var numberOfVerses: Int = 3
 
+    // Add this property to track template state
+    private var isShowingSubTemplate = false
+
     // MARK: - Required CPTemplateApplicationSceneDelegate Methods
 
     func templateApplicationScene(
@@ -225,6 +228,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         let template = CPListTemplate(title: "Select Surah", sections: [section])
 
         print("CarPlay: Pushing surah selection template")
+        isShowingSubTemplate = true  // Set flag before pushing
         interfaceController?.pushTemplate(template, animated: true)
         print("CarPlay: Surah selection template pushed")
     }
@@ -361,17 +365,19 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                     updateNowPlayingInfo()
                     print("CarPlay: Updated now playing info")
 
-                    // Create new template with updated state
-                    let newMemorizeTemplate = createMemorizeTemplate()
-                    print("CarPlay: Created new template with chapter: \(bookViewModel?.selectedChapter?.nameSimple ?? "None")")
-
-                    interfaceController?.popTemplate(animated: true)
-                    print("CarPlay: Popped template")
-
-                    // Update root template with new memorize template
-                    rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, createSettingsTemplate()])
-                    interfaceController?.setRootTemplate(rootTemplate!, animated: true)
-                    print("CarPlay: Set new root template")
+                    // Only try to pop if we're showing a sub-template
+                    if isShowingSubTemplate {
+                        print("CarPlay: Popping sub-template")
+                        interfaceController?.popTemplate(animated: true) { _, _ in
+                            print("CarPlay: Sub-template popped")
+                            self.isShowingSubTemplate = false
+                            // Update root template after pop completes
+                            self.setupRootTemplate()
+                        }
+                    } else {
+                        print("CarPlay: No sub-template to pop, updating root directly")
+                        setupRootTemplate()
+                    }
                 }
                 print("CarPlay: Chapter selection complete")
             } catch {
@@ -424,6 +430,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func observePlaybackState() {
+        // Existing playback observation
         bookViewModel?.$isPlaying
             .sink { [weak self] isPlaying in
                 print("CarPlay: Playback state changed - isPlaying: \(isPlaying)")
@@ -431,12 +438,38 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
             .store(in: &cancellables)
 
+        // Enhanced chapter observation
         bookViewModel?.$selectedChapter
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] chapter in
                 print("CarPlay: Chapter changed in BookViewModel to: \(chapter?.nameSimple ?? "None")")
                 if let viewModel = self?.bookViewModel {
                     print("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
                 }
+
+                // Force a complete UI refresh when chapter changes
+                Task { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    print("CarPlay: Refreshing UI for chapter change")
+
+                    // Create new template with updated state
+                    let newMemorizeTemplate = self.createMemorizeTemplate()
+                    let settingsTemplate = self.createSettingsTemplate()
+                    print("CarPlay: Created new template with chapter: \(chapter?.nameSimple ?? "None")")
+
+                    // Just update the root template directly without popping
+                    self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                    print("CarPlay: Set new root template for chapter change")
+                }
+            }
+            .store(in: &cancellables)
+
+        // Add observation for verses to update UI when they change
+        bookViewModel?.$currentVerses
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("CarPlay: Verses updated, refreshing UI")
                 Task { @MainActor in
                     self?.setupRootTemplate()
                 }
