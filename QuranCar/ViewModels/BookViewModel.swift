@@ -30,6 +30,7 @@ class BookViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var currentVerseNumber: Int = 1
     @Published var selectedVerseText: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
+    @Published var numberOfVerses: Int = 3
 
     private let apiService: QuranAPIService
     private let dataStore: QuranDataStore

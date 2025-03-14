@@ -457,11 +457,38 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func handleNumberSelection(_ number: Int) {
-        numberOfVerses = number
+        print("CarPlay: Starting number selection: \(number)")
 
-        // Pop back and refresh
-        interfaceController?.popTemplate(animated: true)
-        setupRootTemplate()
+        // Update both local and shared state
+        numberOfVerses = number
+        print("CarPlay: Set number of verses to: \(number)")
+
+        if let viewModel = bookViewModel {
+            // Update shared state
+            viewModel.numberOfVerses = number
+            print("CarPlay: Updated shared number of verses to: \(number)")
+
+            // Create new template with updated state
+            let newMemorizeTemplate = createMemorizeTemplate()
+            let settingsTemplate = createSettingsTemplate()
+            print("CarPlay: Created new templates with updated number")
+
+            // Pop and update root template
+            if isShowingSubTemplate {
+                print("CarPlay: Popping number selection template")
+                interfaceController?.popTemplate(animated: true) { _, _ in
+                    print("CarPlay: Template popped, updating root")
+                    self.isShowingSubTemplate = false
+                    self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                    print("CarPlay: Root template updated with new number")
+                }
+            } else {
+                print("CarPlay: Directly updating root template")
+                rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+            }
+        }
     }
 
     private func handleReciterSelection(_ reciter: ReciterEntity) {
@@ -571,6 +598,28 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 // Update now playing info
                 self.updateNowPlayingInfo()
+            }
+            .store(in: &cancellables)
+
+        // Add number of verses observation
+        bookViewModel?.$numberOfVerses
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] number in
+                print("CarPlay: Number of verses changed to: \(number)")
+                guard let self = self else { return }
+
+                self.numberOfVerses = number
+                print("CarPlay: Updated local number of verses to: \(number)")
+
+                // Create new template with updated state
+                let newMemorizeTemplate = self.createMemorizeTemplate()
+                let settingsTemplate = self.createSettingsTemplate()
+                print("CarPlay: Created new templates with updated number")
+
+                // Update root template
+                self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                print("CarPlay: Root template updated with new number")
             }
             .store(in: &cancellables)
     }

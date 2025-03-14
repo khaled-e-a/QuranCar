@@ -21,7 +21,6 @@ class NavigatorHolder: ObservableObject {
 struct BookView: View {
     @StateObject private var viewModel = BookViewModel.shared
     @State private var selectedVerse: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
-    @State private var numberOfVerses: Int = 5
     @State private var showingVersesList = false
     @State private var showingChaptersList = false
     @State private var showingNumberSelector = false
@@ -36,7 +35,7 @@ struct BookView: View {
 
     private var toVerse: String {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
-        let targetVerseNumber = currentVerseNumber + numberOfVerses - 1
+        let targetVerseNumber = currentVerseNumber + viewModel.numberOfVerses - 1
 
         return viewModel.currentVerses
             .first(where: { $0.verseNumber == targetVerseNumber })?
@@ -161,17 +160,18 @@ struct BookView: View {
 
                 NumberSelectorView(
                     maxNumber: Int(viewModel.selectedChapter?.versesCount ?? 1),
-                    currentNumber: numberOfVerses,
-                    onNumberSelected: { number in
-                        numberOfVerses = number
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showingNumberSelector = false
-                        }
-                    }
+                    currentNumber: viewModel.numberOfVerses,
+                    onNumberSelected: handleNumberSelection
                 )
                 .opacity(numberSelectorOpacity)
             }
         }
+    }
+
+    private func handleNumberSelection(_ number: Int) {
+        print("BookView: Selecting number of verses: \(number)")
+        viewModel.numberOfVerses = number
+        print("BookView: Updated shared number of verses to: \(number)")
     }
 }
 
@@ -254,13 +254,13 @@ extension BookView {
             HStack(spacing: 15) {
                 Spacer()
                 ForEach(presetNumbers, id: \.self) { number in
-                    NumberButton(number: number, isSelected: numberOfVerses == number) {
-                        numberOfVerses = number
+                    NumberButton(number: number, isSelected: viewModel.numberOfVerses == number) {
+                        handleNumberSelection(number)
                     }
                 }
 
-                if !(presetNumbers.contains(numberOfVerses)) {
-                    NumberButton(number: numberOfVerses, isSelected: true) {
+                if !(presetNumbers.contains(viewModel.numberOfVerses)) {
+                    NumberButton(number: viewModel.numberOfVerses, isSelected: true) {
                         showingNumberSelector = true
                     }
                 }
@@ -417,7 +417,7 @@ extension BookView {
 
     private func handlePreviousVerse() {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
-        let targetVerseNumber = max(currentVerseNumber - numberOfVerses, 1)
+        let targetVerseNumber = max(currentVerseNumber - viewModel.numberOfVerses, 1)
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
            let text = targetVerse.textUthmani {
@@ -432,7 +432,7 @@ extension BookView {
             currentPlaybackTask = Task {
                 await playWithLooping(
                     verse: "\(targetVerseNumber). \(text)",
-                    numberOfVerses: numberOfVerses
+                    numberOfVerses: viewModel.numberOfVerses
                 )
             }
         }
@@ -442,11 +442,11 @@ extension BookView {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
         let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
 
-        let targetVerseNumber = min(currentVerseNumber + numberOfVerses, maxVerses)
+        let targetVerseNumber = min(currentVerseNumber + viewModel.numberOfVerses, maxVerses)
         let remainingVerses = maxVerses - targetVerseNumber + 1
 
-        if numberOfVerses > remainingVerses {
-            numberOfVerses = remainingVerses
+        if viewModel.numberOfVerses > remainingVerses {
+            viewModel.numberOfVerses = remainingVerses
         }
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
@@ -462,7 +462,7 @@ extension BookView {
             currentPlaybackTask = Task {
                 await playWithLooping(
                     verse: "\(targetVerseNumber). \(text)",
-                    numberOfVerses: numberOfVerses
+                    numberOfVerses: viewModel.numberOfVerses
                 )
             }
         }
@@ -478,7 +478,7 @@ extension BookView {
             Task {
                 await viewModel.togglePlayback(
                     selectedVerse: selectedVerse,
-                    numberOfVerses: numberOfVerses
+                    numberOfVerses: viewModel.numberOfVerses
                 )
             }
         } else {
@@ -487,7 +487,7 @@ extension BookView {
             currentPlaybackTask = Task {
                 await playWithLooping(
                     verse: selectedVerse,
-                    numberOfVerses: numberOfVerses
+                    numberOfVerses: viewModel.numberOfVerses
                 )
             }
         }
@@ -535,14 +535,6 @@ extension BookView {
             viewModel.selectedChapter = chapter
             print("BookView: Loading Quran data")
             await viewModel.loadQuranData()
-            numberOfVerses = 3
-            print("BookView: Set numberOfVerses to 3")
-
-            if let firstVerse = viewModel.currentVerses.first,
-               let text = firstVerse.textUthmani {
-                selectedVerse = "\(firstVerse.verseNumber). \(text)"
-                print("BookView: Updated selectedVerse to: \(selectedVerse)")
-            }
             print("BookView: Chapter selection complete")
         }
     }
@@ -559,9 +551,9 @@ extension BookView {
             let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
             let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
 
-            if numberOfVerses >= remainingVerses {
-                numberOfVerses = 1
-                print("BookView: Adjusted number of verses to: \(numberOfVerses)")
+            if viewModel.numberOfVerses >= remainingVerses {
+                viewModel.numberOfVerses = 1
+                print("BookView: Adjusted number of verses to: \(viewModel.numberOfVerses)")
             }
         }
     }
