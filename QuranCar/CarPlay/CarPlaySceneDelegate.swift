@@ -10,6 +10,14 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var bookViewModel: BookViewModel?
     private var cancellables = Set<AnyCancellable>()
 
+    // Add state for looping
+    private var isLooping: Bool = true
+    private var currentPlaybackTask: Task<Void, Never>?
+
+    // Add state tracking
+    private var currentVerse: String = ""
+    private var numberOfVerses: Int = 3
+
     // MARK: - Required CPTemplateApplicationSceneDelegate Methods
 
     func templateApplicationScene(
@@ -32,6 +40,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Setup state observation
         observePlaybackState()
+
+        // Setup remote command center
+        setupRemoteCommandCenter()
     }
 
     func templateApplicationScene(
@@ -173,17 +184,169 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
 
-    private func handlePreviousChunk() {
-        // Delegate to view model's previous verse handler
-        Task {
-            await bookViewModel?.handlePreviousVerse()
+    private func setupRemoteCommandCenter() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        // Play command
+        commandCenter.playCommand.addTarget { [weak self] _ in
+            print("CarPlay: Play command received")
+            Task {
+                await self?.startPlayback()
+            }
+            return .success
+        }
+
+        // Pause command
+        commandCenter.pauseCommand.addTarget { [weak self] _ in
+            print("CarPlay: Pause command received")
+            Task {
+                await self?.stopPlayback()
+            }
+            return .success
+        }
+
+        // Next Track command (for steering wheel next)
+        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+            print("CarPlay: Next track command received")
+            Task { @MainActor in
+                self?.handleNextChunk()
+            }
+            return .success
+        }
+
+        // Previous Track command (for steering wheel previous)
+        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+            print("CarPlay: Previous track command received")
+            Task { @MainActor in
+                self?.handlePreviousChunk()
+            }
+            return .success
+        }
+
+        // Enable the commands
+        commandCenter.nextTrackCommand.isEnabled = true
+        commandCenter.previousTrackCommand.isEnabled = true
+    }
+
+    private func startPlayback() async {
+        guard let viewModel = bookViewModel else { return }
+
+        // Cancel any existing playback
+        currentPlaybackTask?.cancel()
+
+        // Start new playback loop
+        currentPlaybackTask = Task {
+            await playWithLooping(
+                verse: currentVerse,
+                numberOfVerses: numberOfVerses
+            )
+        }
+    }
+
+    private func stopPlayback() async {
+        // Stop the loop and playback
+        isLooping = false
+        currentPlaybackTask?.cancel()
+        currentPlaybackTask = nil
+
+        if let viewModel = bookViewModel {
+            await viewModel.togglePlayback(
+                selectedVerse: currentVerse,
+                numberOfVerses: numberOfVerses
+            )
+        }
+    }
+
+    private func playWithLooping(verse: String, numberOfVerses: Int) async {
+        // Force stop any current playback
+        if let viewModel = bookViewModel, viewModel.isPlaying {
+            await viewModel.togglePlayback(
+                selectedVerse: verse,
+                numberOfVerses: numberOfVerses
+            )
+        }
+
+        isLooping = true
+
+        while isLooping {
+            if Task.isCancelled { return }
+
+            // Start new playback
+            if let viewModel = bookViewModel {
+                await viewModel.togglePlayback(
+                    selectedVerse: verse,
+                    numberOfVerses: numberOfVerses
+                )
+
+                // Wait for playback to complete
+                while viewModel.isPlaying && !Task.isCancelled {
+                    try? await Task.sleep(for: .milliseconds(100))
+                }
+
+                if Task.isCancelled { return }
+
+                // Half second pause between loops
+                try? await Task.sleep(for: .milliseconds(500))
+            }
         }
     }
 
     private func handleNextChunk() {
-        // Delegate to view model's next verse handler
-        Task {
-            await bookViewModel?.handleNextVerse()
+        guard let viewModel = bookViewModel else { return }
+
+        // Stop current playback if playing
+        if viewModel.isPlaying {
+            Task {
+                await stopPlayback()
+            }
+        }
+
+        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+        let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+
+        // Calculate next verse number
+        let nextVerseNumber = min(currentVerseNumber + numberOfVerses, maxVerses)
+
+        if let nextVerse = viewModel.currentVerses.first(where: { $0.verseNumber == nextVerseNumber }),
+           let text = nextVerse.textUthmani {
+            currentVerse = "\(nextVerseNumber). \(text)"
+
+            // Start playback of new verse
+            Task {
+                await startPlayback()
+            }
+
+            // Update UI
+            updateNowPlayingInfo()
+        }
+    }
+
+    private func handlePreviousChunk() {
+        guard let viewModel = bookViewModel else { return }
+
+        // Stop current playback if playing
+        if viewModel.isPlaying {
+            Task {
+                await stopPlayback()
+            }
+        }
+
+        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+
+        // Calculate previous verse number
+        let previousVerseNumber = max(currentVerseNumber - numberOfVerses, 1)
+
+        if let previousVerse = viewModel.currentVerses.first(where: { $0.verseNumber == previousVerseNumber }),
+           let text = previousVerse.textUthmani {
+            currentVerse = "\(previousVerseNumber). \(text)"
+
+            // Start playback of new verse
+            Task {
+                await startPlayback()
+            }
+
+            // Update UI
+            updateNowPlayingInfo()
         }
     }
 
