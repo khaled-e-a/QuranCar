@@ -26,9 +26,21 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     ) {
         self.interfaceController = interfaceController
 
-        // Initialize view model if needed
-        if bookViewModel == nil {
-            bookViewModel = BookViewModel()
+        // Use shared instance
+        bookViewModel = BookViewModel.shared
+        if let viewModel = bookViewModel {
+            print("CarPlay: Using shared BookViewModel instance: \(ObjectIdentifier(viewModel))")
+        }
+
+        // Load initial data
+        Task {
+            try? await bookViewModel?.loadQuranData()
+
+            // Update local state from BookViewModel
+            if let firstVerse = bookViewModel?.currentVerses.first,
+               let text = firstVerse.textUthmani {
+                currentVerse = "\(firstVerse.verseNumber). \(text)"
+            }
         }
 
         // Setup templates
@@ -105,23 +117,37 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func setupRootTemplate() {
-        // Create templates for each main section
+        print("CarPlay: Setting up root template")
+        if let viewModel = bookViewModel {
+            print("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+            print("CarPlay: Selected chapter: \(viewModel.selectedChapter?.nameSimple ?? "None")")
+            print("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
+        }
+
         let memorizeTemplate = createMemorizeTemplate()
         let settingsTemplate = createSettingsTemplate()
 
         rootTemplate = CPTabBarTemplate(templates: [memorizeTemplate, settingsTemplate])
+        print("CarPlay: Root template updated")
     }
 
     private func createMemorizeTemplate() -> CPListTemplate {
+        print("CarPlay: Creating memorize template")
+        print("CarPlay: Current chapter in BookViewModel: \(bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected")")
+
+        let surahDetailText = bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected"
+        print("CarPlay: Using detail text: \(surahDetailText)")
+
         let items = [
             CPListItem(
                 text: "Select Surah",
-                detailText: bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected",
+                detailText: surahDetailText,
                 image: UIImage(systemName: "book.fill"),
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
                 item.handler = { [weak self] _, _ in
+                    print("CarPlay: Select Surah item tapped")
                     self?.showSurahSelection()
                 }
             },
@@ -165,15 +191,22 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
         ]
 
-        let section = CPListSection(items: items)
-        return CPListTemplate(title: "Memorize", sections: [section])
+        print("CarPlay: Created memorize template with surah: \(surahDetailText)")
+        return CPListTemplate(title: "Memorize", sections: [CPListSection(items: items)])
     }
 
     private func showSurahSelection() {
-        guard let viewModel = bookViewModel else { return }
+        print("CarPlay: Showing surah selection")
+        guard let viewModel = bookViewModel else {
+            print("CarPlay: ERROR - No BookViewModel available")
+            return
+        }
+        print("CarPlay: BookViewModel instance in showSurahSelection: \(ObjectIdentifier(viewModel))")
+        print("CarPlay: Number of chapters available: \(viewModel.chapters.count)")
 
         let items = viewModel.chapters.map { chapter in
-            CPListItem(
+            print("CarPlay: Creating item for chapter: \(chapter.nameSimple)")
+            return CPListItem(
                 text: chapter.nameSimple,
                 detailText: "Verses: \(chapter.versesCount)",
                 image: UIImage(systemName: "book"),
@@ -181,15 +214,19 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryType: .none
             ).then { item in
                 item.handler = { [weak self] _, _ in
+                    print("CarPlay: Chapter selected: \(chapter.nameSimple)")
                     self?.handleChapterSelection(chapter)
                 }
             }
         }
 
+        print("CarPlay: Created \(items.count) chapter items")
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: "Select Surah", sections: [section])
 
+        print("CarPlay: Pushing surah selection template")
         interfaceController?.pushTemplate(template, animated: true)
+        print("CarPlay: Surah selection template pushed")
     }
 
     private func showVerseSelection() {
@@ -296,26 +333,49 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     // MARK: - Selection Handlers
 
     private func handleChapterSelection(_ chapter: ChapterEntity) {
+        print("CarPlay: Starting chapter selection for: \(chapter.nameSimple)")
+        print("CarPlay: Current BookViewModel instance: \(ObjectIdentifier(bookViewModel!))")
+        print("CarPlay: Current UI state before update - detailText: \(bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected")")
+
         Task {
             do {
-                // Match BookView's implementation exactly
+                print("CarPlay: Setting selectedChapter")
                 bookViewModel?.selectedChapter = chapter
-                try await bookViewModel?.loadQuranData()
-                numberOfVerses = 3
+                print("CarPlay: Selected chapter is now: \(bookViewModel?.selectedChapter?.nameSimple ?? "None")")
 
-                // Update current verse to first verse of chapter
+                print("CarPlay: Loading Quran data")
+                try await bookViewModel?.loadQuranData()
+                print("CarPlay: Quran data loaded")
+
+                numberOfVerses = 3
+                print("CarPlay: Set numberOfVerses to 3")
+
                 if let firstVerse = bookViewModel?.currentVerses.first,
                    let text = firstVerse.textUthmani {
                     currentVerse = "\(firstVerse.verseNumber). \(text)"
+                    print("CarPlay: Updated currentVerse to: \(currentVerse)")
                 }
 
-                // Pop back to main screen
                 await MainActor.run {
+                    print("CarPlay: Updating UI")
+                    updateNowPlayingInfo()
+                    print("CarPlay: Updated now playing info")
+
+                    // Create new template with updated state
+                    let newMemorizeTemplate = createMemorizeTemplate()
+                    print("CarPlay: Created new template with chapter: \(bookViewModel?.selectedChapter?.nameSimple ?? "None")")
+
                     interfaceController?.popTemplate(animated: true)
-                    setupRootTemplate()
+                    print("CarPlay: Popped template")
+
+                    // Update root template with new memorize template
+                    rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, createSettingsTemplate()])
+                    interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+                    print("CarPlay: Set new root template")
                 }
+                print("CarPlay: Chapter selection complete")
             } catch {
-                print("Error loading chapter data: \(error)")
+                print("CarPlay: Error during chapter selection: \(error)")
             }
         }
     }
@@ -366,7 +426,20 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private func observePlaybackState() {
         bookViewModel?.$isPlaying
             .sink { [weak self] isPlaying in
+                print("CarPlay: Playback state changed - isPlaying: \(isPlaying)")
                 self?.updatePlaybackState(isPlaying: isPlaying)
+            }
+            .store(in: &cancellables)
+
+        bookViewModel?.$selectedChapter
+            .sink { [weak self] chapter in
+                print("CarPlay: Chapter changed in BookViewModel to: \(chapter?.nameSimple ?? "None")")
+                if let viewModel = self?.bookViewModel {
+                    print("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+                }
+                Task { @MainActor in
+                    self?.setupRootTemplate()
+                }
             }
             .store(in: &cancellables)
     }
@@ -390,15 +463,27 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func updateNowPlayingInfo() {
-        guard let viewModel = bookViewModel else { return }
+        print("CarPlay: Updating now playing info")
+        guard let viewModel = bookViewModel else {
+            print("CarPlay: ERROR - No BookViewModel available for now playing info")
+            return
+        }
 
         // Update the now playing info using MPNowPlayingInfoCenter
         var nowPlayingInfo = [String: Any]()
-        nowPlayingInfo[MPMediaItemPropertyTitle] = viewModel.selectedChapter?.nameSimple ?? "Unknown Surah"
-        nowPlayingInfo[MPMediaItemPropertyArtist] = viewModel.selectedReciter?.translatedName ?? "Unknown Reciter"
-        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = "Verse \(viewModel.currentVerseNumber)"
+
+        let title = viewModel.selectedChapter?.nameSimple ?? "Unknown Surah"
+        let artist = viewModel.selectedReciter?.translatedName ?? "Unknown Reciter"
+        let albumTitle = "Verse \(viewModel.currentVerseNumber)"
+
+        print("CarPlay: Setting now playing info - Title: \(title), Artist: \(artist), Album: \(albumTitle)")
+
+        nowPlayingInfo[MPMediaItemPropertyTitle] = title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = artist
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = albumTitle
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        print("CarPlay: Now playing info updated")
     }
 
     private func setupRemoteCommandCenter() {

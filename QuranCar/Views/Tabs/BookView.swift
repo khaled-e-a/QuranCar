@@ -19,7 +19,7 @@ class NavigatorHolder: ObservableObject {
 }
 
 struct BookView: View {
-    @StateObject private var viewModel = BookViewModel()
+    @StateObject private var viewModel = BookViewModel.shared
     @State private var selectedVerse: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     @State private var numberOfVerses: Int = 5
     @State private var showingVersesList = false
@@ -29,6 +29,10 @@ struct BookView: View {
     @State private var showingRecitersList = false
     @State private var isLooping: Bool = true
     @State private var currentPlaybackTask: Task<Void, Never>?
+
+    init() {
+        print("BookView: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+    }
 
     private var toVerse: String {
         let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
@@ -63,6 +67,21 @@ struct BookView: View {
         ZStack {
             mainContent
                 .blur(radius: showingNumberSelector ? 3 : 0)
+                .onChange(of: viewModel.selectedChapter) { chapter in
+                    print("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
+                    if let chapter = chapter {
+                        Task {
+                            print("BookView: Updating UI for new chapter")
+                            await viewModel.loadQuranData()
+
+                            if let firstVerse = viewModel.currentVerses.first,
+                               let text = firstVerse.textUthmani {
+                                selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                                print("BookView: Updated selected verse to: \(selectedVerse)")
+                            }
+                        }
+                    }
+                }
 
             numberSelectorOverlay
         }
@@ -506,15 +525,21 @@ extension BookView {
 // MARK: - BookView Actions
 extension BookView {
     private func handleChapterSelection(_ chapter: ChapterEntity) {
+        print("BookView: Selecting chapter: \(chapter.nameSimple)")
         Task {
+            print("BookView: Setting selectedChapter")
             viewModel.selectedChapter = chapter
+            print("BookView: Loading Quran data")
             await viewModel.loadQuranData()
             numberOfVerses = 3
+            print("BookView: Set numberOfVerses to 3")
 
             if let firstVerse = viewModel.currentVerses.first,
                let text = firstVerse.textUthmani {
                 selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                print("BookView: Updated selectedVerse to: \(selectedVerse)")
             }
+            print("BookView: Chapter selection complete")
         }
     }
 

@@ -9,7 +9,17 @@ import Foundation
 import Combine
 
 class BookViewModel: ObservableObject {
-    @Published var selectedChapter: ChapterEntity?
+    static let shared = BookViewModel()
+
+    @Published var selectedChapter: ChapterEntity? {
+        willSet {
+            print("BookViewModel: About to set selectedChapter to: \(newValue?.nameSimple ?? "None")")
+            print("BookViewModel: Called from: \(Thread.callStackSymbols[1])")
+        }
+        didSet {
+            print("BookViewModel: selectedChapter changed to: \(selectedChapter?.nameSimple ?? "None")")
+        }
+    }
     @Published var currentVerses: [VerseEntity] = []
     @Published var isLoading = false
     @Published var error: Error?
@@ -62,6 +72,9 @@ class BookViewModel: ObservableObject {
     }
 
     func loadQuranData() async {
+        print("BookViewModel: Starting loadQuranData")
+        print("BookViewModel: Current chapter: \(selectedChapter?.nameSimple ?? "None")")
+
         // Prevent multiple simultaneous loading operations
         guard !isLoading else { return }
 
@@ -89,6 +102,9 @@ class BookViewModel: ObservableObject {
         }
 
         isLoading = false
+
+        print("BookViewModel: Finished loadQuranData")
+        print("BookViewModel: Verses loaded: \(currentVerses.count)")
     }
 
     func loadChapters() async {
