@@ -136,10 +136,12 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
     private func createMemorizeTemplate() -> CPListTemplate {
         print("CarPlay: Creating memorize template")
-        print("CarPlay: Current chapter in BookViewModel: \(bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected")")
 
+        // Get current state for display
         let surahDetailText = bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected"
-        print("CarPlay: Using detail text: \(surahDetailText)")
+        let verseDetailText = currentVerse.isEmpty ? "Not Selected" : currentVerse
+
+        print("CarPlay: Using surah: \(surahDetailText), verse: \(verseDetailText)")
 
         let items = [
             CPListItem(
@@ -157,7 +159,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
             CPListItem(
                 text: "Select Starting Verse",
-                detailText: currentVerse.isEmpty ? "Not Selected" : currentVerse,
+                detailText: verseDetailText,  // Use the local state
                 image: UIImage(systemName: "text.quote"),
                 accessoryImage: nil,
                 accessoryType: .none
@@ -194,7 +196,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
         ]
 
-        print("CarPlay: Created memorize template with surah: \(surahDetailText)")
+        print("CarPlay: Created memorize template with verse: \(verseDetailText)")
         return CPListTemplate(title: "Memorize", sections: [CPListSection(items: items)])
     }
 
@@ -234,26 +236,43 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func showVerseSelection() {
-        guard let viewModel = bookViewModel else { return }
+        print("CarPlay: Showing verse selection")
+        guard let viewModel = bookViewModel else {
+            print("CarPlay: ERROR - No BookViewModel available")
+            return
+        }
+        print("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
+
+        // Only show verses if we have them
+        if viewModel.currentVerses.isEmpty {
+            print("CarPlay: No verses available")
+            return
+        }
 
         let items = viewModel.currentVerses.map { verse in
-            CPListItem(
+            print("CarPlay: Creating item for verse: \(verse.verseNumber)")
+            return CPListItem(
                 text: "\(verse.verseNumber). \(verse.textUthmani ?? "")",
-                detailText: "", // Remove translation as it's not available
+                detailText: "",
                 image: UIImage(systemName: "text.quote"),
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
                 item.handler = { [weak self] _, _ in
+                    print("CarPlay: Verse selected: \(verse.verseNumber)")
                     self?.handleVerseSelection(verse)
                 }
             }
         }
 
+        print("CarPlay: Created \(items.count) verse items")
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: "Select Verse", sections: [section])
 
+        print("CarPlay: Pushing verse selection template")
+        isShowingSubTemplate = true
         interfaceController?.pushTemplate(template, animated: true)
+        print("CarPlay: Verse selection template pushed")
     }
 
     private func showNumberOfVersesSelection() {
@@ -387,19 +406,53 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func handleVerseSelection(_ verse: VerseEntity) {
+        print("CarPlay: Starting verse selection for verse \(verse.verseNumber)")
+
         if let text = verse.textUthmani {
-            currentVerse = "\(verse.verseNumber). \(text)"
+            let verseText = "\(verse.verseNumber). \(text)"
 
-            // Update number of verses if needed
-            let maxVerses = Int(bookViewModel?.selectedChapter?.versesCount ?? 1)
-            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
-            if numberOfVerses > remainingVerses {
-                numberOfVerses = remainingVerses
+            // Update both local and shared state
+            currentVerse = verseText
+            print("CarPlay: Set current verse to: \(currentVerse)")
+
+            if let viewModel = bookViewModel {
+                // Update shared state
+                viewModel.currentVerseNumber = Int(verse.verseNumber)
+                viewModel.selectedVerseText = verseText
+                print("CarPlay: Updated shared verse text to: \(verseText)")
+
+                // Update number of verses if needed
+                let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+                let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
+                if numberOfVerses > remainingVerses {
+                    numberOfVerses = remainingVerses
+                    print("CarPlay: Adjusted number of verses to: \(numberOfVerses)")
+                }
+
+                // Create new template with updated state
+                let newMemorizeTemplate = createMemorizeTemplate()
+                let settingsTemplate = createSettingsTemplate()
+                print("CarPlay: Created new templates with updated verse")
+
+                // Pop and update root template
+                if isShowingSubTemplate {
+                    print("CarPlay: Popping verse selection template")
+                    interfaceController?.popTemplate(animated: true) { _, _ in
+                        print("CarPlay: Template popped, updating root")
+                        self.isShowingSubTemplate = false
+                        self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                        self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                        print("CarPlay: Root template updated with new verse")
+                    }
+                } else {
+                    print("CarPlay: Directly updating root template")
+                    rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+                }
+
+                // Update now playing info
+                updateNowPlayingInfo()
             }
-
-            // Pop back and refresh
-            interfaceController?.popTemplate(animated: true)
-            setupRootTemplate()
         }
     }
 
@@ -473,6 +526,51 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 Task { @MainActor in
                     self?.setupRootTemplate()
                 }
+            }
+            .store(in: &cancellables)
+
+        // Add verse number observation
+        bookViewModel?.$currentVerseNumber
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] verseNumber in
+                print("CarPlay: Verse number changed to: \(verseNumber)")
+                guard let self = self,
+                      let viewModel = self.bookViewModel,
+                      let verse = viewModel.currentVerses.first(where: { $0.verseNumber == verseNumber }),
+                      let text = verse.textUthmani else { return }
+
+                self.currentVerse = "\(verseNumber). \(text)"
+                print("CarPlay: Updated current verse to: \(self.currentVerse)")
+
+                Task { @MainActor in
+                    self.setupRootTemplate()
+                    self.updateNowPlayingInfo()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Update selected verse text observation
+        bookViewModel?.$selectedVerseText
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] verseText in
+                print("CarPlay: Selected verse text changed to: \(verseText)")
+                guard let self = self else { return }
+
+                self.currentVerse = verseText
+                print("CarPlay: Updated current verse to: \(verseText)")
+
+                // Create new template with updated state
+                let newMemorizeTemplate = self.createMemorizeTemplate()
+                let settingsTemplate = self.createSettingsTemplate()
+                print("CarPlay: Created new templates with updated verse")
+
+                // Update root template
+                self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                print("CarPlay: Root template updated with new verse")
+
+                // Update now playing info
+                self.updateNowPlayingInfo()
             }
             .store(in: &cancellables)
     }

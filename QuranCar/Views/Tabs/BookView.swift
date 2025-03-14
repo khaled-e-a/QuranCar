@@ -67,6 +67,10 @@ struct BookView: View {
         ZStack {
             mainContent
                 .blur(radius: showingNumberSelector ? 3 : 0)
+                .onChange(of: viewModel.selectedVerseText) { verseText in
+                    print("BookView: Detected verse text change to: \(verseText)")
+                    selectedVerse = verseText
+                }
                 .onChange(of: viewModel.selectedChapter) { chapter in
                     print("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
                     if let chapter = chapter {
@@ -544,14 +548,20 @@ extension BookView {
     }
 
     private func handleVerseSelection(_ verse: VerseEntity) {
+        print("BookView: Selecting verse: \(verse.verseNumber)")
         if let text = verse.textUthmani {
-            selectedVerse = "\(verse.verseNumber). \(text)"
+            let verseText = "\(verse.verseNumber). \(text)"
+            selectedVerse = verseText
+            viewModel.currentVerseNumber = Int(verse.verseNumber)
+            viewModel.selectedVerseText = verseText  // Update shared verse text
+            print("BookView: Updated selected verse to: \(selectedVerse)")
 
             let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
             let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
 
             if numberOfVerses >= remainingVerses {
                 numberOfVerses = 1
+                print("BookView: Adjusted number of verses to: \(numberOfVerses)")
             }
         }
     }
