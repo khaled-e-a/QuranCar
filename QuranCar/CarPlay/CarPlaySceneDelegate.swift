@@ -135,15 +135,36 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func createMemorizeTemplate() -> CPListTemplate {
-        print("CarPlay: Creating memorize template")
-
         // Get current state for display
         let surahDetailText = bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected"
         let verseDetailText = currentVerse.isEmpty ? "Not Selected" : currentVerse
+        let isPlaying = bookViewModel?.isPlaying ?? false
+        let isPreparingAudio = bookViewModel?.isPreparingAudio ?? false
 
-        print("CarPlay: Using surah: \(surahDetailText), verse: \(verseDetailText)")
+        print("CarPlay: Creating template - Playing: \(isPlaying), Preparing: \(isPreparingAudio)")
 
         let items = [
+            CPListItem(
+                text: getPlayButtonText(isPlaying: isPlaying, isPreparing: isPreparingAudio),
+                detailText: getPlayButtonDetail(isPlaying: isPlaying, isPreparing: isPreparingAudio),
+                image: getPlayButtonImage(isPlaying: isPlaying, isPreparing: isPreparingAudio),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    Task {
+                        if isPlaying {
+                            print("CarPlay: Stopping playback")
+                            await self?.stopPlayback()
+                        } else if !isPreparingAudio {
+                            print("CarPlay: Starting playback")
+                            await self?.startPlayback()
+                        }
+                    }
+                }
+                item.isEnabled = !isPreparingAudio
+            },
+
             CPListItem(
                 text: "Select Surah",
                 detailText: surahDetailText,
@@ -179,25 +200,41 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 item.handler = { [weak self] _, _ in
                     self?.showNumberOfVersesSelection()
                 }
-            },
-
-            CPListItem(
-                text: "Start Memorizing",
-                detailText: bookViewModel?.isPlaying ?? false ? "Playing" : "Tap to Start",
-                image: UIImage(systemName: "play.circle.fill"),
-                accessoryImage: nil,
-                accessoryType: .none
-            ).then { item in
-                item.handler = { [weak self] _, _ in
-                    Task {
-                        await self?.startPlayback()
-                    }
-                }
             }
         ]
 
         print("CarPlay: Created memorize template with verse: \(verseDetailText)")
         return CPListTemplate(title: "Memorize", sections: [CPListSection(items: items)])
+    }
+
+    private func getPlayButtonText(isPlaying: Bool, isPreparing: Bool) -> String {
+        if isPreparing {
+            return "Preparing..."
+        } else if isPlaying {
+            return "Stop Memorizing"
+        } else {
+            return "Start Memorizing"
+        }
+    }
+
+    private func getPlayButtonDetail(isPlaying: Bool, isPreparing: Bool) -> String {
+        if isPreparing {
+            return "Loading audio..."
+        } else if isPlaying {
+            return "Playing..."
+        } else {
+            return "Tap to Start"
+        }
+    }
+
+    private func getPlayButtonImage(isPlaying: Bool, isPreparing: Bool) -> UIImage? {
+        if isPreparing {
+            return UIImage(systemName: "hourglass")
+        } else if isPlaying {
+            return UIImage(systemName: "stop.circle.fill")
+        } else {
+            return UIImage(systemName: "play.circle.fill")
+        }
     }
 
     private func showSurahSelection() {
@@ -622,6 +659,28 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 print("CarPlay: Root template updated with new number")
             }
             .store(in: &cancellables)
+
+        // Add observation for audio preparation state
+        bookViewModel?.$isPreparingAudio
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isPreparing in
+                print("CarPlay: Audio preparation state changed: \(isPreparing)")
+                Task { @MainActor in
+                    guard let self = self else { return }
+
+                    let updatedMemorizeTemplate = self.createMemorizeTemplate()
+                    let updatedSettingsTemplate = self.createSettingsTemplate()
+                    self.rootTemplate = CPTabBarTemplate(templates: [
+                        updatedMemorizeTemplate,
+                        updatedSettingsTemplate
+                    ])
+
+                    if let rootTemplate = self.rootTemplate {
+                        try? await self.interfaceController?.setRootTemplate(rootTemplate, animated: true)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func updatePlaybackState(isPlaying: Bool) {
@@ -718,31 +777,56 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Start new playback loop
         currentPlaybackTask = Task {
-            await playWithLooping(
-                verse: currentVerse,
-                numberOfVerses: numberOfVerses
-            )
+            do {
+                try await playWithLooping(
+                    verse: currentVerse,
+                    numberOfVerses: numberOfVerses
+                )
+            } catch {
+                print("CarPlay: Error during playback: \(error)")
+            }
+
+            // Always update UI after attempt, regardless of success/failure
+            let updatedMemorizeTemplate = createMemorizeTemplate()
+            let updatedSettingsTemplate = createSettingsTemplate()
+            rootTemplate = CPTabBarTemplate(templates: [updatedMemorizeTemplate, updatedSettingsTemplate])
+            try? await interfaceController?.setRootTemplate(rootTemplate!, animated: true)
         }
     }
 
     private func stopPlayback() async {
+        print("CarPlay: Stopping playback and loop")
         // Stop the loop and playback
         isLooping = false
         currentPlaybackTask?.cancel()
         currentPlaybackTask = nil
 
         if let viewModel = bookViewModel {
-            await viewModel.togglePlayback(
-                selectedVerse: currentVerse,
-                numberOfVerses: numberOfVerses
-            )
+            do {
+                // Create new task to handle the throws
+                try await Task {
+                    try await viewModel.togglePlayback(
+                        selectedVerse: currentVerse,
+                        numberOfVerses: numberOfVerses
+                    )
+                }.value
+
+                // Force UI update to show start button
+                let newMemorizeTemplate = createMemorizeTemplate()
+                let settingsTemplate = createSettingsTemplate()
+                rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                try await interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+                print("CarPlay: Updated UI to show start button")
+            } catch {
+                print("CarPlay: Error stopping playback: \(error)")
+            }
         }
     }
 
-    private func playWithLooping(verse: String, numberOfVerses: Int) async {
+    private func playWithLooping(verse: String, numberOfVerses: Int) async throws {
         // Force stop any current playback
         if let viewModel = bookViewModel, viewModel.isPlaying {
-            await viewModel.togglePlayback(
+            try await viewModel.togglePlayback(
                 selectedVerse: verse,
                 numberOfVerses: numberOfVerses
             )
@@ -755,20 +839,20 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
             // Start new playback
             if let viewModel = bookViewModel {
-                await viewModel.togglePlayback(
+                try await viewModel.togglePlayback(
                     selectedVerse: verse,
                     numberOfVerses: numberOfVerses
                 )
 
                 // Wait for playback to complete
                 while viewModel.isPlaying && !Task.isCancelled {
-                    try? await Task.sleep(for: .milliseconds(100))
+                    try await Task.sleep(for: .milliseconds(100))
                 }
 
                 if Task.isCancelled { return }
 
                 // Half second pause between loops
-                try? await Task.sleep(for: .milliseconds(500))
+                try await Task.sleep(for: .milliseconds(500))
             }
         }
     }

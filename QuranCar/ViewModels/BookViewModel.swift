@@ -31,6 +31,7 @@ class BookViewModel: ObservableObject {
     @Published var currentVerseNumber: Int = 1
     @Published var selectedVerseText: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     @Published var numberOfVerses: Int = 3
+    @Published var isPreparingAudio = false  // Add new state for audio preparation
 
     private let apiService: QuranAPIService
     private let dataStore: QuranDataStore
@@ -275,38 +276,44 @@ class BookViewModel: ObservableObject {
         isLoading = false
     }
 
-    func togglePlayback(selectedVerse: String, numberOfVerses: Int) async {
+    func togglePlayback(selectedVerse: String, numberOfVerses: Int) async throws {
         print("BookViewModel: Toggle playback called")
         print("BookViewModel: Selected verse: \(selectedVerse)")
         print("BookViewModel: Number of verses: \(numberOfVerses)")
-        print("BookViewModel: Current audio files available: \(currentAudioFiles.count)")
 
         if audioManager.isPlaying {
             print("BookViewModel: Stopping playback")
             audioManager.stopPlayback()
             isPlaying = false
         } else {
+            // Set preparing state at start
+            isPreparingAudio = true
+
+            // Use defer to ensure we clear the preparing state
+            defer {
+                isPreparingAudio = false
+                print("BookViewModel: Audio preparation completed")
+            }
+
             do {
                 let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
                 let endVerseNumber = currentVerseNumber + numberOfVerses - 1
                 print("BookViewModel: Playing verses from \(currentVerseNumber) to \(endVerseNumber)")
 
-                // Prepare audio if not already prepared
-                if !audioManager.isPlaying {
-                    print("BookViewModel: Preparing audio files")
-                    try await audioManager.prepareAudio(
-                        audioFiles: currentAudioFiles,
-                        startVerse: currentVerseNumber,
-                        endVerse: endVerseNumber
-                    )
-                }
+                // Prepare audio if needed
+                print("BookViewModel: Preparing audio files")
+                try await audioManager.prepareAudio(
+                    audioFiles: currentAudioFiles,
+                    startVerse: currentVerseNumber,
+                    endVerse: endVerseNumber
+                )
 
                 print("BookViewModel: Starting playback")
                 audioManager.startPlayback()
                 isPlaying = true
             } catch {
                 print("BookViewModel: Error during playback: \(error)")
-                self.error = error
+                throw error
             }
         }
     }
@@ -326,10 +333,15 @@ class BookViewModel: ObservableObject {
 
             // Start new playback
             if let text = previousVerse.textUthmani {
-                await togglePlayback(
-                    selectedVerse: "\(previousVerseNumber). \(text)",
-                    numberOfVerses: 1
-                )
+                do {
+                    try await togglePlayback(
+                        selectedVerse: "\(previousVerseNumber). \(text)",
+                        numberOfVerses: 1
+                    )
+                } catch {
+                    self.error = error
+                    print("Error during previous verse playback: \(error)")
+                }
             }
         }
     }
@@ -349,10 +361,15 @@ class BookViewModel: ObservableObject {
 
             // Start new playback
             if let text = nextVerse.textUthmani {
-                await togglePlayback(
-                    selectedVerse: "\(nextVerseNumber). \(text)",
-                    numberOfVerses: 1
-                )
+                do {
+                    try await togglePlayback(
+                        selectedVerse: "\(nextVerseNumber). \(text)",
+                        numberOfVerses: 1
+                    )
+                } catch {
+                    self.error = error
+                    print("Error during next verse playback: \(error)")
+                }
             }
         }
     }

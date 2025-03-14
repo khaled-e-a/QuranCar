@@ -476,10 +476,14 @@ extension BookView {
             currentPlaybackTask = nil
 
             Task {
-                await viewModel.togglePlayback(
-                    selectedVerse: selectedVerse,
-                    numberOfVerses: viewModel.numberOfVerses
-                )
+                do {
+                    try await viewModel.togglePlayback(
+                        selectedVerse: selectedVerse,
+                        numberOfVerses: viewModel.numberOfVerses
+                    )
+                } catch {
+                    print("Error during playback toggle: \(error)")
+                }
             }
         } else {
             // Start new playback loop
@@ -496,10 +500,15 @@ extension BookView {
     private func playWithLooping(verse: String, numberOfVerses: Int) async {
         // Force stop any current playback
         if viewModel.isPlaying {
-            await viewModel.togglePlayback(
-                selectedVerse: selectedVerse,
-                numberOfVerses: numberOfVerses
-            )
+            do {
+                try await viewModel.togglePlayback(
+                    selectedVerse: selectedVerse,
+                    numberOfVerses: numberOfVerses
+                )
+            } catch {
+                print("Error stopping current playback: \(error)")
+                return
+            }
         }
 
         isLooping = true
@@ -508,10 +517,16 @@ extension BookView {
             if Task.isCancelled { return }
 
             // Start new playback
-            await viewModel.togglePlayback(
-                selectedVerse: verse,
-                numberOfVerses: numberOfVerses
-            )
+            do {
+                try await viewModel.togglePlayback(
+                    selectedVerse: verse,
+                    numberOfVerses: numberOfVerses
+                )
+            } catch {
+                print("Error during looped playback: \(error)")
+                isLooping = false
+                return
+            }
 
             // Wait for playback to complete
             while viewModel.isPlaying && !Task.isCancelled {
