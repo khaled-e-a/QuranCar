@@ -105,7 +105,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func setupRootTemplate() {
-        // Create templates for each tab
+        // Create templates for each main section
         let memorizeTemplate = createMemorizeTemplate()
         let settingsTemplate = createSettingsTemplate()
 
@@ -113,37 +113,254 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func createMemorizeTemplate() -> CPListTemplate {
-        let section = CPListSection(items: [
+        let items = [
             CPListItem(
-                text: "Current Memorization",
-                detailText: getCurrentMemorizationDetails(),
-                image: UIImage(systemName: "book.fill")
-            )
-        ])
+                text: "Select Surah",
+                detailText: bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected",
+                image: UIImage(systemName: "book.fill"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.showSurahSelection()
+                }
+            },
 
+            CPListItem(
+                text: "Select Starting Verse",
+                detailText: currentVerse.isEmpty ? "Not Selected" : currentVerse,
+                image: UIImage(systemName: "text.quote"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.showVerseSelection()
+                }
+            },
+
+            CPListItem(
+                text: "Number of Verses",
+                detailText: "\(numberOfVerses)",
+                image: UIImage(systemName: "number.circle"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.showNumberOfVersesSelection()
+                }
+            },
+
+            CPListItem(
+                text: "Start Memorizing",
+                detailText: bookViewModel?.isPlaying ?? false ? "Playing" : "Tap to Start",
+                image: UIImage(systemName: "play.circle.fill"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    Task {
+                        await self?.startPlayback()
+                    }
+                }
+            }
+        ]
+
+        let section = CPListSection(items: items)
         return CPListTemplate(title: "Memorize", sections: [section])
     }
 
-    private func createSettingsTemplate() -> CPListTemplate {
-        let section = CPListSection(items: [
-            CPListItem(
-                text: "Number of Verses",
-                detailText: "3", // Default value since numberOfVerses isn't directly accessible
-                image: UIImage(systemName: "number")
-            ),
-            CPListItem(
-                text: "Selected Reciter",
-                detailText: bookViewModel?.selectedReciter?.translatedName ?? "Default",
-                image: UIImage(systemName: "person.wave.2")
-            )
-        ])
+    private func showSurahSelection() {
+        guard let viewModel = bookViewModel else { return }
 
+        let items = viewModel.chapters.map { chapter in
+            CPListItem(
+                text: chapter.nameSimple,
+                detailText: "Verses: \(chapter.versesCount)",
+                image: UIImage(systemName: "book"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.handleChapterSelection(chapter)
+                }
+            }
+        }
+
+        let section = CPListSection(items: items)
+        let template = CPListTemplate(title: "Select Surah", sections: [section])
+
+        interfaceController?.pushTemplate(template, animated: true)
+    }
+
+    private func showVerseSelection() {
+        guard let viewModel = bookViewModel else { return }
+
+        let items = viewModel.currentVerses.map { verse in
+            CPListItem(
+                text: "\(verse.verseNumber). \(verse.textUthmani ?? "")",
+                detailText: "", // Remove translation as it's not available
+                image: UIImage(systemName: "text.quote"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.handleVerseSelection(verse)
+                }
+            }
+        }
+
+        let section = CPListSection(items: items)
+        let template = CPListTemplate(title: "Select Verse", sections: [section])
+
+        interfaceController?.pushTemplate(template, animated: true)
+    }
+
+    private func showNumberOfVersesSelection() {
+        guard let viewModel = bookViewModel else { return }
+
+        // Calculate max verses remaining from current verse
+        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+        let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
+        let remainingVerses = maxVerses - currentVerseNumber + 1
+
+        // Create number options like in BookView
+        let numbers = [1, 3, 5, 7, remainingVerses]
+            .filter { $0 <= remainingVerses }
+            .distinct()
+            .sorted()
+
+        let items = numbers.map { number in
+            CPListItem(
+                text: "\(number) Verse\(number > 1 ? "s" : "")",
+                detailText: nil,
+                image: UIImage(systemName: "\(number).circle"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.handleNumberSelection(number)
+                }
+            }
+        }
+
+        let section = CPListSection(items: items)
+        let template = CPListTemplate(title: "Number of Verses", sections: [section])
+
+        interfaceController?.pushTemplate(template, animated: true)
+    }
+
+    private func createSettingsTemplate() -> CPListTemplate {
+        guard let viewModel = bookViewModel else { return CPListTemplate(title: "Settings", sections: []) }
+
+        let items = [
+            CPListItem(
+                text: "Select Reciter",
+                detailText: viewModel.selectedReciter?.translatedName ?? "Not Selected",
+                image: UIImage(systemName: "person.wave.2"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.showReciterSelection()
+                }
+            }
+        ]
+
+        let section = CPListSection(items: items)
         return CPListTemplate(title: "Settings", sections: [section])
     }
 
-    private func getCurrentMemorizationDetails() -> String {
-        guard let viewModel = bookViewModel else { return "Not configured" }
-        return "\(viewModel.selectedChapter?.nameSimple ?? "No surah") - Verse \(viewModel.currentVerseNumber)"
+    private func showReciterSelection() {
+        guard let viewModel = bookViewModel else { return }
+
+        let items = viewModel.reciters.map { reciter in
+            CPListItem(
+                text: reciter.translatedName,
+                detailText: reciter.style,
+                image: UIImage(systemName: "person.wave.2"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.handler = { [weak self] _, _ in
+                    self?.handleReciterSelection(reciter)
+                }
+            }
+        }
+
+        let section = CPListSection(items: items)
+        let template = CPListTemplate(title: "Select Reciter", sections: [section])
+
+        interfaceController?.pushTemplate(template, animated: true)
+    }
+
+    // MARK: - Selection Handlers
+
+    private func handleChapterSelection(_ chapter: ChapterEntity) {
+        Task {
+            do {
+                // Match BookView's implementation exactly
+                bookViewModel?.selectedChapter = chapter
+                try await bookViewModel?.loadQuranData()
+                numberOfVerses = 3
+
+                // Update current verse to first verse of chapter
+                if let firstVerse = bookViewModel?.currentVerses.first,
+                   let text = firstVerse.textUthmani {
+                    currentVerse = "\(firstVerse.verseNumber). \(text)"
+                }
+
+                // Pop back to main screen
+                await MainActor.run {
+                    interfaceController?.popTemplate(animated: true)
+                    setupRootTemplate()
+                }
+            } catch {
+                print("Error loading chapter data: \(error)")
+            }
+        }
+    }
+
+    private func handleVerseSelection(_ verse: VerseEntity) {
+        if let text = verse.textUthmani {
+            currentVerse = "\(verse.verseNumber). \(text)"
+
+            // Update number of verses if needed
+            let maxVerses = Int(bookViewModel?.selectedChapter?.versesCount ?? 1)
+            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
+            if numberOfVerses > remainingVerses {
+                numberOfVerses = remainingVerses
+            }
+
+            // Pop back and refresh
+            interfaceController?.popTemplate(animated: true)
+            setupRootTemplate()
+        }
+    }
+
+    private func handleNumberSelection(_ number: Int) {
+        numberOfVerses = number
+
+        // Pop back and refresh
+        interfaceController?.popTemplate(animated: true)
+        setupRootTemplate()
+    }
+
+    private func handleReciterSelection(_ reciter: ReciterEntity) {
+        bookViewModel?.selectedReciter = reciter
+
+        Task {
+            do {
+                try await bookViewModel?.loadQuranData()
+
+                // Pop back and refresh
+                await MainActor.run {
+                    interfaceController?.popTemplate(animated: true)
+                    setupRootTemplate()
+                }
+            } catch {
+                print("Error loading reciter data: \(error)")
+            }
+        }
     }
 
     private func observePlaybackState() {
@@ -372,5 +589,19 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         didFailToLoadInterfaceController error: Error
     ) {
         print("CarPlay failed to load: \(error.localizedDescription)")
+    }
+}
+
+// Helper extension for array uniqueness
+extension Sequence where Element: Hashable {
+    func distinct() -> [Element] {
+        Array(Set(self))
+    }
+}
+
+extension CPListItem {
+    func then(_ configure: (CPListItem) -> Void) -> CPListItem {
+        configure(self)
+        return self
     }
 }
