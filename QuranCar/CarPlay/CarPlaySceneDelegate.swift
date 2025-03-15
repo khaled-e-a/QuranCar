@@ -6,9 +6,12 @@ import MediaPlayer
 class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var interfaceController: CPInterfaceController?
     private var nowPlayingTemplate: CPNowPlayingTemplate?
-    private var rootTemplate: CPTabBarTemplate?
+    private var rootTemplate: CPTemplate?
     private var bookViewModel: BookViewModel?
     private var cancellables = Set<AnyCancellable>()
+
+    // Disable enabling for selection in the current version
+    private var isEnabled = false
 
     // Add state for looping
     private var isLooping: Bool = true
@@ -127,10 +130,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             print("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
         }
 
-        let memorizeTemplate = createMemorizeTemplate()
-        let settingsTemplate = createSettingsTemplate()
-
-        rootTemplate = CPTabBarTemplate(templates: [memorizeTemplate, settingsTemplate])
+        // Use memorize template directly as root
+        rootTemplate = createMemorizeTemplate()
+        interfaceController?.setRootTemplate(rootTemplate!, animated: true)
         print("CarPlay: Root template updated")
     }
 
@@ -140,10 +142,13 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         let verseDetailText = currentVerse.isEmpty ? "Not Selected" : currentVerse
         let isPlaying = bookViewModel?.isPlaying ?? false
         let isPreparingAudio = bookViewModel?.isPreparingAudio ?? false
+        let reciterName = bookViewModel?.selectedReciter?.translatedName ?? "Not Selected"
 
         print("CarPlay: Creating template - Playing: \(isPlaying), Preparing: \(isPreparingAudio)")
 
-        let items = [
+        // Create a single section with all items
+        let section = CPListSection(items: [
+            // Playback control
             CPListItem(
                 text: getPlayButtonText(isPlaying: isPlaying, isPreparing: isPreparingAudio),
                 detailText: getPlayButtonDetail(isPlaying: isPlaying, isPreparing: isPreparingAudio),
@@ -165,31 +170,36 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 item.isEnabled = !isPreparingAudio
             },
 
+            // Surah selection
             CPListItem(
-                text: "Select Surah",
+                text: "Surah",
                 detailText: surahDetailText,
                 image: UIImage(systemName: "book.fill"),
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     print("CarPlay: Select Surah item tapped")
                     self?.showSurahSelection()
                 }
             },
 
+            // Verse selection
             CPListItem(
-                text: "Select Starting Verse",
-                detailText: verseDetailText,  // Use the local state
+                text: "Starting Verse",
+                detailText: verseDetailText,
                 image: UIImage(systemName: "text.quote"),
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     self?.showVerseSelection()
                 }
             },
 
+            // Number of verses
             CPListItem(
                 text: "Number of Verses",
                 detailText: "\(numberOfVerses)",
@@ -197,14 +207,30 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     self?.showNumberOfVersesSelection()
                 }
-            }
-        ]
+            },
 
-        print("CarPlay: Created memorize template with verse: \(verseDetailText)")
-        return CPListTemplate(title: "Memorize", sections: [CPListSection(items: items)])
+            // Reciter selection
+            CPListItem(
+                text: "Reciter",
+                detailText: reciterName,
+                image: UIImage(systemName: "person.wave.2"),
+                accessoryImage: nil,
+                accessoryType: .none
+            ).then { item in
+                item.isEnabled = isEnabled
+                item.handler = { [weak self] _, _ in
+                    self?.showReciterSelection()
+                }
+            }
+        ])
+
+        // Create template with single section
+        let template = CPListTemplate(title: "Memorize", sections: [section])
+        return template
     }
 
     private func getPlayButtonText(isPlaying: Bool, isPreparing: Bool) -> String {
@@ -255,6 +281,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     print("CarPlay: Chapter selected: \(chapter.nameSimple)")
                     self?.handleChapterSelection(chapter)
@@ -264,7 +291,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         print("CarPlay: Created \(items.count) chapter items")
         let section = CPListSection(items: items)
-        let template = CPListTemplate(title: "Select Surah", sections: [section])
+        let template = CPListTemplate(title: "Surah", sections: [section])
 
         print("CarPlay: Pushing surah selection template")
         isShowingSubTemplate = true  // Set flag before pushing
@@ -295,6 +322,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     print("CarPlay: Verse selected: \(verse.verseNumber)")
                     self?.handleVerseSelection(verse)
@@ -304,7 +332,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         print("CarPlay: Created \(items.count) verse items")
         let section = CPListSection(items: items)
-        let template = CPListTemplate(title: "Select Verse", sections: [section])
+        let template = CPListTemplate(title: "Starting Verse", sections: [section])
 
         print("CarPlay: Pushing verse selection template")
         isShowingSubTemplate = true
@@ -334,6 +362,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     self?.handleNumberSelection(number)
                 }
@@ -344,27 +373,6 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         let template = CPListTemplate(title: "Number of Verses", sections: [section])
 
         interfaceController?.pushTemplate(template, animated: true)
-    }
-
-    private func createSettingsTemplate() -> CPListTemplate {
-        guard let viewModel = bookViewModel else { return CPListTemplate(title: "Settings", sections: []) }
-
-        let items = [
-            CPListItem(
-                text: "Select Reciter",
-                detailText: viewModel.selectedReciter?.translatedName ?? "Not Selected",
-                image: UIImage(systemName: "person.wave.2"),
-                accessoryImage: nil,
-                accessoryType: .none
-            ).then { item in
-                item.handler = { [weak self] _, _ in
-                    self?.showReciterSelection()
-                }
-            }
-        ]
-
-        let section = CPListSection(items: items)
-        return CPListTemplate(title: "Settings", sections: [section])
     }
 
     private func showReciterSelection() {
@@ -378,6 +386,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 accessoryImage: nil,
                 accessoryType: .none
             ).then { item in
+                item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
                     self?.handleReciterSelection(reciter)
                 }
@@ -385,7 +394,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         }
 
         let section = CPListSection(items: items)
-        let template = CPListTemplate(title: "Select Reciter", sections: [section])
+        let template = CPListTemplate(title: "Reciter", sections: [section])
 
         interfaceController?.pushTemplate(template, animated: true)
     }
@@ -468,7 +477,6 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 // Create new template with updated state
                 let newMemorizeTemplate = createMemorizeTemplate()
-                let settingsTemplate = createSettingsTemplate()
                 print("CarPlay: Created new templates with updated verse")
 
                 // Pop and update root template
@@ -477,13 +485,13 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                     interfaceController?.popTemplate(animated: true) { _, _ in
                         print("CarPlay: Template popped, updating root")
                         self.isShowingSubTemplate = false
-                        self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                        self.rootTemplate = newMemorizeTemplate
                         self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
                         print("CarPlay: Root template updated with new verse")
                     }
                 } else {
                     print("CarPlay: Directly updating root template")
-                    rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    rootTemplate = newMemorizeTemplate
                     interfaceController?.setRootTemplate(rootTemplate!, animated: true)
                 }
 
@@ -507,7 +515,6 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
             // Create new template with updated state
             let newMemorizeTemplate = createMemorizeTemplate()
-            let settingsTemplate = createSettingsTemplate()
             print("CarPlay: Created new templates with updated number")
 
             // Pop and update root template
@@ -516,13 +523,13 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 interfaceController?.popTemplate(animated: true) { _, _ in
                     print("CarPlay: Template popped, updating root")
                     self.isShowingSubTemplate = false
-                    self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    self.rootTemplate = newMemorizeTemplate
                     self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
                     print("CarPlay: Root template updated with new number")
                 }
             } else {
                 print("CarPlay: Directly updating root template")
-                rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                rootTemplate = newMemorizeTemplate
                 interfaceController?.setRootTemplate(rootTemplate!, animated: true)
             }
         }
@@ -571,11 +578,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                     // Create new template with updated state
                     let newMemorizeTemplate = self.createMemorizeTemplate()
-                    let settingsTemplate = self.createSettingsTemplate()
                     print("CarPlay: Created new template with chapter: \(chapter?.nameSimple ?? "None")")
 
                     // Just update the root template directly without popping
-                    self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                    self.rootTemplate = newMemorizeTemplate
                     self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
                     print("CarPlay: Set new root template for chapter change")
                 }
@@ -625,11 +631,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 // Create new template with updated state
                 let newMemorizeTemplate = self.createMemorizeTemplate()
-                let settingsTemplate = self.createSettingsTemplate()
                 print("CarPlay: Created new templates with updated verse")
 
                 // Update root template
-                self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                self.rootTemplate = newMemorizeTemplate
                 self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
                 print("CarPlay: Root template updated with new verse")
 
@@ -650,11 +655,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 // Create new template with updated state
                 let newMemorizeTemplate = self.createMemorizeTemplate()
-                let settingsTemplate = self.createSettingsTemplate()
                 print("CarPlay: Created new templates with updated number")
 
                 // Update root template
-                self.rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
+                self.rootTemplate = newMemorizeTemplate
                 self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
                 print("CarPlay: Root template updated with new number")
             }
@@ -666,18 +670,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             .sink { [weak self] isPreparing in
                 print("CarPlay: Audio preparation state changed: \(isPreparing)")
                 Task { @MainActor in
-                    guard let self = self else { return }
-
-                    let updatedMemorizeTemplate = self.createMemorizeTemplate()
-                    let updatedSettingsTemplate = self.createSettingsTemplate()
-                    self.rootTemplate = CPTabBarTemplate(templates: [
-                        updatedMemorizeTemplate,
-                        updatedSettingsTemplate
-                    ])
-
-                    if let rootTemplate = self.rootTemplate {
-                        try? await self.interfaceController?.setRootTemplate(rootTemplate, animated: true)
-                    }
+                    await self?.updateRootTemplate()
                 }
             }
             .store(in: &cancellables)
@@ -786,36 +779,26 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 print("CarPlay: Error during playback: \(error)")
             }
 
-            // Always update UI after attempt, regardless of success/failure
-            let updatedMemorizeTemplate = createMemorizeTemplate()
-            let updatedSettingsTemplate = createSettingsTemplate()
-            rootTemplate = CPTabBarTemplate(templates: [updatedMemorizeTemplate, updatedSettingsTemplate])
-            try? await interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+            // Update UI after attempt
+            await updateRootTemplate()
         }
     }
 
     private func stopPlayback() async {
         print("CarPlay: Stopping playback and loop")
-        // Stop the loop and playback
         isLooping = false
         currentPlaybackTask?.cancel()
         currentPlaybackTask = nil
 
         if let viewModel = bookViewModel {
             do {
-                // Create new task to handle the throws
-                try await Task {
-                    try await viewModel.togglePlayback(
-                        selectedVerse: currentVerse,
-                        numberOfVerses: numberOfVerses
-                    )
-                }.value
+                try await viewModel.togglePlayback(
+                    selectedVerse: currentVerse,
+                    numberOfVerses: numberOfVerses
+                )
 
-                // Force UI update to show start button
-                let newMemorizeTemplate = createMemorizeTemplate()
-                let settingsTemplate = createSettingsTemplate()
-                rootTemplate = CPTabBarTemplate(templates: [newMemorizeTemplate, settingsTemplate])
-                try await interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+                // Update UI
+                await updateRootTemplate()
                 print("CarPlay: Updated UI to show start button")
             } catch {
                 print("CarPlay: Error stopping playback: \(error)")
@@ -938,6 +921,11 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         didFailToLoadInterfaceController error: Error
     ) {
         print("CarPlay failed to load: \(error.localizedDescription)")
+    }
+
+    private func updateRootTemplate() async {
+        rootTemplate = createMemorizeTemplate()
+        try? await interfaceController?.setRootTemplate(rootTemplate!, animated: true)
     }
 }
 
