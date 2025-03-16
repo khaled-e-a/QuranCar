@@ -20,7 +20,7 @@ struct RecitersListView: View {
                                     Text(reciter.translatedName ?? "")
                                         .font(.system(size: 17, weight: .regular))
                                         .foregroundColor(Color.textBody)
-                                    Text(reciter.reciterName ?? "")
+                                    Text(reciter.style ?? "")
                                         .font(.system(size: 15, weight: .regular))
                                         .foregroundColor(Color.textBodySubtle)
                                 }
