@@ -3,6 +3,7 @@ import NoorUI
 
 struct MainView: View {
     @State private var selectedTab = Tab.memorize
+    @State private var showingCoachMarks = false
 
     var body: some View {
         NavigationView {
@@ -18,15 +19,23 @@ struct MainView: View {
                     BookView()
                         .tag(Tab.memorize)
 
-                    SettingsView()
+                    SettingsView(selectedTab: $selectedTab)
                         .tag(Tab.settings)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             .background(Color.background1) // Updated from Color(hex:)
             .navigationBarHidden(true)  // Hide the navigation bar
+            .overlay {
+                if showingCoachMarks {
+                    CoachMarkView(showCoachMarks: $showingCoachMarks)
+                }
+            }
         }
         .navigationViewStyle(.stack)  // Prevent split view on iPad
+        .onReceive(NotificationCenter.default.publisher(for: .showCoachMarks)) { _ in
+            showingCoachMarks = true
+        }
     }
 }
 
@@ -117,4 +126,8 @@ enum Tab {
 
 #Preview {
     MainView()
+}
+
+extension Notification.Name {
+    static let showCoachMarks = Notification.Name("showCoachMarks")
 }

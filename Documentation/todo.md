@@ -4,3 +4,5 @@
 - [x] Write tests for the APIs
 - [ ] Add privacy policy
 - [ ] Add onboarding tutorial
+- [ ] Change QuranCar to Quran Car everywhere
+- [ ] Remove QuranKit library

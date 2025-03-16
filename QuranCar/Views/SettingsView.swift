@@ -3,6 +3,9 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var storeManager = StoreManager.shared
     @State private var showingThankYou = false
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = true
+    @State private var showingOnboarding = false
+    @Binding var selectedTab: Tab
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -15,10 +18,37 @@ struct SettingsView: View {
                 ComingSoonCard()
                     .padding(.horizontal)
 
-                // Privacy Policy Section
+                // Tutorial Section
                 VStack(spacing: 0) {
+                    Button(action: {
+                        showingOnboarding = true
+                    }) {
+                        HStack {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(Color.textBodySubtle)
+                            Text("Restart Tutorial")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
+                            Spacer()
+                            Image(systemName: "arrow.right")
+                                .foregroundColor(Color.textBodySubtle)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color.background2)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+
+                    Divider()
+                        .background(Color.stroke1)
+
+                    // Privacy Policy Link
                     Link(destination: URL(string: "https://elm.academy/qurancar/privacy")!) {
                         HStack {
+                            Image(systemName: "lock.shield")
+                                .foregroundColor(Color.textBodySubtle)
                             Text("Privacy Policy")
                                 .font(.system(size: 17, weight: .regular))
                                 .foregroundColor(Color.textBody)
@@ -47,6 +77,17 @@ struct SettingsView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Thank you for supporting QuranCar! Your contribution helps us continue developing and improving the app.")
+        }
+        .fullScreenCover(isPresented: $showingOnboarding) {
+            OnboardingView(showOnboarding: $showingOnboarding) {
+                selectedTab = .memorize
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    NotificationCenter.default.post(
+                        name: .showCoachMarks,
+                        object: nil
+                    )
+                }
+            }
         }
     }
 }
@@ -209,6 +250,6 @@ struct FeatureRow: View {
 
 #Preview {
     NavigationView {
-        SettingsView()
+        SettingsView(selectedTab: .constant(.memorize))
     }
 }

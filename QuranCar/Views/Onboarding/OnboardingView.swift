@@ -8,15 +8,25 @@ struct OnboardingView: View {
     let pages = [
         OnboardingPage(
             title: "Welcome to QuranCar",
-            description: "Your companion for memorizing Quran while driving. Designed specifically for safe and distraction-free use with CarPlay.",
-            imageName: "car.fill",
-            accentColor: Color.primaryNormal
+            description: """
+            Your companion for memorizing Quran while driving.
+
+            Designed specifically for safe and distraction-free use with CarPlay.
+            """,
+            imageName: "quran_car_logo",
+            accentColor: Color.primaryNormal,
+            useSystemImage: false
         ),
         OnboardingPage(
             title: "Set Up Your Memorization",
-            description: "Use the app to configure your memorization settings, then connect to CarPlay to start memorizing while you drive.",
-            imageName: "gearshape.fill",
-            accentColor: Color.primaryNormal
+            description: """
+            Use the app to configure your memorization settings.
+
+            Then connect to CarPlay to start memorizing while you drive.
+            """,
+            imageName: "carplay",
+            accentColor: Color.primaryNormal,
+            useSystemImage: false
         )
     ]
 
@@ -46,34 +56,26 @@ struct OnboardingView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentPage)
 
-                // Buttons
-                VStack(spacing: 16) {
-                    Button(action: {
+                // Button
+                Button(action: {
+                    if currentPage == pages.count - 1 {
                         withAnimation {
                             showOnboarding = false
                             onCompletion()
                         }
-                    }) {
-                        Text(currentPage == pages.count - 1 ? "Get Started" : "Skip")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.primaryNormal)
-                            .cornerRadius(12)
-                    }
-
-                    if currentPage < pages.count - 1 {
-                        Button(action: {
-                            withAnimation {
-                                currentPage += 1
-                            }
-                        }) {
-                            Text("Next")
-                                .font(.system(size: 17, weight: .regular))
-                                .foregroundColor(Color.primaryNormal)
+                    } else {
+                        withAnimation {
+                            currentPage += 1
                         }
                     }
+                }) {
+                    Text(currentPage == pages.count - 1 ? "Get Started" : "Next")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.primaryNormal)
+                        .cornerRadius(12)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
@@ -87,6 +89,7 @@ struct OnboardingPage {
     let description: String
     let imageName: String
     let accentColor: Color
+    let useSystemImage: Bool
 }
 
 struct OnboardingPageView: View {
@@ -96,9 +99,17 @@ struct OnboardingPageView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: page.imageName)
-                .font(.system(size: 80))
-                .foregroundColor(page.accentColor)
+            if page.useSystemImage {
+                Image(systemName: page.imageName)
+                    .font(.system(size: 80))
+                    .foregroundColor(page.accentColor)
+            } else {
+                Image(page.imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 180, height: 180)
+                    .cornerRadius(20)
+            }
 
             VStack(spacing: 16) {
                 Text(page.title)
