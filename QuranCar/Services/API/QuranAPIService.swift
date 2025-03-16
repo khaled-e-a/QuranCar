@@ -209,39 +209,56 @@ class QuranAPIService {
     }
 
     func fetchVerseAudio(recitationId: Int, chapterNumber: Int) async throws -> [AudioFile] {
-        let url = URL(string: "\(baseURL)/recitations/\(recitationId)/by_chapter/\(chapterNumber)")!
-        var request = URLRequest(url: url)
+        var allAudioFiles: [AudioFile] = []
+        var currentPage = 1
+        let perPage = 50
 
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
-        request.addValue(clientId, forHTTPHeaderField: "x-client-id")
+        while true {
+            let url = URL(string: "\(baseURL)/recitations/\(recitationId)/by_chapter/\(chapterNumber)?page=\(currentPage)&per_page=\(perPage)")!
+            let request = try await prepareRequest(url)
 
-        print("QuranAPIService: Fetching audio files for reciter \(recitationId) chapter \(chapterNumber)")
+            print("""
+            QuranAPIService: Fetching audio files for reciter \(recitationId) chapter \(chapterNumber) - Page \(currentPage)
+            URL: \(request.url?.absoluteString ?? "")
+            Method: \(request.httpMethod ?? "GET")
+            Headers: \(request.allHTTPHeaderFields ?? [:])
+            """)
 
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            print("QuranAPIService: Audio files Response data: \(String(data: data, encoding: .utf8) ?? "")")
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                print("QuranAPIService: Audio files Response data: \(String(data: data, encoding: .utf8) ?? "")")
 
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw QuranAPIError.invalidResponse
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw QuranAPIError.invalidResponse
+                }
+
+                switch httpResponse.statusCode {
+                case 200:
+                    let response = try JSONDecoder().decode(AudioFilesResponse.self, from: data)
+                    allAudioFiles.append(contentsOf: response.audioFiles)
+
+                    // Check if there's a next page
+                    if let nextPage = response.pagination.nextPage {
+                        // Wait a short moment before fetching the next page
+                        try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
+                        currentPage = nextPage
+                    } else {
+                        print("QuranAPIService: Successfully fetched all \(allAudioFiles.count) audio files")
+                        return allAudioFiles
+                    }
+
+                case 401:
+                    print("QuranAPIService: Audio files Unauthorized")
+                    throw QuranAPIError.unauthorized
+
+                default:
+                    print("QuranAPIService: Audio files Unexpected status code: \(httpResponse.statusCode)")
+                    throw QuranAPIError.invalidResponse
+                }
+            } catch {
+                print("QuranAPIService: Network error: \(error)")
+                throw QuranAPIError.networkError(error)
             }
-
-            switch httpResponse.statusCode {
-            case 200:
-                let response = try JSONDecoder().decode(AudioFilesResponse.self, from: data)
-                print("QuranAPIService: Successfully fetched \(response.audioFiles.count) audio files")
-                return response.audioFiles
-            case 401:
-                print("QuranAPIService: Audio files Unauthorized")
-                throw QuranAPIError.unauthorized
-            default:
-                print("QuranAPIService: Audio files Unexpected status code: \(httpResponse.statusCode)")
-                throw QuranAPIError.invalidResponse
-            }
-        } catch {
-            print("QuranAPIService: Network error: \(error)")
-            throw QuranAPIError.networkError(error)
         }
     }
 }
