@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 32) {
                 // Coming Soon Section
                 ComingSoonCard()
@@ -30,10 +30,14 @@ struct SettingsView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
             }
-            .padding(.vertical)
+            .padding(.vertical, 24)
+            // Add minimum spacing at the bottom to ensure content isn't blocked by safe area
+            .padding(.bottom, 20)
         }
         .background(Color.background1)
         .navigationTitle("Settings")
+        // This ensures the scroll view takes up the full height
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

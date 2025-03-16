@@ -65,47 +65,36 @@ struct BookView: View {
 
     var body: some View {
         ZStack {
-            mainContent
-                .blur(radius: showingNumberSelector ? 3 : 0)
-                .onChange(of: viewModel.selectedVerseText) { verseText in
-                    print("BookView: Detected verse text change to: \(verseText)")
-                    selectedVerse = verseText
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    mainContent
                 }
-                .onChange(of: viewModel.selectedChapter) { chapter in
-                    print("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
-                    if let chapter = chapter {
-                        Task {
-                            print("BookView: Updating UI for new chapter")
-                            await viewModel.loadQuranData()
+                .padding(24)
+            }
+            .background(Color.background1)
+            .blur(radius: showingNumberSelector ? 3 : 0)
+            .onChange(of: viewModel.selectedVerseText) { verseText in
+                print("BookView: Detected verse text change to: \(verseText)")
+                selectedVerse = verseText
+            }
+            .onChange(of: viewModel.selectedChapter) { chapter in
+                print("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
+                if let chapter = chapter {
+                    Task {
+                        print("BookView: Updating UI for new chapter")
+                        await viewModel.loadQuranData()
 
-                            if let firstVerse = viewModel.currentVerses.first,
-                               let text = firstVerse.textUthmani {
-                                selectedVerse = "\(firstVerse.verseNumber). \(text)"
-                                print("BookView: Updated selected verse to: \(selectedVerse)")
-                            }
+                        if let firstVerse = viewModel.currentVerses.first,
+                           let text = firstVerse.textUthmani {
+                            selectedVerse = "\(firstVerse.verseNumber). \(text)"
+                            print("BookView: Updated selected verse to: \(selectedVerse)")
                         }
                     }
                 }
+            }
 
             numberSelectorOverlay
         }
-        .onChange(of: showingNumberSelector) { show in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                numberSelectorOpacity = show ? 1 : 0
-            }
-        }
-    }
-
-    private var mainContent: some View {
-        VStack(spacing: 20) {
-            surahSelectionSection
-            startingVerseSection
-            numberOfVersesSection
-            memorizationLoopSection
-            // Spacer()
-            reciterAndPlaySection
-        }
-        .padding(24)
         .navigationTitle("Memorize")
         .task {
             await viewModel.loadQuranData()
@@ -146,6 +135,23 @@ struct BookView: View {
                 onReciterSelected: handleReciterSelection
             )
         }
+        .onChange(of: showingNumberSelector) { show in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                numberSelectorOpacity = show ? 1 : 0
+            }
+        }
+    }
+
+    private var mainContent: some View {
+        VStack(spacing: 20) {
+            surahSelectionSection
+            startingVerseSection
+            numberOfVersesSection
+            memorizationLoopSection
+            reciterAndPlaySection
+        }
+        // Add minimum spacing at the bottom to ensure content isn't blocked by safe area
+        .padding(.bottom, 20)
     }
 
     private var numberSelectorOverlay: some View {
