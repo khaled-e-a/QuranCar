@@ -17,6 +17,7 @@ class AudioManager: NSObject, ObservableObject {
     override init() {
         super.init()
         setupAudioSession()
+        setupNotificationObservers()
     }
 
     func prepareAudio(audioFiles: [AudioFileEntity], startVerse: Int, endVerse: Int) async throws {
@@ -50,7 +51,14 @@ class AudioManager: NSObject, ObservableObject {
 
         // Create player with first item
         if let firstItem = playerItems.first {
-            player = AVPlayer(playerItem: firstItem)
+            let player = AVPlayer(playerItem: firstItem)
+            player.automaticallyWaitsToMinimizeStalling = false
+            player.allowsExternalPlayback = true
+
+            // Enable background playback
+            try? AVAudioSession.sharedInstance().setActive(true)
+
+            self.player = player
             setupPlayerObservers()
             print("AudioManager: Player created with first item")
         } else {
@@ -134,8 +142,18 @@ class AudioManager: NSObject, ObservableObject {
 
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            // Update audio session configuration
+            try AVAudioSession.sharedInstance().setCategory(
+                .playback,
+                mode: .default,
+                options: [.allowBluetooth, .defaultToSpeaker]
+            )
             try AVAudioSession.sharedInstance().setActive(true)
+
+            // Enable background audio
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, policy: .longFormAudio)
+
             print("AudioManager: Audio session setup successful")
         } catch {
             print("AudioManager: Failed to set up audio session: \(error)")
@@ -240,8 +258,64 @@ class AudioManager: NSObject, ObservableObject {
         }
     }
 
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInterruption),
+            name: AVAudioSession.interruptionNotification,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRouteChange),
+            name: AVAudioSession.routeChangeNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            return
+        }
+
+        switch type {
+        case .began:
+            // Audio session interrupted (e.g., phone call)
+            stopPlayback()
+        case .ended:
+            guard let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else { return }
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+            if options.contains(.shouldResume) {
+                // Interruption ended - resume playback
+                startPlayback()
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    @objc private func handleRouteChange(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+            return
+        }
+
+        switch reason {
+        case .oldDeviceUnavailable:
+            // Audio output was removed (e.g., headphones unplugged)
+            stopPlayback()
+        default:
+            break
+        }
+    }
+
     deinit {
         cleanupCurrentPlayer()
+        NotificationCenter.default.removeObserver(self)
     }
 }
 

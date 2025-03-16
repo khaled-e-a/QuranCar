@@ -15,10 +15,10 @@
 			</array>
 		</dict>
 	</array>
-	<key>QURAN_CLIENT_SECRET</key>
-	<string>$(QURAN_CLIENT_SECRET)</string>
 	<key>QURAN_CLIENT_ID</key>
 	<string>$(QURAN_CLIENT_ID)</string>
+	<key>QURAN_CLIENT_SECRET</key>
+	<string>$(QURAN_CLIENT_SECRET)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -38,5 +38,9 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

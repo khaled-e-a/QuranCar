@@ -1,8 +1,15 @@
 - [ ] The prev and next buttons in carplay should also update the selection in the book view
-- [ ] The audio should keep working in the background or when the screen is locked
-- [ ] The audio should keep working even if the app is closed
+- [x] The audio should keep working in the background or when the screen is locked
+- [x] The audio should keep working even if the app is closed
 - [x] Write tests for the APIs
 - [ ] Add privacy policy
-- [ ] Add onboarding tutorial
-- [ ] Change QuranCar to Quran Car everywhere
+- [x] Add onboarding tutorial
+- [x] Change QuranCar to Quran Car everywhere
 - [ ] Remove QuranKit library
+
+# Tests
+- [ ] Test the audio playback in the background
+- [ ] Test the audio playback when the screen is locked
+- [ ] Test the audio playback when the app is closed
+- [ ] Test the audio playback when the device is locked
+- [ ] Test the audio playback when the device is locked and the screen is off
