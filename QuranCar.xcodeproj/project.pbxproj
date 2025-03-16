@@ -380,9 +380,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		287A0B902D52F2090049E06D /* QuranCar */ = {
+		287A0B902D52F2090049E06D /* Quran Car */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCar" */;
+			buildConfigurationList = 287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "Quran Car" */;
 			buildPhases = (
 				287A0B8D2D52F2090049E06D /* Sources */,
 				287A0B8E2D52F2090049E06D /* Frameworks */,
@@ -392,7 +392,7 @@
 			);
 			dependencies = (
 			);
-			name = QuranCar;
+			name = "Quran Car";
 			packageProductDependencies = (
 				287A0BD72D52FEF90049E06D /* QuranKit */,
 				28C447652D55C1F5004A9011 /* HomeFeature */,
@@ -481,7 +481,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				287A0B902D52F2090049E06D /* QuranCar */,
+				287A0B902D52F2090049E06D /* Quran Car */,
 				287A0BA02D52F20D0049E06D /* QuranCarTests */,
 				287A0BAA2D52F20D0049E06D /* QuranCarUITests */,
 			);
@@ -573,12 +573,12 @@
 /* Begin PBXTargetDependency section */
 		287A0BA32D52F20D0049E06D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 287A0B902D52F2090049E06D /* QuranCar */;
+			target = 287A0B902D52F2090049E06D /* Quran Car */;
 			targetProxy = 287A0BA22D52F20D0049E06D /* PBXContainerItemProxy */;
 		};
 		287A0BAD2D52F20D0049E06D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 287A0B902D52F2090049E06D /* QuranCar */;
+			target = 287A0B902D52F2090049E06D /* Quran Car */;
 			targetProxy = 287A0BAC2D52F20D0049E06D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -734,7 +734,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
-				PRODUCT_NAME = "Quran Car";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = QuranCarDevelop;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -772,7 +772,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
-				PRODUCT_NAME = "Quran Car";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = QuranCarDevelop;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -869,7 +869,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "QuranCar" */ = {
+		287A0BB52D52F20D0049E06D /* Build configuration list for PBXNativeTarget "Quran Car" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				287A0BB62D52F20D0049E06D /* Debug */,

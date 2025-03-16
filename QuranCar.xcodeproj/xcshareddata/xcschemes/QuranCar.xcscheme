@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "287A0B902D52F2090049E06D"
-               BuildableName = "QuranCar.app"
-               BlueprintName = "QuranCar"
+               BuildableName = "Quran Car.app"
+               BlueprintName = "Quran Car"
                ReferencedContainer = "container:QuranCar.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -69,8 +69,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "287A0B902D52F2090049E06D"
-            BuildableName = "QuranCar.app"
-            BlueprintName = "QuranCar"
+            BuildableName = "Quran Car.app"
+            BlueprintName = "Quran Car"
             ReferencedContainer = "container:QuranCar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -89,8 +89,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "287A0B902D52F2090049E06D"
-            BuildableName = "QuranCar.app"
-            BlueprintName = "QuranCar"
+            BuildableName = "Quran Car.app"
+            BlueprintName = "Quran Car"
             ReferencedContainer = "container:QuranCar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
