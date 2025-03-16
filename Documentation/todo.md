@@ -1,4 +1,6 @@
 - [ ] The prev and next buttons in carplay should also update the selection in the book view
 - [ ] The audio should keep working in the background or when the screen is locked
 - [ ] The audio should keep working even if the app is closed
-- [ ] Write tests for the APIs
+- [x] Write tests for the APIs
+- [ ] Add privacy policy
+- [ ] Add onboarding tutorial

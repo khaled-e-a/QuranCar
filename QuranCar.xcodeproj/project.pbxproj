@@ -29,6 +29,8 @@
 		282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */; };
 		282C40B72D86A6EA00E531FD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 282C40B62D86A6EA00E531FD /* StoreKit.framework */; };
 		282C40C32D86A7A300E531FD /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C12D86A7A300E531FD /* StoreManager.swift */; };
+		282C40C72D87740500E531FD /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C52D87740500E531FD /* OnboardingView.swift */; };
+		282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C82D8775A400E531FD /* CoachMarkView.swift */; };
 		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
 		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
 		284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55542D546C1C00AE2A23 /* SettingsView.swift */; };
@@ -86,6 +88,8 @@
 		282C40B62D86A6EA00E531FD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		282C40C12D86A7A300E531FD /* StoreManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		282C40C42D8761F700E531FD /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfig.storekit; sourceTree = "<group>"; };
+		282C40C52D87740500E531FD /* OnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		282C40C82D8775A400E531FD /* CoachMarkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoachMarkView.swift; sourceTree = "<group>"; };
 		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
 		284E55542D546C1C00AE2A23 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 		2811BAC12D66E0F700A39CA3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				282C40C62D87740500E531FD /* Onboarding */,
 				286A9AD82D7A0149003600D9 /* SplashView.swift */,
 				2894A9A02D736BC500BEA2CD /* Reciters */,
 				2894A99D2D70DD5C00BEA2CD /* Components */,
@@ -237,6 +242,15 @@
 				282C40C12D86A7A300E531FD /* StoreManager.swift */,
 			);
 			path = Store;
+			sourceTree = "<group>";
+		};
+		282C40C62D87740500E531FD /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				282C40C82D8775A400E531FD /* CoachMarkView.swift */,
+				282C40C52D87740500E531FD /* OnboardingView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		287A0B882D52F2080049E06D = {
@@ -518,6 +532,7 @@
 				2811BFB32D6D82CE00A39CA3 /* AppDelegate.swift in Sources */,
 				283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */,
 				2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */,
+				282C40C72D87740500E531FD /* OnboardingView.swift in Sources */,
 				2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */,
 				286A9ADF2D7A8FF7003600D9 /* Configuration.swift in Sources */,
 				282C40B12D7CEDA700E531FD /* CarPlaySceneDelegate.swift in Sources */,
@@ -525,6 +540,7 @@
 				2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */,
 				2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */,
 				2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */,
+				282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */,
 				2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */,
 				2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */,
 				2811BFC42D6EAA9900A39CA3 /* QuranAPIService.swift in Sources */,

@@ -42,6 +42,7 @@ struct SplashView: View {
                     .offset(y: isAnimating ? 0 : 20)
             }
         }
+        .preferredColorScheme(.dark)
         .onAppear {
             withAnimation(.easeOut(duration: 0.5)) {
                 isAnimating = true
