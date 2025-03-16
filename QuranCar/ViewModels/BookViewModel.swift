@@ -11,6 +11,15 @@ import Combine
 class BookViewModel: ObservableObject {
     static let shared = BookViewModel()
 
+    private let defaults = UserDefaults.standard
+
+    private enum UserDefaultsKeys {
+        static let selectedChapterId = "selectedChapterId"
+        static let selectedVerseNumber = "selectedVerseNumber"
+        static let numberOfVerses = "numberOfVerses"
+        static let selectedReciterId = "selectedReciterId"
+    }
+
     @Published var selectedChapter: ChapterEntity? {
         willSet {
             print("BookViewModel: About to set selectedChapter to: \(newValue?.nameSimple ?? "None")")
@@ -18,6 +27,10 @@ class BookViewModel: ObservableObject {
         }
         didSet {
             print("BookViewModel: selectedChapter changed to: \(selectedChapter?.nameSimple ?? "None")")
+            // Add persistence
+            if let chapterId = selectedChapter?.id {
+                defaults.set(chapterId, forKey: UserDefaultsKeys.selectedChapterId)
+            }
         }
     }
     @Published var currentVerses: [VerseEntity] = []
@@ -25,12 +38,26 @@ class BookViewModel: ObservableObject {
     @Published var error: Error?
     @Published var chapters: [ChapterEntity] = []
     @Published var reciters: [ReciterEntity] = []
-    @Published var selectedReciter: ReciterEntity?
+    @Published var selectedReciter: ReciterEntity? {
+        didSet {
+            if let reciterId = selectedReciter?.id {
+                defaults.set(reciterId, forKey: UserDefaultsKeys.selectedReciterId)
+            }
+        }
+    }
     @Published var currentAudioFiles: [AudioFileEntity] = []
     @Published var isPlaying = false
-    @Published var currentVerseNumber: Int = 1
+    @Published var currentVerseNumber: Int = 1 {
+        didSet {
+            defaults.set(currentVerseNumber, forKey: UserDefaultsKeys.selectedVerseNumber)
+        }
+    }
     @Published var selectedVerseText: String = "1. بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
-    @Published var numberOfVerses: Int = 3
+    @Published var numberOfVerses: Int = 3 {
+        didSet {
+            defaults.set(numberOfVerses, forKey: UserDefaultsKeys.numberOfVerses)
+        }
+    }
     @Published var isPreparingAudio = false  // Add new state for audio preparation
 
     private let apiService: QuranAPIService
@@ -64,6 +91,8 @@ class BookViewModel: ObservableObject {
         Task {
             await loadQuranData()
         }
+
+        restoreSavedState()
     }
 
     var audioLoadingProgress: Double {
@@ -371,6 +400,67 @@ class BookViewModel: ObservableObject {
                     print("Error during next verse playback: \(error)")
                 }
             }
+        }
+    }
+
+    private func restoreSavedState() {
+        // Restore number of verses first as it's simple
+        numberOfVerses = defaults.integer(forKey: UserDefaultsKeys.numberOfVerses)
+        if numberOfVerses == 0 { // If no saved value
+            numberOfVerses = 3 // Default value
+        }
+
+        // Restore current verse number
+        currentVerseNumber = defaults.integer(forKey: UserDefaultsKeys.selectedVerseNumber)
+        if currentVerseNumber == 0 { // If no saved value
+            currentVerseNumber = 1 // Default value
+        }
+
+        // Load saved chapter and reciter IDs
+        let savedChapterId = defaults.integer(forKey: UserDefaultsKeys.selectedChapterId)
+        let savedReciterId = defaults.integer(forKey: UserDefaultsKeys.selectedReciterId)
+
+        // We need to load the data first before we can restore the selections
+        Task {
+            do {
+                // Load chapters and reciters
+                try await loadChaptersAndReciters()
+
+                // Restore chapter selection
+                if savedChapterId > 0 {
+                    selectedChapter = chapters.first(where: { $0.id == savedChapterId })
+                }
+
+                // Restore reciter selection
+                if savedReciterId > 0 {
+                    selectedReciter = reciters.first(where: { $0.id == savedReciterId })
+                }
+
+                // Load Quran data after restoring selections
+                await loadQuranData()
+
+                // Update verse text after data is loaded
+                if let verse = currentVerses.first(where: { $0.verseNumber == currentVerseNumber }),
+                   let text = verse.textUthmani {
+                    selectedVerseText = "\(verse.verseNumber). \(text)"
+                }
+            } catch {
+                print("Error restoring saved state: \(error)")
+                self.error = error
+            }
+        }
+    }
+
+    private func loadChaptersAndReciters() async throws {
+        // Load chapters
+        await loadChapters()
+
+        // Load reciters
+        await loadReciters()
+
+        // Check for any errors that occurred during loading
+        if let error = self.error {
+            throw error
         }
     }
 }
