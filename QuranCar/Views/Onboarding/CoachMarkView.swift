@@ -34,6 +34,19 @@ struct CoachMarkView: View {
             description: "Play, pause, or navigate between verses. The audio will automatically loop to help with memorization",
             anchor: .playbackControls,
             arrowDirection: .up
+        ),
+        CoachStep(
+            title: "CarPlay Ready!",
+            description: """
+            1. Connect your iPhone to CarPlay
+            2. Find QuranCar in CarPlay
+            3. Use steering wheel controls:
+               • Next/Previous: Change verse chunks
+               • Play/Pause: Control memorization
+            4. Audio will automatically loop to help memorization
+            """,
+            anchor: .carPlay,
+            arrowDirection: .none
         )
     ]
 
@@ -51,12 +64,20 @@ struct CoachMarkView: View {
                 if currentStep < coachSteps.count {
                     let step = coachSteps[currentStep]
 
-                    CoachMarkBubble(
-                        title: step.title,
-                        description: step.description,
-                        arrowDirection: step.arrowDirection,
-                        position: position(for: step.anchor, in: geometry)
-                    )
+                    if step.anchor == .carPlay {
+                        // Special layout for CarPlay instructions
+                        CarPlayInstructionBubble(
+                            title: step.title,
+                            description: step.description
+                        )
+                    } else {
+                        CoachMarkBubble(
+                            title: step.title,
+                            description: step.description,
+                            arrowDirection: step.arrowDirection,
+                            position: position(for: step.anchor, in: geometry)
+                        )
+                    }
                 }
 
                 // Step indicator
@@ -100,6 +121,8 @@ struct CoachMarkView: View {
             return CGPoint(x: geometry.size.width * 0.5, y: geometry.size.height * 0.8)
         case .playbackControls:
             return CGPoint(x: geometry.size.width * 0.5, y: geometry.size.height * 0.9)
+        case .carPlay:
+            return CGPoint(x: geometry.size.width * 0.5, y: geometry.size.height * 0.5)
         }
     }
 }
@@ -146,9 +169,45 @@ struct CoachMarkBubble: View {
     }
 }
 
+struct CarPlayInstructionBubble: View {
+    let title: String
+    let description: String
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "car.fill")
+                .font(.system(size: 44))
+                .foregroundColor(.white)
+
+            VStack(spacing: 16) {
+                Text(title)
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.white)
+
+                Text(description)
+                    .font(.system(size: 17))
+                    .foregroundColor(.white.opacity(0.9))
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 24)
+                    .frame(maxWidth: 320)
+            }
+
+            Text("Tap anywhere to finish")
+                .font(.system(size: 15))
+                .foregroundColor(.white.opacity(0.7))
+                .padding(.top, 8)
+        }
+        .padding(24)
+        .background(Color.primaryNormal)
+        .cornerRadius(16)
+        .padding(.horizontal, 32)
+    }
+}
+
 enum ArrowDirection {
     case up
     case down
+    case none
 }
 
 enum CoachAnchor {
@@ -157,6 +216,7 @@ enum CoachAnchor {
     case numberOfVerses
     case reciterSelector
     case playbackControls
+    case carPlay
 }
 
 struct CoachStep {

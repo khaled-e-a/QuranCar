@@ -69,7 +69,7 @@ struct SupportDevelopmentCard: View {
                 .multilineTextAlignment(.center)
 
             // Description
-            Text("Help us continue developing and improving QuranCar. Your support is greatly appreciated!")
+            Text("Help us continue developing and improving QuranCar. Jazakum Allah Khairan!")
                 .font(.system(size: 17))
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
@@ -77,9 +77,10 @@ struct SupportDevelopmentCard: View {
 
             if let product = storeManager.supportProduct {
                 if storeManager.isSubscribed {
-                    Text("Thank you for your support! ❤️")
+                    Text("Jazakum Allah Khairan for your support! ❤️")
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .background(Color.white.opacity(0.15))
