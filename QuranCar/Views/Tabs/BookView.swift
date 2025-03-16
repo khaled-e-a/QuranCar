@@ -28,6 +28,7 @@ struct BookView: View {
     @State private var showingRecitersList = false
     @State private var isLooping: Bool = true
     @State private var currentPlaybackTask: Task<Void, Never>?
+    @StateObject private var carPlayManager = CarPlayConnectionManager.shared
 
     init() {
         print("BookView: BookViewModel instance: \(ObjectIdentifier(viewModel))")
@@ -357,13 +358,13 @@ extension BookView {
                 }) {
                     Image(systemName: "backward.fill")
                         .font(.title2)
-                        .foregroundColor(isFirstVerse ? .gray : .white)
+                        .foregroundColor((isFirstVerse || carPlayManager.isConnected) ? .gray : .white)
                         .frame(width: 44, height: 44)
-                        .background(isFirstVerse ? Color.gray.opacity(0.3) : Color.primaryNormal)
+                        .background((isFirstVerse || carPlayManager.isConnected) ? Color.gray.opacity(0.3) : Color.primaryNormal)
                         .clipShape(Circle())
                         .shadow(radius: 8, y: 2)
                 }
-                .disabled(isFirstVerse)
+                .disabled(isFirstVerse || carPlayManager.isConnected)
 
                 // Play/Pause button
                 Button(action: {
@@ -372,17 +373,18 @@ extension BookView {
                     if viewModel.isLoading {
                         ProgressView()
                             .frame(width: 56, height: 56)
-                            .background(Color.primaryNormal)
+                            .background(carPlayManager.isConnected ? Color.gray.opacity(0.3) : Color.primaryNormal)
                             .clipShape(Circle())
                     } else {
                         Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
                             .font(.title)
                             .frame(width: 56, height: 56)
-                            .background(Color.primaryNormal)
-                            .foregroundColor(.white)
+                            .background(carPlayManager.isConnected ? Color.gray.opacity(0.3) : Color.primaryNormal)
+                            .foregroundColor(carPlayManager.isConnected ? .gray : .white)
                             .clipShape(Circle())
                     }
                 }
+                .disabled(carPlayManager.isConnected)
                 .shadow(radius: 8, y: 2)
 
                 // Next button
@@ -391,13 +393,13 @@ extension BookView {
                 }) {
                     Image(systemName: "forward.fill")
                         .font(.title2)
-                        .foregroundColor(isLastPossibleStartVerse ? .gray : .white)
+                        .foregroundColor((isLastPossibleStartVerse || carPlayManager.isConnected) ? .gray : .white)
                         .frame(width: 44, height: 44)
-                        .background(isLastPossibleStartVerse ? Color.gray.opacity(0.3) : Color.primaryNormal)
+                        .background((isLastPossibleStartVerse || carPlayManager.isConnected) ? Color.gray.opacity(0.3) : Color.primaryNormal)
                         .clipShape(Circle())
                         .shadow(radius: 8, y: 2)
                 }
-                .disabled(isLastPossibleStartVerse)
+                .disabled(isLastPossibleStartVerse || carPlayManager.isConnected)
             }
             .padding(.vertical, 8)
         }
@@ -550,6 +552,20 @@ extension BookView {
             viewModel.selectedChapter = chapter
             print("BookView: Loading Quran data")
             await viewModel.loadQuranData()
+
+            // Reset verse selection to first verse of the new chapter
+            if let firstVerse = viewModel.currentVerses.first,
+               let text = firstVerse.textUthmani {
+                let verseText = "\(firstVerse.verseNumber). \(text)"
+                selectedVerse = verseText
+                viewModel.currentVerseNumber = Int(firstVerse.verseNumber)
+                viewModel.selectedVerseText = verseText
+
+                // Reset number of verses to 1 or default
+                viewModel.numberOfVerses = Int(min(3, chapter.versesCount)) // Using 3 as default, adjust if needed
+                print("BookView: Reset to first verse: \(verseText)")
+            }
+
             print("BookView: Chapter selection complete")
         }
     }

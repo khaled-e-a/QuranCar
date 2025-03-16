@@ -2,31 +2,38 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        List {
-            // Coming Soon Section
-            Section {
+        ScrollView {
+            LazyVStack(spacing: 32) {
+                // Coming Soon Section
                 ComingSoonCard()
-            }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
+                    .padding(.horizontal)
 
-            // Privacy Policy Section
-            Section {
-                Link(destination: URL(string: "https://elm.academy/qurancar/privacy")!) {
-                    HStack {
-                        Text("Privacy Policy")
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(Color.textBody)
-                        Spacer()
-                        Image(systemName: "arrow.up.right")
-                            .foregroundColor(Color.textBodySubtle)
+                // Privacy Policy Section
+                VStack(spacing: 0) {
+                    Link(destination: URL(string: "https://elm.academy/qurancar/privacy")!) {
+                        HStack {
+                            Text("Privacy Policy")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
+                            Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .foregroundColor(Color.textBodySubtle)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color.background2)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
+                .cornerRadius(10)
+                .padding(.horizontal)
             }
+            .padding(.vertical)
         }
-        .navigationTitle("Settings")
-        .listStyle(.insetGrouped)
         .background(Color.background1)
+        .navigationTitle("Settings")
     }
 }
 
@@ -36,12 +43,12 @@ struct ComingSoonCard: View {
             // Icon
             Image(systemName: "sparkles")
                 .font(.system(size: 44))
-                .foregroundColor(Color(Color.textBody))
+                .foregroundColor(.white)
 
             // Title
             Text("More Features Coming Soon!")
                 .font(.system(size: 28, weight: .bold))
-                .foregroundColor(Color(Color.textBody))
+                .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
             // Features list
@@ -49,7 +56,7 @@ struct ComingSoonCard: View {
                 FeatureRow(icon: "bookmark.fill", text: "Save memorization loops")
                 FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "Track your progress")
                 FeatureRow(icon: "person.2.fill", text: "Share with friends")
-                FeatureRow(icon: "star.fill", text: "Favorite verses")
+                FeatureRow(icon: "ellipsis.circle.fill", text: "And more to come...")
             }
         }
         .frame(maxWidth: .infinity)
@@ -66,7 +73,6 @@ struct ComingSoonCard: View {
         )
         .cornerRadius(12)
         .shadow(radius: 8, y: 2)
-        .padding()
     }
 }
 
@@ -77,11 +83,11 @@ struct FeatureRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(Color(Color.background1))
+                .foregroundColor(.white)
 
             Text(text)
                 .font(.system(size: 17, weight: .regular))
-                .foregroundColor(Color(Color.textBody))
+                .foregroundColor(.white)
         }
     }
 }

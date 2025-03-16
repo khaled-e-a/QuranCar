@@ -34,6 +34,7 @@ struct ChaptersListView: View {
                                 chapter.id == selectedChapter?.id ?
                                     Color.primarySubtle : Color.clear
                             )
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(PlainButtonStyle())
 

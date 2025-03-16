@@ -80,28 +80,29 @@ struct TabButton: View {
 }
 
 struct CarPlayStatusBar: View {
+    @StateObject private var carPlayManager = CarPlayConnectionManager.shared
+
     var body: some View {
         HStack {
             Text("Quran Car")
-                .font(.system(size: 28, weight: .bold)) // H2 style
-                .foregroundColor(Color.textTitle) // Title color
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(Color.textTitle)
 
             Spacer()
 
             HStack(spacing: 4) {
-                Image(systemName: "car.fill")
-                    .foregroundColor(Color.primaryNormal) // Primary Normal
-                Text("Connected to CarPlay")
-                    .font(.system(size: 15, weight: .regular)) // Caption style
-                    .foregroundColor(Color.textBodySubtle) // Body-subtle color
+                Image(systemName: carPlayManager.isConnected ? "car.fill" : "car")
+                    .foregroundColor(carPlayManager.isConnected ? Color.primaryNormal : Color.textBodySubtle)
+                Text(carPlayManager.isConnected ? "Connected to CarPlay" : "Ready to Connect")
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(Color.textBodySubtle)
             }
         }
         .padding(.horizontal)
-        .padding(.top, 16) // Add top padding
-        .padding(.bottom, 12) // Add bottom padding
-        .frame(height: 60) // Set a fixed height
-        .background(Color.background1) // Background 1
-        // .shadow(radius: 8, y: 2)
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+        .frame(height: 60)
+        .background(Color.background1)
     }
 }
 

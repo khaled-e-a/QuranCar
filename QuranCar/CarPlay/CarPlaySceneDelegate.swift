@@ -32,6 +32,12 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     ) {
         self.interfaceController = interfaceController
 
+        // Notify connection status
+        NotificationCenter.default.post(
+            name: .CPTemplateApplicationSceneDidConnect,
+            object: nil
+        )
+
         // Use shared instance
         bookViewModel = BookViewModel.shared
         if let viewModel = bookViewModel {
@@ -69,6 +75,12 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     ) {
         self.interfaceController = nil
         cancellables.removeAll()
+
+        // Notify disconnection
+        NotificationCenter.default.post(
+            name: .CPTemplateApplicationSceneDidDisconnect,
+            object: nil
+        )
     }
 
     // MARK: - Scene Lifecycle Methods

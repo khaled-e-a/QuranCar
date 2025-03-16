@@ -7,18 +7,31 @@ struct VersesListView: View {
 
     var body: some View {
         NavigationView {
-            List(verses, id: \.id) { verse in
-                Button(action: {
-                    onVerseSelected(verse)
-                    dismiss()
-                }) {
-                    if let text = verse.textUthmani {
-                        Text("\(verse.verseNumber). \(text)".truncated(to: 50))
-                            .font(.custom("SF Arabic", size: 17))
-                            .foregroundColor(Color.textBody)
-                            .lineLimit(1)
-                            .multilineTextAlignment(.trailing)
-                            .environment(\.layoutDirection, .rightToLeft)
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(verses, id: \.id) { verse in
+                        Button(action: {
+                            onVerseSelected(verse)
+                            dismiss()
+                        }) {
+                            if let text = verse.textUthmani {
+                                Text("\(verse.verseNumber). \(text)".truncated(to: 50))
+                                    .font(.custom("SF Arabic", size: 17))
+                                    .foregroundColor(Color.textBody)
+                                    .lineLimit(1)
+                                    .multilineTextAlignment(.trailing)
+                                    .environment(\.layoutDirection, .rightToLeft)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 16)
+                                    .contentShape(Rectangle())
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                        Divider()
+                            .background(Color.stroke1)
+                            .padding(.horizontal)
                     }
                 }
             }

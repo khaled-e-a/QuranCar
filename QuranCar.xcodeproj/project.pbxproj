@@ -26,6 +26,7 @@
 		282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */; };
 		282C40AD2D7CBF9C00E531FD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 282C40AC2D7CBF9C00E531FD /* Colors.xcassets */; };
 		282C40B12D7CEDA700E531FD /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */; };
+		282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */; };
 		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
 		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
 		284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55542D546C1C00AE2A23 /* SettingsView.swift */; };
@@ -79,6 +80,7 @@
 		282C40AC2D7CBF9C00E531FD /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = Resources/Colors.xcassets; sourceTree = "<group>"; };
 		282C40AE2D7CED1D00E531FD /* QuranCar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuranCar.entitlements; sourceTree = "<group>"; };
 		282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarPlayConnectionManager.swift; sourceTree = "<group>"; };
 		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
 		284E55542D546C1C00AE2A23 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 		282C40B02D7CEDA700E531FD /* CarPlay */ = {
 			isa = PBXGroup;
 			children = (
+				282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */,
 				282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */,
 			);
 			path = CarPlay;
@@ -487,6 +490,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */,
 				2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */,
 				286A9AD92D7A0149003600D9 /* SplashView.swift in Sources */,
 				2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */,
