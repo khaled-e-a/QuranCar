@@ -241,7 +241,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         ])
 
         // Create template with single section
-        let template = CPListTemplate(title: "Memorize", sections: [section])
+        let template = CPListTemplate(title: "Memorization Settings", sections: [section])
         return template
     }
 

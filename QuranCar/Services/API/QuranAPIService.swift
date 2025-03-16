@@ -76,53 +76,60 @@ class QuranAPIService {
     }
 
     func fetchVersesByChapter(_ chapterId: Int) async throws -> [Verse] {
-        // Update URL to match the Python version
-        let url = URL(string: "\(baseURL)/verses/by_chapter/\(chapterId)")!
-        var request = URLRequest(url: url)
+        var allVerses: [Verse] = []
+        var currentPage = 1
+        let perPage = 50
 
-        // Set request method explicitly to match Python
-        request.httpMethod = "GET"
+        while true {
+            let url = URL(string: "\(baseURL)/verses/by_chapter/\(chapterId)?page=\(currentPage)&per_page=\(perPage)")!
+            let request = try await prepareRequest(url)
 
-        // Match Python headers exactly
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
-        request.addValue(clientId, forHTTPHeaderField: "x-client-id")
+            print("""
+            QuranAPIService: Fetching verses for chapter \(chapterId) - Page \(currentPage)
+            URL: \(request.url?.absoluteString ?? "")
+            Method: \(request.httpMethod ?? "GET")
+            Headers: \(request.allHTTPHeaderFields ?? [:])
+            """)
 
-        print("""
-        QuranAPIService: Fetching verses for chapter \(chapterId)
-        URL: \(request.url?.absoluteString ?? "")
-        Method: \(request.httpMethod ?? "GET")
-        Headers: \(request.allHTTPHeaderFields ?? [:])
-        """)
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
 
-        do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw QuranAPIError.invalidResponse
+                }
 
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw QuranAPIError.invalidResponse
+                print("QuranAPIService: Response status code: \(httpResponse.statusCode)")
+
+                switch httpResponse.statusCode {
+                case 200:
+                    let versesResponse = try JSONDecoder().decode(VersesResponse.self, from: data)
+
+                    // Add verses from this page to our collection
+                    allVerses.append(contentsOf: versesResponse.verses)
+
+                    if let nextPage = versesResponse.pagination.nextPage {
+                        // Wait a short moment before fetching the next page to avoid overwhelming the API
+                        try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
+                        currentPage = nextPage
+                    } else {
+                        print("QuranAPIService: Successfully fetched all \(allVerses.count) verses")
+                        return allVerses
+                    }
+
+                case 401:
+                    throw QuranAPIError.unauthorized
+
+                default:
+                    print("QuranAPIService: Unexpected status code: \(httpResponse.statusCode)")
+                    throw QuranAPIError.invalidResponse
+                }
+            } catch let error as DecodingError {
+                print("QuranAPIService: Decoding error: \(error)")
+                throw QuranAPIError.decodingError(error)
+            } catch {
+                print("QuranAPIService: Network error: \(error)")
+                throw QuranAPIError.networkError(error)
             }
-
-            print("QuranAPIService: Response status code: \(httpResponse.statusCode)")
-
-            switch httpResponse.statusCode {
-            case 200:
-                let versesResponse = try JSONDecoder().decode(VersesResponse.self, from: data)
-                print("QuranAPIService: Successfully fetched \(versesResponse.verses.count) verses")
-                return versesResponse.verses
-
-            case 401:
-                throw QuranAPIError.unauthorized
-
-            default:
-                print("QuranAPIService: Unexpected status code: \(httpResponse.statusCode)")
-                throw QuranAPIError.invalidResponse
-            }
-        } catch let error as DecodingError {
-            print("QuranAPIService: Decoding error: \(error)")
-            throw QuranAPIError.decodingError(error)
-        } catch {
-            print("QuranAPIService: Network error: \(error)")
-            throw QuranAPIError.networkError(error)
         }
     }
 
