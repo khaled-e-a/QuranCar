@@ -1,9 +1,16 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @StateObject private var storeManager = StoreManager.shared
+    @State private var showingThankYou = false
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 32) {
+                // Support Development Section
+                SupportDevelopmentCard()
+                    .padding(.horizontal)
+
                 // Coming Soon Section
                 ComingSoonCard()
                     .padding(.horizontal)
@@ -31,13 +38,114 @@ struct SettingsView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical, 24)
-            // Add minimum spacing at the bottom to ensure content isn't blocked by safe area
             .padding(.bottom, 20)
         }
         .background(Color.background1)
         .navigationTitle("Settings")
-        // This ensures the scroll view takes up the full height
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .alert("Thank You!", isPresented: $showingThankYou) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Thank you for supporting QuranCar! Your contribution helps us continue developing and improving the app.")
+        }
+    }
+}
+
+struct SupportDevelopmentCard: View {
+    @ObservedObject private var storeManager = StoreManager.shared
+    @State private var isRetrying = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            // Icon
+            Image(systemName: "heart.fill")
+                .font(.system(size: 44))
+                .foregroundColor(.white)
+
+            // Title
+            Text("Support QuranCar")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+
+            // Description
+            Text("Help us continue developing and improving QuranCar. Your support is greatly appreciated!")
+                .font(.system(size: 17))
+                .foregroundColor(.white.opacity(0.9))
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 8)
+
+            if let product = storeManager.supportProduct {
+                if storeManager.isSubscribed {
+                    Text("Thank you for your support! ❤️")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color.white.opacity(0.15))
+                        .cornerRadius(8)
+                } else {
+                    Button {
+                        Task {
+                            await storeManager.purchase()
+                        }
+                    } label: {
+                        HStack {
+                            Text("Support Development")
+                                .font(.system(size: 17, weight: .medium))
+                            Spacer()
+                            Text(product.displayPrice)
+                                .font(.system(size: 17, weight: .semibold))
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color.white.opacity(0.15))
+                        .cornerRadius(8)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            } else {
+                if isRetrying {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Button {
+                        isRetrying = true
+                        Task {
+                            await storeManager.fetchProduct()
+                            isRetrying = false
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.clockwise")
+                            Text("Retry Loading")
+                        }
+                        .foregroundColor(.white)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(24)
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.primaryNormal,
+                    Color.primaryHover
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(12)
+        .shadow(radius: 8, y: 2)
+        .onAppear {
+            if storeManager.supportProduct == nil {
+                Task {
+                    await storeManager.fetchProduct()
+                }
+            }
+        }
     }
 }
 

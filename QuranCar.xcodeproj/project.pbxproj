@@ -27,6 +27,11 @@
 		282C40AD2D7CBF9C00E531FD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 282C40AC2D7CBF9C00E531FD /* Colors.xcassets */; };
 		282C40B12D7CEDA700E531FD /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */; };
 		282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */; };
+		282C40B72D86A6EA00E531FD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 282C40B62D86A6EA00E531FD /* StoreKit.framework */; };
+		282C40B92D86A72C00E531FD /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 282C40B82D86A72C00E531FD /* StoreKitConfig.storekit */; };
+		282C40BA2D86A72C00E531FD /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 282C40B82D86A72C00E531FD /* StoreKitConfig.storekit */; };
+		282C40BB2D86A72C00E531FD /* StoreKitConfig.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 282C40B82D86A72C00E531FD /* StoreKitConfig.storekit */; };
+		282C40C32D86A7A300E531FD /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C12D86A7A300E531FD /* StoreManager.swift */; };
 		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
 		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
 		284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55542D546C1C00AE2A23 /* SettingsView.swift */; };
@@ -81,6 +86,9 @@
 		282C40AE2D7CED1D00E531FD /* QuranCar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuranCar.entitlements; sourceTree = "<group>"; };
 		282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		282C40B42D86429B00E531FD /* CarPlayConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarPlayConnectionManager.swift; sourceTree = "<group>"; };
+		282C40B62D86A6EA00E531FD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		282C40B82D86A72C00E531FD /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfig.storekit; sourceTree = "<group>"; };
+		282C40C12D86A7A300E531FD /* StoreManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
 		284E55542D546C1C00AE2A23 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -111,6 +119,7 @@
 				2811BADE2D6AC7CD00A39CA3 /* QuranViewFeature in Frameworks */,
 				28C447662D55C1F5004A9011 /* HomeFeature in Frameworks */,
 				2811BACF2D66E30300A39CA3 /* AppStructureFeature in Frameworks */,
+				282C40B72D86A6EA00E531FD /* StoreKit.framework in Frameworks */,
 				2811BABA2D66D68200A39CA3 /* AppDependencies in Frameworks */,
 				2811BAF02D6D71CC00A39CA3 /* ReadingService in Frameworks */,
 				287A0BD82D52FEF90049E06D /* QuranKit in Frameworks */,
@@ -200,6 +209,7 @@
 		2811BFC22D6EAA9800A39CA3 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				282C40C22D86A7A300E531FD /* Store */,
 				2894A9A62D73BF3B00BEA2CD /* Audio */,
 				2811BFBE2D6EAA9800A39CA3 /* API */,
 				2811BFC12D6EAA9800A39CA3 /* Storage */,
@@ -222,6 +232,14 @@
 				282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */,
 			);
 			path = CarPlay;
+			sourceTree = "<group>";
+		};
+		282C40C22D86A7A300E531FD /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				282C40C12D86A7A300E531FD /* StoreManager.swift */,
+			);
+			path = Store;
 			sourceTree = "<group>";
 		};
 		287A0B882D52F2080049E06D = {
@@ -262,6 +280,7 @@
 				287A0B982D52F20C0049E06D /* Assets.xcassets */,
 				287A0B9A2D52F20C0049E06D /* Preview Content */,
 				282C40A62D7A9FFE00E531FD /* Config.xcconfig */,
+				282C40B82D86A72C00E531FD /* StoreKitConfig.storekit */,
 			);
 			path = QuranCar;
 			sourceTree = "<group>";
@@ -342,6 +361,7 @@
 		28C447642D55C1F5004A9011 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				282C40B62D86A6EA00E531FD /* StoreKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -463,6 +483,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */,
+				282C40B92D86A72C00E531FD /* StoreKitConfig.storekit in Resources */,
 				282C40AD2D7CBF9C00E531FD /* Colors.xcassets in Resources */,
 				282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */,
 				287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */,
@@ -473,6 +494,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				282C40BA2D86A72C00E531FD /* StoreKitConfig.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +502,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				282C40BB2D86A72C00E531FD /* StoreKitConfig.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -492,6 +515,7 @@
 			files = (
 				282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */,
 				2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */,
+				282C40C32D86A7A300E531FD /* StoreManager.swift in Sources */,
 				286A9AD92D7A0149003600D9 /* SplashView.swift in Sources */,
 				2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */,
 				2811BFCC2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld in Sources */,

@@ -23,6 +23,7 @@ struct SplashView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 180, height: 180)
+                    .cornerRadius(20)
                     .scaleEffect(isAnimating ? 1.0 : 0.8)
                     .opacity(isAnimating ? 1 : 0)
 
