@@ -7,7 +7,7 @@ struct OnboardingView: View {
 
     let pages = [
         OnboardingPage(
-            title: "Welcome to QuranCar",
+            title: "Welcome to Quran Car",
             description: """
             Your companion for memorizing Quran while driving.
 

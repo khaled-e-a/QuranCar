@@ -76,7 +76,7 @@ struct SettingsView: View {
         .alert("Thank You!", isPresented: $showingThankYou) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Thank you for supporting QuranCar! Your contribution helps us continue developing and improving the app.")
+            Text("Thank you for supporting Quran Car! Your contribution helps us continue developing and improving the app.")
         }
         .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView(showOnboarding: $showingOnboarding) {
@@ -104,13 +104,13 @@ struct SupportDevelopmentCard: View {
                 .foregroundColor(.white)
 
             // Title
-            Text("Support QuranCar")
+            Text("Support Quran Car")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
             // Description
-            Text("Help us continue developing and improving QuranCar. Jazakum Allah Khairan!")
+            Text("Help us continue developing and improving Quran Car. Jazakum Allah Khairan!")
                 .font(.system(size: 17))
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
