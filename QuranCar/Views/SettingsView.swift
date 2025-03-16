@@ -93,9 +93,11 @@ struct SupportDevelopmentCard: View {
                         HStack {
                             Text("Support Development")
                                 .font(.system(size: 17, weight: .medium))
+                                .foregroundColor(.white)
                             Spacer()
                             Text(product.displayPrice)
                                 .font(.system(size: 17, weight: .semibold))
+                                .foregroundColor(.white)
                         }
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)

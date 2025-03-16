@@ -42,7 +42,7 @@ struct CustomTabBar: View {
             )
 
             TabButton(
-                title: "Settings",
+                title: "More",
                 isSelected: selectedTab == .settings,
                 action: { selectedTab = .settings }
             )
