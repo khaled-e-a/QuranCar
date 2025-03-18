@@ -6,6 +6,13 @@
 - [x] Add onboarding tutorial
 - [x] Change QuranCar to Quran Car everywhere
 - [ ] Remove QuranKit library
+- [ ] Look into how to market the app and get more users
+- [ ] Add analytics
+- [ ] Add pattern background to all views
+- [ ] Do not show tutorial if the user has already seen it
+- [x] replace carplay icon with carpaly screenshot
+- [ ] put app screenshot above carplay screenshot
+- [ ] the "from" part doesn't sync with the current verse
 
 # Tests
 - [ ] Test the audio playback in the background
