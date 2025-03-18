@@ -427,7 +427,12 @@ extension BookView {
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
            let text = targetVerse.textUthmani {
-            viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
+            print("BookView: Previous - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
+            withAnimation {
+                viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
+            }
+            print("BookView: Previous - New verse text: \(viewModel.selectedVerseText)")
+            print("BookView: Previous - New toVerse: \(toVerse)")
 
             // Stop current playback if any
             isLooping = false
@@ -457,7 +462,12 @@ extension BookView {
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
            let text = targetVerse.textUthmani {
-            viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
+            print("BookView: Next - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
+            withAnimation {
+                viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
+            }
+            print("BookView: Next - New verse text: \(viewModel.selectedVerseText)")
+            print("BookView: Next - New toVerse: \(toVerse)")
 
             // Stop current playback if any
             isLooping = false

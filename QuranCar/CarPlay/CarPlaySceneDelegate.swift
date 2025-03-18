@@ -18,7 +18,6 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var currentPlaybackTask: Task<Void, Never>?
 
     // Add state tracking
-    private var currentVerse: String = ""
     private var numberOfVerses: Int = 3
 
     // Add this property to track template state
@@ -51,7 +50,8 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             // Update local state from BookViewModel
             if let firstVerse = bookViewModel?.currentVerses.first,
                let text = firstVerse.textUthmani {
-                currentVerse = "\(firstVerse.verseNumber). \(text)"
+                bookViewModel?.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
+                bookViewModel?.currentVerseNumber = Int(firstVerse.verseNumber)
             }
         }
 
@@ -151,7 +151,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private func createMemorizeTemplate() -> CPListTemplate {
         // Get current state for display
         let surahDetailText = bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected"
-        let verseDetailText = currentVerse.isEmpty ? "Not Selected" : currentVerse
+        let verseDetailText = bookViewModel?.selectedVerseText ?? "Not Selected"
         let isPlaying = bookViewModel?.isPlaying ?? false
         let isPreparingAudio = bookViewModel?.isPreparingAudio ?? false
         let reciterName = bookViewModel?.selectedReciter?.translatedName ?? "Not Selected"
@@ -356,7 +356,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         guard let viewModel = bookViewModel else { return }
 
         // Calculate max verses remaining from current verse
-        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+        let currentVerseNumber = Int(viewModel.selectedVerseText.split(separator: ".").first ?? "1") ?? 1
         let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
         let remainingVerses = maxVerses - currentVerseNumber + 1
 
@@ -433,8 +433,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 if let firstVerse = bookViewModel?.currentVerses.first,
                    let text = firstVerse.textUthmani {
-                    currentVerse = "\(firstVerse.verseNumber). \(text)"
-                    print("CarPlay: Updated currentVerse to: \(currentVerse)")
+                    bookViewModel?.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
+                    bookViewModel?.currentVerseNumber = Int(firstVerse.verseNumber)
+                    print("CarPlay: Updated currentVerse to: \(bookViewModel?.selectedVerseText ?? "")")
                 }
 
                 await MainActor.run {
@@ -469,47 +470,41 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         if let text = verse.textUthmani {
             let verseText = "\(verse.verseNumber). \(text)"
 
-            // Update both local and shared state
-            currentVerse = verseText
-            print("CarPlay: Set current verse to: \(currentVerse)")
+            // Update shared state
+            bookViewModel?.selectedVerseText = verseText
+            bookViewModel?.currentVerseNumber = Int(verse.verseNumber)
+            print("CarPlay: Set current verse to: \(bookViewModel?.selectedVerseText ?? "")")
 
-            if let viewModel = bookViewModel {
-                // Update shared state
-                viewModel.currentVerseNumber = Int(verse.verseNumber)
-                viewModel.selectedVerseText = verseText
-                print("CarPlay: Updated shared verse text to: \(verseText)")
-
-                // Update number of verses if needed
-                let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
-                let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
-                if numberOfVerses > remainingVerses {
-                    numberOfVerses = remainingVerses
-                    print("CarPlay: Adjusted number of verses to: \(numberOfVerses)")
-                }
-
-                // Create new template with updated state
-                let newMemorizeTemplate = createMemorizeTemplate()
-                print("CarPlay: Created new templates with updated verse")
-
-                // Pop and update root template
-                if isShowingSubTemplate {
-                    print("CarPlay: Popping verse selection template")
-                    interfaceController?.popTemplate(animated: true) { _, _ in
-                        print("CarPlay: Template popped, updating root")
-                        self.isShowingSubTemplate = false
-                        self.rootTemplate = newMemorizeTemplate
-                        self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                        print("CarPlay: Root template updated with new verse")
-                    }
-                } else {
-                    print("CarPlay: Directly updating root template")
-                    rootTemplate = newMemorizeTemplate
-                    interfaceController?.setRootTemplate(rootTemplate!, animated: true)
-                }
-
-                // Update now playing info
-                updateNowPlayingInfo()
+            // Update number of verses if needed
+            let maxVerses = Int(bookViewModel?.selectedChapter?.versesCount ?? 1)
+            let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
+            if numberOfVerses > remainingVerses {
+                numberOfVerses = remainingVerses
+                print("CarPlay: Adjusted number of verses to: \(numberOfVerses)")
             }
+
+            // Create new template with updated state
+            let newMemorizeTemplate = createMemorizeTemplate()
+            print("CarPlay: Created new templates with updated verse")
+
+            // Pop and update root template
+            if isShowingSubTemplate {
+                print("CarPlay: Popping verse selection template")
+                interfaceController?.popTemplate(animated: true) { _, _ in
+                    print("CarPlay: Template popped, updating root")
+                    self.isShowingSubTemplate = false
+                    self.rootTemplate = newMemorizeTemplate
+                    self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
+                    print("CarPlay: Root template updated with new verse")
+                }
+            } else {
+                print("CarPlay: Directly updating root template")
+                rootTemplate = newMemorizeTemplate
+                interfaceController?.setRootTemplate(rootTemplate!, animated: true)
+            }
+
+            // Update now playing info
+            updateNowPlayingInfo()
         }
     }
 
@@ -611,34 +606,25 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
             .store(in: &cancellables)
 
-        // Add verse number observation
+        // Simplify verse number observation to only update UI
         bookViewModel?.$currentVerseNumber
             .receive(on: DispatchQueue.main)
             .sink { [weak self] verseNumber in
                 print("CarPlay: Verse number changed to: \(verseNumber)")
-                guard let self = self,
-                      let viewModel = self.bookViewModel,
-                      let verse = viewModel.currentVerses.first(where: { $0.verseNumber == verseNumber }),
-                      let text = verse.textUthmani else { return }
-
-                self.currentVerse = "\(verseNumber). \(text)"
-                print("CarPlay: Updated current verse to: \(self.currentVerse)")
-
                 Task { @MainActor in
-                    self.setupRootTemplate()
-                    self.updateNowPlayingInfo()
+                    self?.setupRootTemplate()
+                    self?.updateNowPlayingInfo()
                 }
             }
             .store(in: &cancellables)
 
-        // Update selected verse text observation
+        // Keep selected verse text observation for UI updates
         bookViewModel?.$selectedVerseText
             .receive(on: DispatchQueue.main)
             .sink { [weak self] verseText in
                 print("CarPlay: Selected verse text changed to: \(verseText)")
                 guard let self = self else { return }
 
-                self.currentVerse = verseText
                 print("CarPlay: Updated current verse to: \(verseText)")
 
                 // Create new template with updated state
@@ -784,7 +770,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         currentPlaybackTask = Task {
             do {
                 try await playWithLooping(
-                    verse: currentVerse,
+                    verse: viewModel.selectedVerseText,
                     numberOfVerses: numberOfVerses
                 )
             } catch {
@@ -805,7 +791,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         if let viewModel = bookViewModel {
             do {
                 try await viewModel.togglePlayback(
-                    selectedVerse: currentVerse,
+                    selectedVerse: viewModel.selectedVerseText,
                     numberOfVerses: numberOfVerses
                 )
 
@@ -862,7 +848,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
         }
 
-        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+        let currentVerseNumber = Int(viewModel.selectedVerseText.split(separator: ".").first ?? "1") ?? 1
         let maxVerses = Int(viewModel.selectedChapter?.versesCount ?? 1)
 
         // Calculate next verse number
@@ -870,7 +856,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         if let nextVerse = viewModel.currentVerses.first(where: { $0.verseNumber == nextVerseNumber }),
            let text = nextVerse.textUthmani {
-            currentVerse = "\(nextVerseNumber). \(text)"
+            // Update the shared state instead of local state
+            viewModel.selectedVerseText = "\(nextVerseNumber). \(text)"
+            viewModel.currentVerseNumber = nextVerseNumber
 
             // Start playback of new verse
             Task {
@@ -892,14 +880,16 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             }
         }
 
-        let currentVerseNumber = Int(currentVerse.split(separator: ".").first ?? "1") ?? 1
+        let currentVerseNumber = Int(viewModel.selectedVerseText.split(separator: ".").first ?? "1") ?? 1
 
         // Calculate previous verse number
         let previousVerseNumber = max(currentVerseNumber - numberOfVerses, 1)
 
         if let previousVerse = viewModel.currentVerses.first(where: { $0.verseNumber == previousVerseNumber }),
            let text = previousVerse.textUthmani {
-            currentVerse = "\(previousVerseNumber). \(text)"
+            // Update the shared state instead of local state
+            viewModel.selectedVerseText = "\(previousVerseNumber). \(text)"
+            viewModel.currentVerseNumber = previousVerseNumber
 
             // Start playback of new verse
             Task {
