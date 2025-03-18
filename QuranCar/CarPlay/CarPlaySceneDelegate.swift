@@ -40,7 +40,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         // Use shared instance
         bookViewModel = BookViewModel.shared
         if let viewModel = bookViewModel {
-            print("CarPlay: Using shared BookViewModel instance: \(ObjectIdentifier(viewModel))")
+            Logger.debug("CarPlay: Using shared BookViewModel instance: \(ObjectIdentifier(viewModel))")
         }
 
         // Load initial data
@@ -135,17 +135,17 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func setupRootTemplate() {
-        print("CarPlay: Setting up root template")
+        Logger.debug("CarPlay: Setting up root template")
         if let viewModel = bookViewModel {
-            print("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
-            print("CarPlay: Selected chapter: \(viewModel.selectedChapter?.nameSimple ?? "None")")
-            print("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
+            Logger.debug("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+            Logger.debug("CarPlay: Selected chapter: \(viewModel.selectedChapter?.nameSimple ?? "None")")
+            Logger.debug("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
         }
 
         // Use memorize template directly as root
         rootTemplate = createMemorizeTemplate()
         interfaceController?.setRootTemplate(rootTemplate!, animated: true)
-        print("CarPlay: Root template updated")
+        Logger.debug("CarPlay: Root template updated")
     }
 
     private func createMemorizeTemplate() -> CPListTemplate {
@@ -156,7 +156,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         let isPreparingAudio = bookViewModel?.isPreparingAudio ?? false
         let reciterName = bookViewModel?.selectedReciter?.translatedName ?? "Not Selected"
 
-        print("CarPlay: Creating template - Playing: \(isPlaying), Preparing: \(isPreparingAudio)")
+        Logger.debug("CarPlay: Creating template - Playing: \(isPlaying), Preparing: \(isPreparingAudio)")
 
         // Create a single section with all items
         let section = CPListSection(items: [
@@ -171,10 +171,10 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 item.handler = { [weak self] _, _ in
                     Task {
                         if isPlaying {
-                            print("CarPlay: Stopping playback")
+                            Logger.debug("CarPlay: Stopping playback")
                             await self?.stopPlayback()
                         } else if !isPreparingAudio {
-                            print("CarPlay: Starting playback")
+                            Logger.debug("CarPlay: Starting playback")
                             await self?.startPlayback()
                         }
                     }
@@ -192,7 +192,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             ).then { item in
                 item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
-                    print("CarPlay: Select Surah item tapped")
+                    Logger.debug("CarPlay: Select Surah item tapped")
                     self?.showSurahSelection()
                 }
             },
@@ -276,16 +276,16 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func showSurahSelection() {
-        print("CarPlay: Showing surah selection")
+        Logger.debug("CarPlay: Showing surah selection")
         guard let viewModel = bookViewModel else {
-            print("CarPlay: ERROR - No BookViewModel available")
+            Logger.error("CarPlay: No BookViewModel available")
             return
         }
-        print("CarPlay: BookViewModel instance in showSurahSelection: \(ObjectIdentifier(viewModel))")
-        print("CarPlay: Number of chapters available: \(viewModel.chapters.count)")
+        Logger.debug("CarPlay: BookViewModel instance in showSurahSelection: \(ObjectIdentifier(viewModel))")
+        Logger.debug("CarPlay: Number of chapters available: \(viewModel.chapters.count)")
 
         let items = viewModel.chapters.map { chapter in
-            print("CarPlay: Creating item for chapter: \(chapter.nameSimple)")
+            Logger.debug("CarPlay: Creating item for chapter: \(chapter.nameSimple)")
             return CPListItem(
                 text: chapter.nameSimple,
                 detailText: "Verses: \(chapter.versesCount)",
@@ -295,38 +295,38 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             ).then { item in
                 item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
-                    print("CarPlay: Chapter selected: \(chapter.nameSimple)")
+                    Logger.debug("CarPlay: Chapter selected: \(chapter.nameSimple)")
                     self?.handleChapterSelection(chapter)
                 }
             }
         }
 
-        print("CarPlay: Created \(items.count) chapter items")
+        Logger.debug("CarPlay: Created \(items.count) chapter items")
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: "Surah", sections: [section])
 
-        print("CarPlay: Pushing surah selection template")
-        isShowingSubTemplate = true  // Set flag before pushing
+        Logger.debug("CarPlay: Pushing surah selection template")
+        isShowingSubTemplate = true
         interfaceController?.pushTemplate(template, animated: true)
-        print("CarPlay: Surah selection template pushed")
+        Logger.debug("CarPlay: Surah selection template pushed")
     }
 
     private func showVerseSelection() {
-        print("CarPlay: Showing verse selection")
+        Logger.debug("CarPlay: Showing verse selection")
         guard let viewModel = bookViewModel else {
-            print("CarPlay: ERROR - No BookViewModel available")
+            Logger.error("CarPlay: No BookViewModel available")
             return
         }
-        print("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
+        Logger.debug("CarPlay: Current verses count: \(viewModel.currentVerses.count)")
 
         // Only show verses if we have them
         if viewModel.currentVerses.isEmpty {
-            print("CarPlay: No verses available")
+            Logger.debug("CarPlay: No verses available")
             return
         }
 
         let items = viewModel.currentVerses.map { verse in
-            print("CarPlay: Creating item for verse: \(verse.verseNumber)")
+            Logger.debug("CarPlay: Creating item for verse: \(verse.verseNumber)")
             return CPListItem(
                 text: "\(verse.verseNumber). \(verse.textUthmani ?? "")",
                 detailText: "",
@@ -336,20 +336,20 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             ).then { item in
                 item.isEnabled = isEnabled
                 item.handler = { [weak self] _, _ in
-                    print("CarPlay: Verse selected: \(verse.verseNumber)")
+                    Logger.debug("CarPlay: Verse selected: \(verse.verseNumber)")
                     self?.handleVerseSelection(verse)
                 }
             }
         }
 
-        print("CarPlay: Created \(items.count) verse items")
+        Logger.debug("CarPlay: Created \(items.count) verse items")
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: "Starting Verse", sections: [section])
 
-        print("CarPlay: Pushing verse selection template")
+        Logger.debug("CarPlay: Pushing verse selection template")
         isShowingSubTemplate = true
         interfaceController?.pushTemplate(template, animated: true)
-        print("CarPlay: Verse selection template pushed")
+        Logger.debug("CarPlay: Verse selection template pushed")
     }
 
     private func showNumberOfVersesSelection() {
@@ -414,58 +414,58 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     // MARK: - Selection Handlers
 
     private func handleChapterSelection(_ chapter: ChapterEntity) {
-        print("CarPlay: Starting chapter selection for: \(chapter.nameSimple)")
-        print("CarPlay: Current BookViewModel instance: \(ObjectIdentifier(bookViewModel!))")
-        print("CarPlay: Current UI state before update - detailText: \(bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected")")
+        Logger.debug("CarPlay: Starting chapter selection for: \(chapter.nameSimple)")
+        Logger.debug("CarPlay: Current BookViewModel instance: \(ObjectIdentifier(bookViewModel!))")
+        Logger.debug("CarPlay: Current UI state before update - detailText: \(bookViewModel?.selectedChapter?.nameSimple ?? "Not Selected")")
 
         Task {
             do {
-                print("CarPlay: Setting selectedChapter")
+                Logger.debug("CarPlay: Setting selectedChapter")
                 bookViewModel?.selectedChapter = chapter
-                print("CarPlay: Selected chapter is now: \(bookViewModel?.selectedChapter?.nameSimple ?? "None")")
+                Logger.debug("CarPlay: Selected chapter is now: \(bookViewModel?.selectedChapter?.nameSimple ?? "None")")
 
-                print("CarPlay: Loading Quran data")
+                Logger.debug("CarPlay: Loading Quran data")
                 try await bookViewModel?.loadQuranData()
-                print("CarPlay: Quran data loaded")
+                Logger.debug("CarPlay: Quran data loaded")
 
                 numberOfVerses = 3
-                print("CarPlay: Set numberOfVerses to 3")
+                Logger.debug("CarPlay: Set numberOfVerses to 3")
 
                 if let firstVerse = bookViewModel?.currentVerses.first,
                    let text = firstVerse.textUthmani {
                     bookViewModel?.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
                     bookViewModel?.currentVerseNumber = Int(firstVerse.verseNumber)
-                    print("CarPlay: Updated currentVerse to: \(bookViewModel?.selectedVerseText ?? "")")
+                    Logger.debug("CarPlay: Updated currentVerse to: \(bookViewModel?.selectedVerseText ?? "")")
                 }
 
                 await MainActor.run {
-                    print("CarPlay: Updating UI")
+                    Logger.debug("CarPlay: Updating UI")
                     updateNowPlayingInfo()
-                    print("CarPlay: Updated now playing info")
+                    Logger.debug("CarPlay: Updated now playing info")
 
                     // Only try to pop if we're showing a sub-template
                     if isShowingSubTemplate {
-                        print("CarPlay: Popping sub-template")
+                        Logger.debug("CarPlay: Popping sub-template")
                         interfaceController?.popTemplate(animated: true) { _, _ in
-                            print("CarPlay: Sub-template popped")
+                            Logger.debug("CarPlay: Sub-template popped")
                             self.isShowingSubTemplate = false
                             // Update root template after pop completes
                             self.setupRootTemplate()
                         }
                     } else {
-                        print("CarPlay: No sub-template to pop, updating root directly")
+                        Logger.debug("CarPlay: No sub-template to pop, updating root directly")
                         setupRootTemplate()
                     }
                 }
-                print("CarPlay: Chapter selection complete")
+                Logger.debug("CarPlay: Chapter selection complete")
             } catch {
-                print("CarPlay: Error during chapter selection: \(error)")
+                Logger.error("CarPlay: Error during chapter selection: \(error)")
             }
         }
     }
 
     private func handleVerseSelection(_ verse: VerseEntity) {
-        print("CarPlay: Starting verse selection for verse \(verse.verseNumber)")
+        Logger.debug("CarPlay: Starting verse selection for verse \(verse.verseNumber)")
 
         if let text = verse.textUthmani {
             let verseText = "\(verse.verseNumber). \(text)"
@@ -473,32 +473,32 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
             // Update shared state
             bookViewModel?.selectedVerseText = verseText
             bookViewModel?.currentVerseNumber = Int(verse.verseNumber)
-            print("CarPlay: Set current verse to: \(bookViewModel?.selectedVerseText ?? "")")
+            Logger.debug("CarPlay: Set current verse to: \(bookViewModel?.selectedVerseText ?? "")")
 
             // Update number of verses if needed
             let maxVerses = Int(bookViewModel?.selectedChapter?.versesCount ?? 1)
             let remainingVerses = maxVerses - Int(verse.verseNumber) + 1
             if numberOfVerses > remainingVerses {
                 numberOfVerses = remainingVerses
-                print("CarPlay: Adjusted number of verses to: \(numberOfVerses)")
+                Logger.debug("CarPlay: Adjusted number of verses to: \(numberOfVerses)")
             }
 
             // Create new template with updated state
             let newMemorizeTemplate = createMemorizeTemplate()
-            print("CarPlay: Created new templates with updated verse")
+            Logger.debug("CarPlay: Created new templates with updated verse")
 
             // Pop and update root template
             if isShowingSubTemplate {
-                print("CarPlay: Popping verse selection template")
+                Logger.debug("CarPlay: Popping verse selection template")
                 interfaceController?.popTemplate(animated: true) { _, _ in
-                    print("CarPlay: Template popped, updating root")
+                    Logger.debug("CarPlay: Template popped, updating root")
                     self.isShowingSubTemplate = false
                     self.rootTemplate = newMemorizeTemplate
                     self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                    print("CarPlay: Root template updated with new verse")
+                    Logger.debug("CarPlay: Root template updated with new verse")
                 }
             } else {
-                print("CarPlay: Directly updating root template")
+                Logger.debug("CarPlay: Directly updating root template")
                 rootTemplate = newMemorizeTemplate
                 interfaceController?.setRootTemplate(rootTemplate!, animated: true)
             }
@@ -509,33 +509,33 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func handleNumberSelection(_ number: Int) {
-        print("CarPlay: Starting number selection: \(number)")
+        Logger.debug("CarPlay: Starting number selection: \(number)")
 
         // Update both local and shared state
         numberOfVerses = number
-        print("CarPlay: Set number of verses to: \(number)")
+        Logger.debug("CarPlay: Set number of verses to: \(number)")
 
         if let viewModel = bookViewModel {
             // Update shared state
             viewModel.numberOfVerses = number
-            print("CarPlay: Updated shared number of verses to: \(number)")
+            Logger.debug("CarPlay: Updated shared number of verses to: \(number)")
 
             // Create new template with updated state
             let newMemorizeTemplate = createMemorizeTemplate()
-            print("CarPlay: Created new templates with updated number")
+            Logger.debug("CarPlay: Created new templates with updated number")
 
             // Pop and update root template
             if isShowingSubTemplate {
-                print("CarPlay: Popping number selection template")
+                Logger.debug("CarPlay: Popping number selection template")
                 interfaceController?.popTemplate(animated: true) { _, _ in
-                    print("CarPlay: Template popped, updating root")
+                    Logger.debug("CarPlay: Template popped, updating root")
                     self.isShowingSubTemplate = false
                     self.rootTemplate = newMemorizeTemplate
                     self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                    print("CarPlay: Root template updated with new number")
+                    Logger.debug("CarPlay: Root template updated with new number")
                 }
             } else {
-                print("CarPlay: Directly updating root template")
+                Logger.debug("CarPlay: Directly updating root template")
                 rootTemplate = newMemorizeTemplate
                 interfaceController?.setRootTemplate(rootTemplate!, animated: true)
             }
@@ -555,7 +555,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                     setupRootTemplate()
                 }
             } catch {
-                print("Error loading reciter data: \(error)")
+                Logger.error("Error loading reciter data: \(error)")
             }
         }
     }
@@ -564,7 +564,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         // Existing playback observation
         bookViewModel?.$isPlaying
             .sink { [weak self] isPlaying in
-                print("CarPlay: Playback state changed - isPlaying: \(isPlaying)")
+                Logger.debug("CarPlay: Playback state changed - isPlaying: \(isPlaying)")
                 self?.updatePlaybackState(isPlaying: isPlaying)
             }
             .store(in: &cancellables)
@@ -573,24 +573,24 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$selectedChapter
             .receive(on: DispatchQueue.main)
             .sink { [weak self] chapter in
-                print("CarPlay: Chapter changed in BookViewModel to: \(chapter?.nameSimple ?? "None")")
+                Logger.debug("CarPlay: Chapter changed in BookViewModel to: \(chapter?.nameSimple ?? "None")")
                 if let viewModel = self?.bookViewModel {
-                    print("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+                    Logger.debug("CarPlay: BookViewModel instance: \(ObjectIdentifier(viewModel))")
                 }
 
                 // Force a complete UI refresh when chapter changes
                 Task { @MainActor [weak self] in
                     guard let self = self else { return }
-                    print("CarPlay: Refreshing UI for chapter change")
+                    Logger.debug("CarPlay: Refreshing UI for chapter change")
 
                     // Create new template with updated state
                     let newMemorizeTemplate = self.createMemorizeTemplate()
-                    print("CarPlay: Created new template with chapter: \(chapter?.nameSimple ?? "None")")
+                    Logger.debug("CarPlay: Created new template with chapter: \(chapter?.nameSimple ?? "None")")
 
                     // Just update the root template directly without popping
                     self.rootTemplate = newMemorizeTemplate
                     self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                    print("CarPlay: Set new root template for chapter change")
+                    Logger.debug("CarPlay: Set new root template for chapter change")
                 }
             }
             .store(in: &cancellables)
@@ -599,7 +599,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$currentVerses
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                print("CarPlay: Verses updated, refreshing UI")
+                Logger.debug("CarPlay: Verses updated, refreshing UI")
                 Task { @MainActor in
                     self?.setupRootTemplate()
                 }
@@ -610,7 +610,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$currentVerseNumber
             .receive(on: DispatchQueue.main)
             .sink { [weak self] verseNumber in
-                print("CarPlay: Verse number changed to: \(verseNumber)")
+                Logger.debug("CarPlay: Verse number changed to: \(verseNumber)")
                 Task { @MainActor in
                     self?.setupRootTemplate()
                     self?.updateNowPlayingInfo()
@@ -622,19 +622,19 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$selectedVerseText
             .receive(on: DispatchQueue.main)
             .sink { [weak self] verseText in
-                print("CarPlay: Selected verse text changed to: \(verseText)")
+                Logger.debug("CarPlay: Selected verse text changed to: \(verseText)")
                 guard let self = self else { return }
 
-                print("CarPlay: Updated current verse to: \(verseText)")
+                Logger.debug("CarPlay: Updated current verse to: \(verseText)")
 
                 // Create new template with updated state
                 let newMemorizeTemplate = self.createMemorizeTemplate()
-                print("CarPlay: Created new templates with updated verse")
+                Logger.debug("CarPlay: Created new templates with updated verse")
 
                 // Update root template
                 self.rootTemplate = newMemorizeTemplate
                 self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                print("CarPlay: Root template updated with new verse")
+                Logger.debug("CarPlay: Root template updated with new verse")
 
                 // Update now playing info
                 self.updateNowPlayingInfo()
@@ -645,20 +645,20 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$numberOfVerses
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
-                print("CarPlay: Number of verses changed to: \(number)")
+                Logger.debug("CarPlay: Number of verses changed to: \(number)")
                 guard let self = self else { return }
 
                 self.numberOfVerses = number
-                print("CarPlay: Updated local number of verses to: \(number)")
+                Logger.debug("CarPlay: Updated local number of verses to: \(number)")
 
                 // Create new template with updated state
                 let newMemorizeTemplate = self.createMemorizeTemplate()
-                print("CarPlay: Created new templates with updated number")
+                Logger.debug("CarPlay: Created new templates with updated number")
 
                 // Update root template
                 self.rootTemplate = newMemorizeTemplate
                 self.interfaceController?.setRootTemplate(self.rootTemplate!, animated: true)
-                print("CarPlay: Root template updated with new number")
+                Logger.debug("CarPlay: Root template updated with new number")
             }
             .store(in: &cancellables)
 
@@ -666,7 +666,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         bookViewModel?.$isPreparingAudio
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isPreparing in
-                print("CarPlay: Audio preparation state changed: \(isPreparing)")
+                Logger.debug("CarPlay: Audio preparation state changed: \(isPreparing)")
                 Task { @MainActor in
                     await self?.updateRootTemplate()
                 }
@@ -693,9 +693,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func updateNowPlayingInfo() {
-        print("CarPlay: Updating now playing info")
+        Logger.debug("CarPlay: Updating now playing info")
         guard let viewModel = bookViewModel else {
-            print("CarPlay: ERROR - No BookViewModel available for now playing info")
+            Logger.error("CarPlay: ERROR - No BookViewModel available for now playing info")
             return
         }
 
@@ -706,14 +706,14 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         let artist = viewModel.selectedReciter?.translatedName ?? "Unknown Reciter"
         let albumTitle = "Verse \(viewModel.currentVerseNumber)"
 
-        print("CarPlay: Setting now playing info - Title: \(title), Artist: \(artist), Album: \(albumTitle)")
+        Logger.debug("CarPlay: Setting now playing info - Title: \(title), Artist: \(artist), Album: \(albumTitle)")
 
         nowPlayingInfo[MPMediaItemPropertyTitle] = title
         nowPlayingInfo[MPMediaItemPropertyArtist] = artist
         nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = albumTitle
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-        print("CarPlay: Now playing info updated")
+        Logger.debug("CarPlay: Now playing info updated")
     }
 
     private func setupRemoteCommandCenter() {
@@ -721,7 +721,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Play command
         commandCenter.playCommand.addTarget { [weak self] _ in
-            print("CarPlay: Play command received")
+            Logger.debug("CarPlay: Play command received")
             Task {
                 await self?.startPlayback()
             }
@@ -730,7 +730,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Pause command
         commandCenter.pauseCommand.addTarget { [weak self] _ in
-            print("CarPlay: Pause command received")
+            Logger.debug("CarPlay: Pause command received")
             Task {
                 await self?.stopPlayback()
             }
@@ -739,7 +739,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Next Track command (for steering wheel next)
         commandCenter.nextTrackCommand.addTarget { [weak self] _ in
-            print("CarPlay: Next track command received")
+            Logger.debug("CarPlay: Next track command received")
             Task { @MainActor in
                 self?.handleNextChunk()
             }
@@ -748,7 +748,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         // Previous Track command (for steering wheel previous)
         commandCenter.previousTrackCommand.addTarget { [weak self] _ in
-            print("CarPlay: Previous track command received")
+            Logger.debug("CarPlay: Previous track command received")
             Task { @MainActor in
                 self?.handlePreviousChunk()
             }
@@ -774,7 +774,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                     numberOfVerses: numberOfVerses
                 )
             } catch {
-                print("CarPlay: Error during playback: \(error)")
+                Logger.error("CarPlay: Error during playback: \(error)")
             }
 
             // Update UI after attempt
@@ -783,7 +783,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     }
 
     private func stopPlayback() async {
-        print("CarPlay: Stopping playback and loop")
+        Logger.debug("CarPlay: Stopping playback and loop")
         isLooping = false
         currentPlaybackTask?.cancel()
         currentPlaybackTask = nil
@@ -797,9 +797,9 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
                 // Update UI
                 await updateRootTemplate()
-                print("CarPlay: Updated UI to show start button")
+                Logger.debug("CarPlay: Updated UI to show start button")
             } catch {
-                print("CarPlay: Error stopping playback: \(error)")
+                Logger.error("CarPlay: Error stopping playback: \(error)")
             }
         }
     }
@@ -922,7 +922,7 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         _ templateApplicationScene: CPTemplateApplicationScene,
         didFailToLoadInterfaceController error: Error
     ) {
-        print("CarPlay failed to load: \(error.localizedDescription)")
+        Logger.error("CarPlay failed to load: \(error.localizedDescription)")
     }
 
     private func updateRootTemplate() async {

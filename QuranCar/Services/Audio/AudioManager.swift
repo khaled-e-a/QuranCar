@@ -36,18 +36,18 @@ class AudioManager: NSObject, ObservableObject {
             return false
         }
 
-        print("AudioManager: Found \(versesToPlay.count) verses to play in range \(startVerse) to \(endVerse)")
-        print("AudioManager: Verse keys to play: \(versesToPlay.map { $0.verseKey ?? "unknown" })")
-        print("AudioManager: URLs to download: \(versesToPlay.map { $0.url ?? "unknown" })")
+        Logger.debug("AudioManager: Found \(versesToPlay.count) verses to play in range \(startVerse) to \(endVerse)")
+        Logger.debug("AudioManager: Verse keys to play: \(versesToPlay.map { $0.verseKey ?? "unknown" })")
+        Logger.debug("AudioManager: URLs to download: \(versesToPlay.map { $0.url ?? "unknown" })")
 
         // Download files
         let urls = try await downloadAudioFiles(urls: versesToPlay.map { $0.url ?? "" })
-        print("AudioManager: Successfully downloaded \(urls.count) files")
+        Logger.debug("AudioManager: Successfully downloaded \(urls.count) files")
         self.audioFiles = urls
 
         // Create player items
         self.playerItems = urls.map { AVPlayerItem(url: $0) }
-        print("AudioManager: Created \(playerItems.count) player items")
+        Logger.debug("AudioManager: Created \(playerItems.count) player items")
 
         // Create player with first item
         if let firstItem = playerItems.first {
@@ -60,41 +60,41 @@ class AudioManager: NSObject, ObservableObject {
 
             self.player = player
             setupPlayerObservers()
-            print("AudioManager: Player created with first item")
+            Logger.debug("AudioManager: Player created with first item")
         } else {
-            print("AudioManager: Error - No player items available")
+            Logger.error("AudioManager: Error - No player items available")
         }
 
         isLoading = false
     }
 
     func startPlayback() {
-        print("AudioManager: Starting playback")
-        print("AudioManager: Current player item: \(String(describing: player?.currentItem))")
-        print("AudioManager: Total items in queue: \(playerItems.count)")
+        Logger.debug("AudioManager: Starting playback")
+        Logger.debug("AudioManager: Current player item: \(String(describing: player?.currentItem))")
+        Logger.debug("AudioManager: Total items in queue: \(playerItems.count)")
         isPlaying = true
         player?.play()
     }
 
     func stopPlayback() {
-        print("AudioManager: Stopping playback")
+        Logger.debug("AudioManager: Stopping playback")
         isPlaying = false
         player?.pause()
     }
 
     private func downloadAudioFiles(urls: [String]) async throws -> [URL] {
-        print("AudioManager: Starting download of \(urls.count) files")
+        Logger.debug("AudioManager: Starting download of \(urls.count) files")
         var downloadedFiles: [URL] = []
         let fileManager = FileManager.default
         let cacheDirectory = try fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        print("AudioManager: Cache directory: \(cacheDirectory.path)")
+        Logger.debug("AudioManager: Cache directory: \(cacheDirectory.path)")
 
         for (index, urlString) in urls.enumerated() {
             let formattedUrlString = urlString.contains("mirrors.quranicaudio") ? "https:\(urlString)" : "https://verses.quran.foundation/\(urlString)"
-            print("AudioManager: Processing URL [\(index + 1)/\(urls.count)]: \(formattedUrlString)")
+            Logger.debug("AudioManager: Processing URL [\(index + 1)/\(urls.count)]: \(formattedUrlString)")
 
             guard let url = URL(string: formattedUrlString) else {
-                print("AudioManager: Invalid URL: \(formattedUrlString)")
+                Logger.error("AudioManager: Invalid URL: \(formattedUrlString)")
                 continue
             }
 
@@ -112,31 +112,31 @@ class AudioManager: NSObject, ObservableObject {
             // Add the last component and extension back
             let fileName = "\(fileNameWithoutExtension)_\(lastComponents.last?.components(separatedBy: ".").first ?? "").\(urlExtension)"
 
-            print("AudioManager: Generated filename: \(fileName)")
+            Logger.debug("AudioManager: Generated filename: \(fileName)")
             let fileURL = cacheDirectory.appendingPathComponent(fileName)
 
             if fileManager.fileExists(atPath: fileURL.path) {
-                print("AudioManager: File already cached: \(fileName)")
+                Logger.debug("AudioManager: File already cached: \(fileName)")
                 downloadedFiles.append(fileURL)
                 downloadProgress = Double(index + 1) / Double(urls.count)
                 continue
             }
 
-            print("AudioManager: Downloading file: \(fileName)")
+            Logger.debug("AudioManager: Downloading file: \(fileName)")
             do {
                 let (downloadURL, _) = try await URLSession.shared.download(from: url)
                 try fileManager.moveItem(at: downloadURL, to: fileURL)
                 downloadedFiles.append(fileURL)
-                print("AudioManager: Successfully downloaded and cached: \(fileName)")
+                Logger.debug("AudioManager: Successfully downloaded and cached: \(fileName)")
             } catch {
-                print("AudioManager: Error downloading file \(fileName): \(error)")
+                Logger.error("AudioManager: Error downloading file \(fileName): \(error)")
                 throw error
             }
 
             downloadProgress = Double(index + 1) / Double(urls.count)
         }
 
-        print("AudioManager: Completed downloads. Total files: \(downloadedFiles.count)")
+        Logger.debug("AudioManager: Completed downloads. Total files: \(downloadedFiles.count)")
         return downloadedFiles
     }
 
@@ -154,9 +154,9 @@ class AudioManager: NSObject, ObservableObject {
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(.playback, mode: .default, policy: .longFormAudio)
 
-            print("AudioManager: Audio session setup successful")
+            Logger.debug("AudioManager: Audio session setup successful")
         } catch {
-            print("AudioManager: Failed to set up audio session: \(error)")
+            Logger.error("AudioManager: Failed to set up audio session: \(error)")
         }
     }
 
@@ -180,11 +180,11 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     private func setupPlayerObservers() {
-        print("AudioManager: Setting up observers for \(playerItems.count) items")
+        Logger.debug("AudioManager: Setting up observers for \(playerItems.count) items")
 
         // Make sure we have a valid player
         guard let player = player else {
-            print("AudioManager: No player available to setup observers")
+            Logger.error("AudioManager: No player available to setup observers")
             return
         }
 
@@ -212,15 +212,15 @@ class AudioManager: NSObject, ObservableObject {
                currentItem.duration.isValid && currentItem.duration != .indefinite,
                currentItem.duration.seconds > 0 {
                 let progress = time.seconds / currentItem.duration.seconds
-                print("AudioManager: Playback progress: \(Int(progress * 100))% of current item")
+                Logger.debug("AudioManager: Playback progress: \(Int(progress * 100))% of current item")
             }
         }
 
         // Print the queue for debugging
-        print("AudioManager: Audio queue:")
+        Logger.debug("AudioManager: Audio queue:")
         for (index, item) in playerItems.enumerated() {
             if let urlAsset = item.asset as? AVURLAsset {
-                print("AudioManager: Item \(index): \(urlAsset.url.lastPathComponent)")
+                Logger.debug("AudioManager: Item \(index): \(urlAsset.url.lastPathComponent)")
             }
         }
     }
@@ -228,15 +228,15 @@ class AudioManager: NSObject, ObservableObject {
     @objc private func playerItemDidFinish(_ notification: Notification) {
         guard let playerItem = notification.object as? AVPlayerItem,
               let currentIndex = playerItems.firstIndex(of: playerItem) else {
-            print("AudioManager: Could not identify completed item")
+            Logger.error("AudioManager: Could not identify completed item")
             return
         }
 
-        print("AudioManager: Item \(currentIndex) finished playing")
+        Logger.debug("AudioManager: Item \(currentIndex) finished playing")
         currentVerseIndex = currentIndex + 1
 
         if currentVerseIndex >= playerItems.count {
-            print("AudioManager: Reached end of playlist, resetting state")
+            Logger.debug("AudioManager: Reached end of playlist, resetting state")
             currentVerseIndex = 0
             isPlaying = false
             player?.pause()
@@ -247,13 +247,13 @@ class AudioManager: NSObject, ObservableObject {
             return
         }
 
-        print("AudioManager: Playing next item at index: \(currentVerseIndex)")
+        Logger.debug("AudioManager: Playing next item at index: \(currentVerseIndex)")
         if let nextItem = playerItems[safe: currentVerseIndex] {
             player?.replaceCurrentItem(with: nextItem)
             player?.play()
 
             if let urlAsset = nextItem.asset as? AVURLAsset {
-                print("AudioManager: Now playing: \(urlAsset.url.lastPathComponent)")
+                Logger.debug("AudioManager: Now playing: \(urlAsset.url.lastPathComponent)")
             }
         }
     }

@@ -14,6 +14,7 @@ class QuranViewController: UIViewController {
     }
 
     private func setupView() {
+        Logger.debug("QuranViewController: Setting up view")
         view.backgroundColor = UIColor(hex: "F9FAFB") // Background 1
 
         let label = UILabel()

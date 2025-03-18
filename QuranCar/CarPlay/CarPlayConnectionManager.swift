@@ -11,12 +11,12 @@ class CarPlayConnectionManager: ObservableObject {
 
     @Published var isConnected = false {
         didSet {
-            print("CarPlayConnectionManager: Connection state changed to: \(isConnected)")
+            Logger.debug("CarPlayConnectionManager: Connection state changed to: \(isConnected)")
         }
     }
 
     private init() {
-        print("CarPlayConnectionManager: Initializing")
+        Logger.debug("CarPlayConnectionManager: Initializing")
         setupNotifications()
     }
 
@@ -30,7 +30,7 @@ class CarPlayConnectionManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            print("CarPlayConnectionManager: Received connect notification")
+            Logger.debug("CarPlayConnectionManager: Received connect notification")
             self?.handleCarPlayConnection()
         }
 
@@ -40,7 +40,7 @@ class CarPlayConnectionManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            print("CarPlayConnectionManager: Received disconnect notification")
+            Logger.debug("CarPlayConnectionManager: Received disconnect notification")
             self?.handleCarPlayDisconnection()
         }
 
@@ -51,7 +51,7 @@ class CarPlayConnectionManager: ObservableObject {
             queue: .main
         ) { [weak self] notification in
             if let scene = notification.object as? CPTemplateApplicationScene {
-                print("CarPlayConnectionManager: System disconnect notification for CarPlay scene")
+                Logger.debug("CarPlayConnectionManager: System disconnect notification for CarPlay scene")
                 self?.handleCarPlayDisconnection()
             }
         }
@@ -59,14 +59,14 @@ class CarPlayConnectionManager: ObservableObject {
 
     private func handleCarPlayConnection() {
         DispatchQueue.main.async {
-            print("CarPlayConnectionManager: Setting connected state to true")
+            Logger.debug("CarPlayConnectionManager: Setting connected state to true")
             self.isConnected = true
         }
     }
 
     private func handleCarPlayDisconnection() {
         DispatchQueue.main.async {
-            print("CarPlayConnectionManager: Setting connected state to false")
+            Logger.debug("CarPlayConnectionManager: Setting connected state to false")
             self.isConnected = false
         }
     }

@@ -22,11 +22,11 @@ class BookViewModel: ObservableObject {
 
     @Published var selectedChapter: ChapterEntity? {
         willSet {
-            print("BookViewModel: About to set selectedChapter to: \(newValue?.nameSimple ?? "None")")
-            print("BookViewModel: Called from: \(Thread.callStackSymbols[1])")
+            Logger.debug("BookViewModel: About to set selectedChapter to: \(newValue?.nameSimple ?? "None")")
+            Logger.debug("BookViewModel: Called from: \(Thread.callStackSymbols[1])")
         }
         didSet {
-            print("BookViewModel: selectedChapter changed to: \(selectedChapter?.nameSimple ?? "None")")
+            Logger.debug("BookViewModel: selectedChapter changed to: \(selectedChapter?.nameSimple ?? "None")")
             // Add persistence
             if let chapterId = selectedChapter?.id {
                 defaults.set(chapterId, forKey: UserDefaultsKeys.selectedChapterId)
@@ -77,15 +77,15 @@ class BookViewModel: ObservableObject {
             .publisher(for: .audioPlaybackCompleted)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                print("BookViewModel: Received playback completed notification")
+                Logger.debug("BookViewModel: Received playback completed notification")
                 self?.isPlaying = false
             }
             .store(in: &cancellables)
 
-        print("BookViewModel: Initialized with apiService: \(apiService) and dataStore: \(dataStore)")
-        print("BookViewModel: Client ID: \(TokenManager.shared.getClientId() ?? "NOT_FOUND")")
-        print("BookViewModel: Access Token: \(TokenManager.shared.getAccessToken() ?? "NOT_FOUND")")
-        print("BookViewModel: called from \(Thread.callStackSymbols[1])")
+        Logger.debug("BookViewModel: Initialized with apiService: \(apiService) and dataStore: \(dataStore)")
+        Logger.debug("BookViewModel: Client ID: \(TokenManager.shared.getClientId() ?? "NOT_FOUND")")
+        Logger.debug("BookViewModel: Access Token: \(TokenManager.shared.getAccessToken() ?? "NOT_FOUND")")
+        Logger.debug("BookViewModel: called from \(Thread.callStackSymbols[1])")
 
         // Load initial data
         Task {
@@ -104,8 +104,8 @@ class BookViewModel: ObservableObject {
     }
 
     func loadQuranData() async {
-        print("BookViewModel: Starting loadQuranData")
-        print("BookViewModel: Current chapter: \(selectedChapter?.nameSimple ?? "None")")
+        Logger.debug("BookViewModel: Starting loadQuranData")
+        Logger.debug("BookViewModel: Current chapter: \(selectedChapter?.nameSimple ?? "None")")
 
         // Prevent multiple simultaneous loading operations
         guard !isLoading else { return }
@@ -117,15 +117,12 @@ class BookViewModel: ObservableObject {
             // Ensure we have a valid token
             await QuranAuthManager.shared.refreshTokenIfNeeded()
 
-            // Load data sequentially to avoid merge conflicts
+            // Load data sequentially
             await loadChapters()
-            // Only load verses after chapters are fully loaded
             if let chapter = selectedChapter {
                 await loadVersesByChapter(Int(chapter.id))
             }
-            // Load reciters after verses are done
             await loadReciters()
-            // Finally load audio files
             if selectedReciter != nil {
                 await loadAudioFiles()
             }
@@ -135,8 +132,8 @@ class BookViewModel: ObservableObject {
 
         isLoading = false
 
-        print("BookViewModel: Finished loadQuranData")
-        print("BookViewModel: Verses loaded: \(currentVerses.count)")
+        Logger.debug("BookViewModel: Finished loadQuranData")
+        Logger.debug("BookViewModel: Verses loaded: \(currentVerses.count)")
     }
 
     func loadChapters() async {
@@ -145,21 +142,19 @@ class BookViewModel: ObservableObject {
 
         do {
             // Try to fetch from local storage first
-            print("BookViewModel: Fetching chapters from local storage")
+            Logger.debug("BookViewModel: Fetching chapters from local storage")
             let localChapters = try await dataStore.fetchChapters()
 
             if localChapters.isEmpty {
                 // If no local data, fetch from API
                 let apiChapters = try await apiService.fetchChapters()
-                print("BookViewModel: Fetched \(apiChapters.count) chapters from API")
+                Logger.debug("BookViewModel: Fetched \(apiChapters.count) chapters from API")
                 try await dataStore.saveChapters(apiChapters)
-                // Fetch again from local storage to get managed objects
                 self.chapters = try await dataStore.fetchChapters()
-                print("BookViewModel: Fetched \(self.chapters.count) chapters from local storage")
+                Logger.debug("BookViewModel: Fetched \(self.chapters.count) chapters from local storage")
             } else {
-                // Use local data
                 self.chapters = localChapters
-                print("BookViewModel: Fetched \(self.chapters.count) chapters from local storage")
+                Logger.debug("BookViewModel: Fetched \(self.chapters.count) chapters from local storage")
             }
 
             // Set first chapter (Al-Fatiha) as default if none selected
@@ -306,12 +301,12 @@ class BookViewModel: ObservableObject {
     }
 
     func togglePlayback(selectedVerse: String, numberOfVerses: Int) async throws {
-        print("BookViewModel: Toggle playback called")
-        print("BookViewModel: Selected verse: \(selectedVerse)")
-        print("BookViewModel: Number of verses: \(numberOfVerses)")
+        Logger.debug("BookViewModel: Toggle playback called")
+        Logger.debug("BookViewModel: Selected verse: \(selectedVerse)")
+        Logger.debug("BookViewModel: Number of verses: \(numberOfVerses)")
 
         if audioManager.isPlaying {
-            print("BookViewModel: Stopping playback")
+            Logger.debug("BookViewModel: Stopping playback")
             audioManager.stopPlayback()
             isPlaying = false
         } else {
@@ -321,27 +316,27 @@ class BookViewModel: ObservableObject {
             // Use defer to ensure we clear the preparing state
             defer {
                 isPreparingAudio = false
-                print("BookViewModel: Audio preparation completed")
+                Logger.debug("BookViewModel: Audio preparation completed")
             }
 
             do {
                 let currentVerseNumber = Int(selectedVerse.split(separator: ".").first ?? "1") ?? 1
                 let endVerseNumber = currentVerseNumber + numberOfVerses - 1
-                print("BookViewModel: Playing verses from \(currentVerseNumber) to \(endVerseNumber)")
+                Logger.debug("BookViewModel: Playing verses from \(currentVerseNumber) to \(endVerseNumber)")
 
                 // Prepare audio if needed
-                print("BookViewModel: Preparing audio files")
+                Logger.debug("BookViewModel: Preparing audio files")
                 try await audioManager.prepareAudio(
                     audioFiles: currentAudioFiles,
                     startVerse: currentVerseNumber,
                     endVerse: endVerseNumber
                 )
 
-                print("BookViewModel: Starting playback")
+                Logger.debug("BookViewModel: Starting playback")
                 audioManager.startPlayback()
                 isPlaying = true
             } catch {
-                print("BookViewModel: Error during playback: \(error)")
+                Logger.debug("BookViewModel: Error during playback: \(error)")
                 throw error
             }
         }
@@ -369,7 +364,7 @@ class BookViewModel: ObservableObject {
                     )
                 } catch {
                     self.error = error
-                    print("Error during previous verse playback: \(error)")
+                    Logger.debug("Error during previous verse playback: \(error)")
                 }
             }
         }
@@ -397,7 +392,7 @@ class BookViewModel: ObservableObject {
                     )
                 } catch {
                     self.error = error
-                    print("Error during next verse playback: \(error)")
+                    Logger.debug("Error during next verse playback: \(error)")
                 }
             }
         }
@@ -445,7 +440,7 @@ class BookViewModel: ObservableObject {
                     selectedVerseText = "\(verse.verseNumber). \(text)"
                 }
             } catch {
-                print("Error restoring saved state: \(error)")
+                Logger.error("Error restoring saved state: \(error)")
                 self.error = error
             }
         }

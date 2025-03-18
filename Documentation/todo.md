@@ -12,7 +12,8 @@
 - [x] Do not show tutorial if the user has already seen it
 - [x] replace carplay icon with carpaly screenshot
 - [x] put app screenshot above carplay screenshot
-- [ ] the "from" part doesn't sync with the current verse
+- [x] the "from" part doesn't sync with the current verse
+- [ ] remove debug prints from production
 
 # Tests
 - [ ] Test the audio playback in the background

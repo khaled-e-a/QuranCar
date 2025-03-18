@@ -24,7 +24,7 @@ class QuranAPIService {
     init(clientId: String, authToken: String) {
         self.clientId = clientId
         self.authToken = authToken
-        print("QuranAPIService: Initialized with clientId: \(clientId) and authToken: \(authToken)")
+        Logger.debug("QuranAPIService: Initialized with clientId: \(clientId) and authToken: \(authToken)")
     }
 
     private func prepareRequest(_ url: URL) async throws -> URLRequest {
@@ -48,7 +48,7 @@ class QuranAPIService {
         let request = try await prepareRequest(url)
 
         // Enhanced request logging
-        print("""
+        Logger.debug("""
         QuranAPIService: Fetching chapters from API
         URL: \(request.url?.absoluteString ?? "")
         Method: \(request.httpMethod ?? "GET")
@@ -56,15 +56,15 @@ class QuranAPIService {
         """)
 
         do {
-            print("QuranAPIService: Fetching chapters from API with request: \(request)")
+            Logger.debug("QuranAPIService: Fetching chapters from API with request: \(request)")
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
-                print("QuranAPIService: Received invalid response")
+                Logger.error("QuranAPIService: Received invalid response")
                 throw QuranAPIError.invalidResponse
             }
-            print("QuranAPIService: Received response with status code: \(httpResponse.statusCode)")
+            Logger.debug("QuranAPIService: Received response with status code: \(httpResponse.statusCode)")
 
             let chapters = try JSONDecoder().decode(ChaptersResponse.self, from: data)
             return chapters.chapters
@@ -84,7 +84,7 @@ class QuranAPIService {
             let url = URL(string: "\(baseURL)/verses/by_chapter/\(chapterId)?page=\(currentPage)&per_page=\(perPage)")!
             let request = try await prepareRequest(url)
 
-            print("""
+            Logger.debug("""
             QuranAPIService: Fetching verses for chapter \(chapterId) - Page \(currentPage)
             URL: \(request.url?.absoluteString ?? "")
             Method: \(request.httpMethod ?? "GET")
@@ -98,7 +98,7 @@ class QuranAPIService {
                     throw QuranAPIError.invalidResponse
                 }
 
-                print("QuranAPIService: Response status code: \(httpResponse.statusCode)")
+                Logger.debug("QuranAPIService: Response status code: \(httpResponse.statusCode)")
 
                 switch httpResponse.statusCode {
                 case 200:
@@ -112,7 +112,7 @@ class QuranAPIService {
                         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
                         currentPage = nextPage
                     } else {
-                        print("QuranAPIService: Successfully fetched all \(allVerses.count) verses")
+                        Logger.debug("QuranAPIService: Successfully fetched all \(allVerses.count) verses")
                         return allVerses
                     }
 
@@ -120,14 +120,14 @@ class QuranAPIService {
                     throw QuranAPIError.unauthorized
 
                 default:
-                    print("QuranAPIService: Unexpected status code: \(httpResponse.statusCode)")
+                    Logger.error("QuranAPIService: Unexpected status code: \(httpResponse.statusCode)")
                     throw QuranAPIError.invalidResponse
                 }
             } catch let error as DecodingError {
-                print("QuranAPIService: Decoding error: \(error)")
+                Logger.error("QuranAPIService: Decoding error: \(error)")
                 throw QuranAPIError.decodingError(error)
             } catch {
-                print("QuranAPIService: Network error: \(error)")
+                Logger.error("QuranAPIService: Network error: \(error)")
                 throw QuranAPIError.networkError(error)
             }
         }
@@ -142,7 +142,7 @@ class QuranAPIService {
         request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
         request.addValue(clientId, forHTTPHeaderField: "x-client-id")
 
-        print("""
+        Logger.debug("""
         QuranAPIService: Fetching Uthmani verses for chapter \(chapterNumber)
         URL: \(request.url?.absoluteString ?? "")
         Method: \(request.httpMethod ?? "GET")
@@ -179,31 +179,31 @@ class QuranAPIService {
         request.addValue(authToken, forHTTPHeaderField: "x-auth-token")
         request.addValue(clientId, forHTTPHeaderField: "x-client-id")
 
-        print("QuranAPIService: Fetching reciters")
+        Logger.debug("QuranAPIService: Fetching reciters")
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-            print("QuranAPIService: Reciters Response data: \(String(data: data, encoding: .utf8) ?? "")")
+            Logger.debug("QuranAPIService: Reciters Response data: \(String(data: data, encoding: .utf8) ?? "")")
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw QuranAPIError.invalidResponse
             }
-            print("QuranAPIService: Reciters Response status code: \(httpResponse.statusCode)")
+            Logger.debug("QuranAPIService: Reciters Response status code: \(httpResponse.statusCode)")
 
             switch httpResponse.statusCode {
             case 200:
                 let response = try JSONDecoder().decode(RecitersResponse.self, from: data)
-                print("QuranAPIService: Successfully fetched \(response.recitations.count) reciters")
+                Logger.debug("QuranAPIService: Successfully fetched \(response.recitations.count) reciters")
                 return response.recitations
             case 401:
-                print("QuranAPIService: Reciters Unauthorized")
+                Logger.error("QuranAPIService: Reciters Unauthorized")
                 throw QuranAPIError.unauthorized
             default:
-                print("QuranAPIService: Reciters Unexpected status code: \(httpResponse.statusCode)")
+                Logger.error("QuranAPIService: Reciters Unexpected status code: \(httpResponse.statusCode)")
                 throw QuranAPIError.invalidResponse
             }
         } catch {
-            print("QuranAPIService: Network error: \(error)")
+            Logger.error("QuranAPIService: Network error: \(error)")
             throw QuranAPIError.networkError(error)
         }
     }
@@ -217,7 +217,7 @@ class QuranAPIService {
             let url = URL(string: "\(baseURL)/recitations/\(recitationId)/by_chapter/\(chapterNumber)?page=\(currentPage)&per_page=\(perPage)")!
             let request = try await prepareRequest(url)
 
-            print("""
+            Logger.debug("""
             QuranAPIService: Fetching audio files for reciter \(recitationId) chapter \(chapterNumber) - Page \(currentPage)
             URL: \(request.url?.absoluteString ?? "")
             Method: \(request.httpMethod ?? "GET")
@@ -226,7 +226,7 @@ class QuranAPIService {
 
             do {
                 let (data, response) = try await URLSession.shared.data(for: request)
-                print("QuranAPIService: Audio files Response data: \(String(data: data, encoding: .utf8) ?? "")")
+                Logger.debug("QuranAPIService: Audio files Response data: \(String(data: data, encoding: .utf8) ?? "")")
 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     throw QuranAPIError.invalidResponse
@@ -243,20 +243,20 @@ class QuranAPIService {
                         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
                         currentPage = nextPage
                     } else {
-                        print("QuranAPIService: Successfully fetched all \(allAudioFiles.count) audio files")
+                        Logger.debug("QuranAPIService: Successfully fetched all \(allAudioFiles.count) audio files")
                         return allAudioFiles
                     }
 
                 case 401:
-                    print("QuranAPIService: Audio files Unauthorized")
+                    Logger.error("QuranAPIService: Audio files Unauthorized")
                     throw QuranAPIError.unauthorized
 
                 default:
-                    print("QuranAPIService: Audio files Unexpected status code: \(httpResponse.statusCode)")
+                    Logger.error("QuranAPIService: Audio files Unexpected status code: \(httpResponse.statusCode)")
                     throw QuranAPIError.invalidResponse
                 }
             } catch {
-                print("QuranAPIService: Network error: \(error)")
+                Logger.error("QuranAPIService: Network error: \(error)")
                 throw QuranAPIError.networkError(error)
             }
         }

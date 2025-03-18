@@ -31,6 +31,7 @@
 		282C40C32D86A7A300E531FD /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C12D86A7A300E531FD /* StoreManager.swift */; };
 		282C40C72D87740500E531FD /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C52D87740500E531FD /* OnboardingView.swift */; };
 		282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C82D8775A400E531FD /* CoachMarkView.swift */; };
+		282C40CF2D892E0F00E531FD /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40CD2D892E0F00E531FD /* Logger.swift */; };
 		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
 		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
 		284E55572D546C1C00AE2A23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55542D546C1C00AE2A23 /* SettingsView.swift */; };
@@ -90,6 +91,7 @@
 		282C40C42D8761F700E531FD /* StoreKitConfig.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfig.storekit; sourceTree = "<group>"; };
 		282C40C52D87740500E531FD /* OnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		282C40C82D8775A400E531FD /* CoachMarkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoachMarkView.swift; sourceTree = "<group>"; };
+		282C40CD2D892E0F00E531FD /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
 		284E55542D546C1C00AE2A23 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -253,6 +255,14 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		282C40CE2D892E0F00E531FD /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				282C40CD2D892E0F00E531FD /* Logger.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		287A0B882D52F2080049E06D = {
 			isa = PBXGroup;
 			children = (
@@ -277,6 +287,7 @@
 		287A0B932D52F2090049E06D /* QuranCar */ = {
 			isa = PBXGroup;
 			children = (
+				282C40CE2D892E0F00E531FD /* Utilities */,
 				282C40B02D7CEDA700E531FD /* CarPlay */,
 				282C40AE2D7CED1D00E531FD /* QuranCar.entitlements */,
 				282C40AC2D7CBF9C00E531FD /* Colors.xcassets */,
@@ -532,6 +543,7 @@
 				2811BFB32D6D82CE00A39CA3 /* AppDelegate.swift in Sources */,
 				283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */,
 				2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */,
+				282C40CF2D892E0F00E531FD /* Logger.swift in Sources */,
 				282C40C72D87740500E531FD /* OnboardingView.swift in Sources */,
 				2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */,
 				286A9ADF2D7A8FF7003600D9 /* Configuration.swift in Sources */,

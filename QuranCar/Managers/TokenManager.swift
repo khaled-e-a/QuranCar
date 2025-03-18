@@ -13,13 +13,13 @@ class TokenManager {
     private init() {}
 
     func saveTokens(accessToken: String, clientId: String, idToken: String?, tokenType: String, expiresIn: Int) {
-        print("TokenManager: Saving tokens")
+        Logger.debug("TokenManager: Saving tokens")
         // Store access token
         saveToKeychain(key: accessTokenKey, value: accessToken)
 
         // Store client ID
         saveToKeychain(key: clientIdKey, value: clientId)
-        print("TokenManager: Saved client ID: \(clientId)")
+        Logger.debug("TokenManager: Saved client ID: \(clientId)")
 
         // Store ID token if available
         if let idToken = idToken {
@@ -39,7 +39,7 @@ class TokenManager {
     }
 
     func getClientId() -> String? {
-        print("TokenManager: Getting client ID: \(retrieveFromKeychain(key: clientIdKey) ?? "NOT_FOUND")")
+        Logger.debug("TokenManager: Getting client ID: \(retrieveFromKeychain(key: clientIdKey) ?? "NOT_FOUND")")
         return retrieveFromKeychain(key: clientIdKey)
     }
 
@@ -53,20 +53,20 @@ class TokenManager {
 
     func isTokenValid() -> Bool {
         // First check if we have an access token
-        print("TokenManager: Checking if token is valid")
+        Logger.debug("TokenManager: Checking if token is valid")
         guard let _ = getAccessToken() else {
-            print("TokenManager: No access token found")
+            Logger.debug("TokenManager: No access token found")
             return false
         }
-        print("TokenManager: Access token found")
+        Logger.debug("TokenManager: Access token found")
 
         // Then check expiration
         guard let expirationTimeInterval = UserDefaults.standard.object(forKey: expiresInKey) as? TimeInterval else {
-            print("TokenManager: No expiration time interval found")
+            Logger.debug("TokenManager: No expiration time interval found")
             return false
         }
         let expirationDate = Date(timeIntervalSince1970: expirationTimeInterval)
-        print("TokenManager: Expiration date: \(expirationDate)")
+        Logger.debug("TokenManager: Expiration date: \(expirationDate)")
         return Date() < expirationDate
     }
 
@@ -96,7 +96,7 @@ class TokenManager {
         // Add new item
         let status = SecItemAdd(query as CFDictionary, nil)
         guard status == errSecSuccess else {
-            print("Error saving to Keychain: \(status)")
+            Logger.error("Error saving to Keychain: \(status)")
             return
         }
     }

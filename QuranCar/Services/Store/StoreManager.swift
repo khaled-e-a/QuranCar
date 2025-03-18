@@ -16,7 +16,7 @@ class StoreManager: ObservableObject {
 
         // Load product immediately
         Task {
-            print("StoreManager: Starting initial product fetch")
+            Logger.debug("StoreManager: Starting initial product fetch")
             await fetchProduct()
             await checkSubscriptionStatus()
         }
@@ -29,13 +29,13 @@ class StoreManager: ObservableObject {
     // Fetch support product
     func fetchProduct() async {
         do {
-            print("StoreManager: Fetching subscription product for ID: \(productID)")
+            Logger.debug("StoreManager: Fetching subscription product for ID: \(productID)")
 
             let products = try await Product.products(for: [productID])
-            print("StoreManager: Found \(products.count) products")
+            Logger.debug("StoreManager: Found \(products.count) products")
 
             for product in products {
-                print("StoreManager: Available product - ID: \(product.id), Type: \(product.type), Name: \(product.displayName)")
+                Logger.debug("StoreManager: Available product - ID: \(product.id), Type: \(product.type), Name: \(product.displayName)")
             }
 
             await MainActor.run {
@@ -45,21 +45,21 @@ class StoreManager: ObservableObject {
                 }
 
                 if let product = self.supportProduct {
-                    print("StoreManager: Loaded support product: \(product.displayName) - \(product.displayPrice)")
+                    Logger.debug("StoreManager: Loaded support product: \(product.displayName) - \(product.displayPrice)")
                 } else {
-                    print("StoreManager: No matching product found for ID: \(productID)")
+                    Logger.debug("StoreManager: No matching product found for ID: \(productID)")
                 }
             }
         } catch {
-            print("StoreManager: Failed to load product: \(error)")
-            print("StoreManager: Error details - \(String(describing: error))")
+            Logger.error("StoreManager: Failed to load product: \(error)")
+            Logger.error("StoreManager: Error details - \(String(describing: error))")
         }
     }
 
     // Purchase support
     func purchase() async {
         guard let product = supportProduct else {
-            print("StoreManager: No product available")
+            Logger.debug("StoreManager: No product available")
             return
         }
 
@@ -77,14 +77,14 @@ class StoreManager: ObservableObject {
                     await transaction.finish()
                 }
             case .pending:
-                print("StoreManager: Purchase pending")
+                Logger.debug("StoreManager: Purchase pending")
             case .userCancelled:
-                print("StoreManager: Purchase cancelled")
+                Logger.debug("StoreManager: Purchase cancelled")
             @unknown default:
                 break
             }
         } catch {
-            print("StoreManager: Purchase failed: \(error)")
+            Logger.error("StoreManager: Purchase failed: \(error)")
         }
     }
 

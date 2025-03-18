@@ -56,6 +56,9 @@ struct OnboardingView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentPage)
+                .onChange(of: currentPage) { newPage in
+                    Logger.debug("OnboardingView: Moved to page \(newPage)")
+                }
 
                 // Button
                 Button(action: {

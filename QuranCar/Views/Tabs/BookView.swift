@@ -7,6 +7,7 @@ import AppStructureFeature
 import NoorUI
 import QuranContentFeature
 import Combine
+import Utilities
 
 // First, create a class to hold our navigator
 class NavigatorHolder: ObservableObject {
@@ -30,7 +31,7 @@ struct BookView: View {
     @StateObject private var carPlayManager = CarPlayConnectionManager.shared
 
     init() {
-        print("BookView: BookViewModel instance: \(ObjectIdentifier(viewModel))")
+        Logger.debug("BookView: BookViewModel instance: \(ObjectIdentifier(viewModel))")
     }
 
     private var toVerse: String {
@@ -73,19 +74,19 @@ struct BookView: View {
             .background(Color.background1)
             .blur(radius: showingNumberSelector ? 3 : 0)
             .onChange(of: viewModel.selectedVerseText) { verseText in
-                print("BookView: Detected verse text change to: \(verseText)")
+                Logger.debug("BookView: Detected verse text change to: \(verseText)")
             }
             .onChange(of: viewModel.selectedChapter) { chapter in
-                print("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
+                Logger.debug("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
                 if let chapter = chapter {
                     Task {
-                        print("BookView: Updating UI for new chapter")
+                        Logger.debug("BookView: Updating UI for new chapter")
                         await viewModel.loadQuranData()
 
                         if let firstVerse = viewModel.currentVerses.first,
                            let text = firstVerse.textUthmani {
                             viewModel.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
-                            print("BookView: Updated selected verse to: \(viewModel.selectedVerseText)")
+                            Logger.debug("BookView: Updated selected verse to: \(viewModel.selectedVerseText)")
                         }
                     }
                 }
@@ -174,9 +175,9 @@ struct BookView: View {
     }
 
     private func handleNumberSelection(_ number: Int) {
-        print("BookView: Selecting number of verses: \(number)")
+        Logger.debug("BookView: Selecting number of verses: \(number)")
         viewModel.numberOfVerses = number
-        print("BookView: Updated shared number of verses to: \(number)")
+        Logger.debug("BookView: Updated shared number of verses to: \(number)")
     }
 }
 
@@ -427,12 +428,12 @@ extension BookView {
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
            let text = targetVerse.textUthmani {
-            print("BookView: Previous - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
+            Logger.debug("BookView: Previous - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
             withAnimation {
                 viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
             }
-            print("BookView: Previous - New verse text: \(viewModel.selectedVerseText)")
-            print("BookView: Previous - New toVerse: \(toVerse)")
+            Logger.debug("BookView: Previous - New verse text: \(viewModel.selectedVerseText)")
+            Logger.debug("BookView: Previous - New toVerse: \(toVerse)")
 
             // Stop current playback if any
             isLooping = false
@@ -462,12 +463,12 @@ extension BookView {
 
         if let targetVerse = viewModel.currentVerses.first(where: { $0.verseNumber == targetVerseNumber }),
            let text = targetVerse.textUthmani {
-            print("BookView: Next - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
+            Logger.debug("BookView: Next - Updating verse from \(currentVerseNumber) to \(targetVerseNumber)")
             withAnimation {
                 viewModel.selectedVerseText = "\(targetVerseNumber). \(text)"
             }
-            print("BookView: Next - New verse text: \(viewModel.selectedVerseText)")
-            print("BookView: Next - New toVerse: \(toVerse)")
+            Logger.debug("BookView: Next - New verse text: \(viewModel.selectedVerseText)")
+            Logger.debug("BookView: Next - New toVerse: \(toVerse)")
 
             // Stop current playback if any
             isLooping = false
@@ -498,7 +499,7 @@ extension BookView {
                         numberOfVerses: viewModel.numberOfVerses
                     )
                 } catch {
-                    print("Error during playback toggle: \(error)")
+                    Logger.error("Error during playback toggle: \(error)")
                 }
             }
         } else {
@@ -522,7 +523,7 @@ extension BookView {
                     numberOfVerses: numberOfVerses
                 )
             } catch {
-                print("Error stopping current playback: \(error)")
+                Logger.error("Error stopping current playback: \(error)")
                 return
             }
         }
@@ -539,7 +540,7 @@ extension BookView {
                     numberOfVerses: numberOfVerses
                 )
             } catch {
-                print("Error during looped playback: \(error)")
+                Logger.error("Error during looped playback: \(error)")
                 isLooping = false
                 return
             }
@@ -560,11 +561,11 @@ extension BookView {
 // MARK: - BookView Actions
 extension BookView {
     private func handleChapterSelection(_ chapter: ChapterEntity) {
-        print("BookView: Selecting chapter: \(chapter.nameSimple)")
+        Logger.debug("BookView: Selecting chapter: \(chapter.nameSimple)")
         Task {
-            print("BookView: Setting selectedChapter")
+            Logger.debug("BookView: Setting selectedChapter")
             viewModel.selectedChapter = chapter
-            print("BookView: Loading Quran data")
+            Logger.debug("BookView: Loading Quran data")
             await viewModel.loadQuranData()
 
             // Reset verse selection to first verse of the new chapter
@@ -573,10 +574,10 @@ extension BookView {
                 let verseText = "\(firstVerse.verseNumber). \(text)"
                 viewModel.selectedVerseText = verseText
                 viewModel.currentVerseNumber = Int(firstVerse.verseNumber)
-                print("BookView: Reset to first verse: \(verseText)")
+                Logger.debug("BookView: Reset to first verse: \(verseText)")
             }
 
-            print("BookView: Chapter selection complete")
+            Logger.debug("BookView: Chapter selection complete")
         }
     }
 
@@ -737,12 +738,12 @@ struct HomeViewRepresentable: UIViewControllerRepresentable {
     let navigator: QuranNavigator
 
     func makeUIViewController(context: Context) -> UIViewController {
-        print("HomeViewRepresentable: Creating HomeViewController")
+        Logger.debug("HomeViewRepresentable: Creating HomeViewController")
         return QuranViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        print("HomeViewRepresentable: Updating UIViewController")
+        Logger.debug("HomeViewRepresentable: Updating UIViewController")
     }
 }
 

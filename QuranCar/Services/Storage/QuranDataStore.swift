@@ -24,7 +24,7 @@ class QuranDataStore {
 
         container.loadPersistentStores { description, error in
             if let error = error {
-                print("Error loading Core Data: \(error)")
+                Logger.error("Error loading Core Data: \(error)")
             }
         }
 

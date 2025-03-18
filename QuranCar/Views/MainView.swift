@@ -18,6 +18,9 @@ struct MainView: View {
                 TabView(selection: $selectedTab) {
                     BookView()
                         .tag(Tab.memorize)
+                        .onAppear {
+                            Logger.debug("MainView: BookView tab appeared")
+                        }
 
                     SettingsView(selectedTab: $selectedTab)
                         .tag(Tab.settings)

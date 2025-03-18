@@ -16,9 +16,9 @@ class QuranAuthManager {
         if !TokenManager.shared.isTokenValid() {
             do {
                 let token = try await getNewToken()
-                print("Successfully obtained new token")
+                Logger.debug("Successfully obtained new token")
             } catch {
-                print("Error refreshing token: \(error)")
+                Logger.error("Error refreshing token: \(error)")
             }
         }
     }
@@ -30,7 +30,7 @@ class QuranAuthManager {
 
         // Add Basic Authentication header
         let credentials = "\(clientId):\(clientSecret)"
-        print("QuranAuthManager: Credentials: \(credentials)")
+        Logger.debug("QuranAuthManager: Credentials: \(credentials)")
         if let credentialsData = credentials.data(using: .utf8) {
             let base64Credentials = credentialsData.base64EncodedString()
             request.setValue("Basic \(base64Credentials)", forHTTPHeaderField: "Authorization")
@@ -49,10 +49,10 @@ class QuranAuthManager {
 
         let (data, _) = try await URLSession.shared.data(for: request)
 
-        print("QuranAuthManager: Data: \(data)")
+        Logger.debug("QuranAuthManager: Data: \(data)")
 
         let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
-        print("QuranAuthManager: Token response: \(tokenResponse)")
+        Logger.debug("QuranAuthManager: Token response: \(tokenResponse)")
 
         // Save tokens securely
         TokenManager.shared.saveTokens(
