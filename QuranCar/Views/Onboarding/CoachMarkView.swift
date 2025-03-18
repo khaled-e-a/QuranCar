@@ -39,9 +39,9 @@ struct CoachMarkView: View {
             title: "CarPlay Ready!",
             description: """
             1. Connect your iPhone to CarPlay
-            2. Find QuranCar in CarPlay
+            2. Find Quran Car in CarPlay
             3. Use steering wheel controls:
-               • Next/Previous: Change verse chunks
+               • Next/Previous: Change memorization loop
                • Play/Pause: Control memorization
             4. Audio will automatically loop to help memorization
             """,

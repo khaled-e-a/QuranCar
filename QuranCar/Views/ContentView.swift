@@ -27,15 +27,11 @@ struct ContentView: View {
                 }
                 .transition(.opacity)
             } else if showingOnboarding {
-                OnboardingView(
-                    showOnboarding: $showingOnboarding,
-                    onCompletion: {
-                        // When onboarding is completed, show coach marks after a brief delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            showingCoachMarks = true
-                        }
-                    }
-                )
+                OnboardingView(showOnboarding: $showingOnboarding) {
+                    // When onboarding completes, show coach marks and set hasSeenOnboarding
+                    hasSeenOnboarding = true
+                    showingCoachMarks = true
+                }
                 .transition(.opacity)
             } else {
                 MainView()
@@ -49,12 +45,6 @@ struct ContentView: View {
                     .overlay {
                         if showingCoachMarks && mainViewReady {
                             CoachMarkView(showCoachMarks: $showingCoachMarks)
-                                .transition(.opacity)
-                                .onChange(of: showingCoachMarks) { show in
-                                    if !show {
-                                        hasSeenOnboarding = true
-                                    }
-                                }
                         }
                     }
             }

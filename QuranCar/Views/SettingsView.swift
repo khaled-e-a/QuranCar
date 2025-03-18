@@ -21,7 +21,17 @@ struct SettingsView: View {
                 // Tutorial Section
                 VStack(spacing: 0) {
                     Button(action: {
-                        showingOnboarding = true
+                        if hasSeenOnboarding {
+                            selectedTab = .memorize
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                NotificationCenter.default.post(
+                                    name: .showCoachMarks,
+                                    object: nil
+                                )
+                            }
+                        } else {
+                            showingOnboarding = true
+                        }
                     }) {
                         HStack {
                             Image(systemName: "questionmark.circle")
