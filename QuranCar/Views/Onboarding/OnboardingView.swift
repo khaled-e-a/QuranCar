@@ -13,9 +13,8 @@ struct OnboardingView: View {
 
             Designed specifically for safe and distraction-free use with CarPlay.
             """,
-            imageName: "quran_car_logo",
-            accentColor: Color.primaryNormal,
-            useSystemImage: false
+            images: [ImageConfig(name: "quran_car_logo", useSystemImage: false)],
+            accentColor: Color.primaryNormal
         ),
         OnboardingPage(
             title: "Set Up Your Memorization",
@@ -24,9 +23,11 @@ struct OnboardingView: View {
 
             Then connect to CarPlay to start memorizing while you drive.
             """,
-            imageName: "carplay",
-            accentColor: Color.primaryNormal,
-            useSystemImage: false
+            images: [
+                ImageConfig(name: "app_settings", useSystemImage: false),
+                ImageConfig(name: "carplay", useSystemImage: false)
+            ],
+            accentColor: Color.primaryNormal
         )
     ]
 
@@ -87,8 +88,12 @@ struct OnboardingView: View {
 struct OnboardingPage {
     let title: String
     let description: String
-    let imageName: String
+    let images: [ImageConfig]
     let accentColor: Color
+}
+
+struct ImageConfig {
+    let name: String
     let useSystemImage: Bool
 }
 
@@ -99,16 +104,19 @@ struct OnboardingPageView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            if page.useSystemImage {
-                Image(systemName: page.imageName)
-                    .font(.system(size: 80))
-                    .foregroundColor(page.accentColor)
-            } else {
-                Image(page.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 180, height: 180)
-                    .cornerRadius(20)
+            // First image (if exists)
+            if !page.images.isEmpty {
+                if page.images[0].useSystemImage {
+                    Image(systemName: page.images[0].name)
+                        .font(.system(size: 80))
+                        .foregroundColor(page.accentColor)
+                } else {
+                    Image(page.images[0].name)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 180, height: 180)
+                        .cornerRadius(20)
+                }
             }
 
             VStack(spacing: 16) {
@@ -124,7 +132,21 @@ struct OnboardingPageView: View {
                     .padding(.horizontal, 32)
             }
 
-            Spacer()
+            // Second image (if exists)
+            if page.images.count > 1 {
+                if page.images[1].useSystemImage {
+                    Image(systemName: page.images[1].name)
+                        .font(.system(size: 80))
+                        .foregroundColor(page.accentColor)
+                } else {
+                    Image(page.images[1].name)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 180, height: 180)
+                        .cornerRadius(20)
+                }
+            }
+
             Spacer()
         }
     }
