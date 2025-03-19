@@ -45,8 +45,16 @@ class AudioManager: NSObject, ObservableObject {
         Logger.debug("AudioManager: Successfully downloaded \(urls.count) files")
         self.audioFiles = urls
 
+        let sortedUrls = urls.sorted { url1, url2 in
+            let components1 = url1.pathComponents
+            let components2 = url2.pathComponents
+            let lastComponent1 = components1.last ?? ""
+            let lastComponent2 = components2.last ?? ""
+            return lastComponent1 < lastComponent2
+        }
+
         // Create player items
-        self.playerItems = urls.map { AVPlayerItem(url: $0) }
+        self.playerItems = sortedUrls.map { AVPlayerItem(url: $0) }
         Logger.debug("AudioManager: Created \(playerItems.count) player items")
 
         // Create player with first item
