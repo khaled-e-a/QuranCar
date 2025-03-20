@@ -1,23 +1,7 @@
 import SwiftUI
-import QuranKit
 import UIKit
-import FeaturesSupport
-import AppDependencies
-import AppStructureFeature
-import NoorUI
-import QuranContentFeature
 import Combine
-import Utilities
 
-// First, create a class to hold our navigator
-class NavigatorHolder: ObservableObject {
-    // Make navigator accessible but still private(set)
-    private(set) var navigator: QuranNavigator
-
-    init(navigator: QuranNavigator) {
-        self.navigator = navigator
-    }
-}
 
 struct BookView: View {
     @StateObject private var viewModel = BookViewModel.shared
@@ -735,7 +719,6 @@ extension UIViewController {
 
 struct HomeViewRepresentable: UIViewControllerRepresentable {
     let authToken: String
-    let navigator: QuranNavigator
 
     func makeUIViewController(context: Context) -> UIViewController {
         Logger.debug("HomeViewRepresentable: Creating HomeViewController")

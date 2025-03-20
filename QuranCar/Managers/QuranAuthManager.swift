@@ -1,5 +1,4 @@
 import Foundation
-import QuranKit
 
 class QuranAuthManager {
     static let shared = QuranAuthManager()

@@ -7,15 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2811BABA2D66D68200A39CA3 /* AppDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BAB92D66D68200A39CA3 /* AppDependencies */; };
 		2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BACC2D66E27D00A39CA3 /* BookView.swift */; };
-		2811BACF2D66E30300A39CA3 /* AppStructureFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BACE2D66E30300A39CA3 /* AppStructureFeature */; };
 		2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */; };
 		2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD12D66E48A00A39CA3 /* TokenManager.swift */; };
-		2811BADE2D6AC7CD00A39CA3 /* QuranViewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */; };
-		2811BAE02D6ACCEE00A39CA3 /* QuranContentFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */; };
 		2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAED2D6D4B0400A39CA3 /* MainView.swift */; };
-		2811BAF02D6D71CC00A39CA3 /* ReadingService in Frameworks */ = {isa = PBXBuildFile; productRef = 2811BAEF2D6D71CC00A39CA3 /* ReadingService */; };
 		2811BFB32D6D82CE00A39CA3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFB02D6D82CE00A39CA3 /* AppDelegate.swift */; };
 		2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFB12D6D82CE00A39CA3 /* QuranCarApp.swift */; };
 		2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFBB2D6EA5AE00A39CA3 /* QuranViewController.swift */; };
@@ -42,14 +37,12 @@
 		287A0BA62D52F20D0049E06D /* QuranCarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BA52D52F20D0049E06D /* QuranCarTests.swift */; };
 		287A0BB02D52F20D0049E06D /* QuranCarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BAF2D52F20D0049E06D /* QuranCarUITests.swift */; };
 		287A0BB22D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 287A0BB12D52F20D0049E06D /* QuranCarUITestsLaunchTests.swift */; };
-		287A0BD82D52FEF90049E06D /* QuranKit in Frameworks */ = {isa = PBXBuildFile; productRef = 287A0BD72D52FEF90049E06D /* QuranKit */; };
 		2894A9982D70D5E000BEA2CD /* VersesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9962D70D5E000BEA2CD /* VersesListView.swift */; };
 		2894A99B2D70D6E900BEA2CD /* ChaptersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9992D70D6E900BEA2CD /* ChaptersListView.swift */; };
 		2894A99E2D70DD5C00BEA2CD /* NumberSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */; };
 		2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99F2D736BC500BEA2CD /* RecitersListView.swift */; };
 		2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */; };
 		2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */; };
-		28C447662D55C1F5004A9011 /* HomeFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 28C447652D55C1F5004A9011 /* HomeFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,14 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2811BADE2D6AC7CD00A39CA3 /* QuranViewFeature in Frameworks */,
-				28C447662D55C1F5004A9011 /* HomeFeature in Frameworks */,
-				2811BACF2D66E30300A39CA3 /* AppStructureFeature in Frameworks */,
 				282C40B72D86A6EA00E531FD /* StoreKit.framework in Frameworks */,
-				2811BABA2D66D68200A39CA3 /* AppDependencies in Frameworks */,
-				2811BAF02D6D71CC00A39CA3 /* ReadingService in Frameworks */,
-				287A0BD82D52FEF90049E06D /* QuranKit in Frameworks */,
-				2811BAE02D6ACCEE00A39CA3 /* QuranContentFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,13 +391,6 @@
 			);
 			name = "Quran Car";
 			packageProductDependencies = (
-				287A0BD72D52FEF90049E06D /* QuranKit */,
-				28C447652D55C1F5004A9011 /* HomeFeature */,
-				2811BAB92D66D68200A39CA3 /* AppDependencies */,
-				2811BACE2D66E30300A39CA3 /* AppStructureFeature */,
-				2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */,
-				2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */,
-				2811BAEF2D6D71CC00A39CA3 /* ReadingService */,
 			);
 			productName = QuranCar;
 			productReference = 287A0B912D52F2090049E06D /* Quran Car.app */;
@@ -486,7 +465,6 @@
 			);
 			mainGroup = 287A0B882D52F2080049E06D;
 			packageReferences = (
-				287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */,
 			);
 			productRefGroup = 287A0B922D52F2090049E06D /* Products */;
 			projectDirPath = "";
@@ -907,55 +885,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/quran/quran-ios";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		2811BAB92D66D68200A39CA3 /* AppDependencies */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = AppDependencies;
-		};
-		2811BACE2D66E30300A39CA3 /* AppStructureFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = AppStructureFeature;
-		};
-		2811BADD2D6AC7CD00A39CA3 /* QuranViewFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = QuranViewFeature;
-		};
-		2811BADF2D6ACCEE00A39CA3 /* QuranContentFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = QuranContentFeature;
-		};
-		2811BAEF2D6D71CC00A39CA3 /* ReadingService */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = ReadingService;
-		};
-		287A0BD72D52FEF90049E06D /* QuranKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = QuranKit;
-		};
-		28C447652D55C1F5004A9011 /* HomeFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 287A0BD62D52FEF90049E06D /* XCRemoteSwiftPackageReference "quran-ios" */;
-			productName = HomeFeature;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		2811BFCA2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld */ = {

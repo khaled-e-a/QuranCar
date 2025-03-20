@@ -6,37 +6,14 @@
 //
 
 import UIKit
-import QuranKit
-import AppStructureFeature
-import Logging
 import CarPlay
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        Logger.debug("Documents directory: \(FileManager.documentsURL)")
-
-        // // Initialize the container
-        // let _ = Container.shared
-
-        // Task {
-        //     // Eagerly load download manager to handle any background downloads.
-        //     await Container.shared.downloadManager.start()
-
-        //     // Begin fetching resources immediately after download manager is initialized.
-        //     await Container.shared.readingResources.startLoadingResources()
-        // }
 
         return true
     }
 
-    // func application(
-    //     _ application: UIApplication,
-    //     handleEventsForBackgroundURLSession identifier: String,
-    //     completionHandler: @escaping () -> Void
-    // ) {
-    //     let downloadManager = Container.shared.downloadManager
-    //     downloadManager.setBackgroundSessionCompletion(completionHandler)
-    // }
 
     func application(
         _ application: UIApplication,

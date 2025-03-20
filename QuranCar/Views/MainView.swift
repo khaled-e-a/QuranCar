@@ -1,5 +1,4 @@
 import SwiftUI
-import NoorUI
 
 struct MainView: View {
     @State private var selectedTab = Tab.memorize

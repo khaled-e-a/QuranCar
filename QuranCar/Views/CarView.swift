@@ -1,5 +1,4 @@
 import SwiftUI
-import QuranKit
 
 struct CarView: View {
     var body: some View {
