@@ -149,6 +149,7 @@ struct BookView: View {
                     }
 
                 NumberSelectorView(
+                    isPresented: $showingNumberSelector,
                     maxNumber: Int(viewModel.selectedChapter?.versesCount ?? 1),
                     currentNumber: viewModel.numberOfVerses,
                     onNumberSelected: handleNumberSelection

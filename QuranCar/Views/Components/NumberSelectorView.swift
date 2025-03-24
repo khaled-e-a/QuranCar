@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct NumberSelectorView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Binding var isPresented: Bool
     let maxNumber: Int
     let currentNumber: Int
     let onNumberSelected: (Int) -> Void
 
     @State private var selectedNumber: Int
 
-    init(maxNumber: Int, currentNumber: Int, onNumberSelected: @escaping (Int) -> Void) {
+    init(isPresented: Binding<Bool>, maxNumber: Int, currentNumber: Int, onNumberSelected: @escaping (Int) -> Void) {
+        self._isPresented = isPresented
         self.maxNumber = maxNumber
         self.currentNumber = currentNumber
         self.onNumberSelected = onNumberSelected
@@ -32,7 +33,7 @@ struct NumberSelectorView: View {
             // Done button
             Button(action: {
                 onNumberSelected(selectedNumber)
-                dismiss()
+                isPresented = false
             }) {
                 Text("Done")
                     .font(.system(size: 17, weight: .medium))

@@ -10,13 +10,12 @@ struct SettingsView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 32) {
-                // Support Development Section
-                SupportDevelopmentCard()
-                    .padding(.horizontal)
-
-                // Coming Soon Section
-                ComingSoonCard()
-                    .padding(.horizontal)
+                // Premium Subscription Section
+                VStack(spacing: 24) {
+                    PremiumSubscriptionCard()
+                    ComingSoonCard()
+                }
+                .padding(.horizontal)
 
                 // Tutorial Section
                 VStack(spacing: 0) {
@@ -86,7 +85,7 @@ struct SettingsView: View {
         .alert("Thank You!", isPresented: $showingThankYou) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Thank you for supporting Quran Car! Your contribution helps us continue developing and improving the app.")
+            Text("Thank you for subscribing to Quran Car Premium! You now have access to all reciters.")
         }
         .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView(showOnboarding: $showingOnboarding) {
@@ -102,33 +101,33 @@ struct SettingsView: View {
     }
 }
 
-struct SupportDevelopmentCard: View {
+struct PremiumSubscriptionCard: View {
     @ObservedObject private var storeManager = StoreManager.shared
     @State private var isRetrying = false
 
     var body: some View {
         VStack(spacing: 16) {
             // Icon
-            Image(systemName: "heart.fill")
+            Image(systemName: "crown.fill")
                 .font(.system(size: 44))
                 .foregroundColor(.white)
 
             // Title
-            Text("Support Quran Car")
+            Text("Quran Car Premium")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
             // Description
-            Text("Help us continue developing and improving Quran Car. Jazakum Allah Khairan!")
+            Text("Get access to all reciters and unlock the full potential of Quran Car")
                 .font(.system(size: 17))
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
                 .padding(.bottom, 8)
 
-            if let product = storeManager.supportProduct {
+            if let product = storeManager.premiumProduct {
                 if storeManager.isSubscribed {
-                    Text("Jazakum Allah Khairan for your support! ❤️")
+                    Text("Premium Active")
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -143,7 +142,7 @@ struct SupportDevelopmentCard: View {
                         }
                     } label: {
                         HStack {
-                            Text("Support Development")
+                            Text(storeManager.isTrialEligible ? "Start 7-Day Free Trial" : "Subscribe Now")
                                 .font(.system(size: 17, weight: .medium))
                                 .foregroundColor(.white)
                             Spacer()
@@ -194,66 +193,11 @@ struct SupportDevelopmentCard: View {
         .cornerRadius(12)
         .shadow(radius: 8, y: 2)
         .onAppear {
-            if storeManager.supportProduct == nil {
+            if storeManager.premiumProduct == nil {
                 Task {
                     await storeManager.fetchProduct()
                 }
             }
-        }
-    }
-}
-
-struct ComingSoonCard: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            // Icon
-            Image(systemName: "sparkles")
-                .font(.system(size: 44))
-                .foregroundColor(.white)
-
-            // Title
-            Text("More Features Coming Soon!")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-
-            // Features list
-            VStack(alignment: .leading, spacing: 12) {
-                FeatureRow(icon: "bookmark.fill", text: "Save memorization loops")
-                FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "Track your progress")
-                FeatureRow(icon: "person.2.fill", text: "Share with friends")
-                FeatureRow(icon: "ellipsis.circle.fill", text: "And more to come...")
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(24)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.primaryNormal,
-                    Color.primaryHover
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .cornerRadius(12)
-        .shadow(radius: 8, y: 2)
-    }
-}
-
-struct FeatureRow: View {
-    let icon: String
-    let text: String
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(.white)
-
-            Text(text)
-                .font(.system(size: 17, weight: .regular))
-                .foregroundColor(.white)
         }
     }
 }

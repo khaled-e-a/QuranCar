@@ -2,9 +2,23 @@ import SwiftUI
 
 struct RecitersListView: View {
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var storeManager = StoreManager.shared
+    @State private var showingPremiumCard = false
     let reciters: [ReciterEntity]
     let selectedReciter: ReciterEntity?
     let onReciterSelected: (ReciterEntity) -> Void
+
+    private var isReciterAvailable: (ReciterEntity) -> Bool {
+        { reciter in
+            // First four reciters are always available
+            if let index = reciters.firstIndex(where: { $0.id == reciter.id }),
+               index < 4 {
+                return true
+            }
+            // All reciters are available for premium users
+            return storeManager.isSubscribed
+        }
+    }
 
     var body: some View {
         NavigationView {
@@ -12,14 +26,16 @@ struct RecitersListView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(reciters, id: \.id) { reciter in
                         Button(action: {
-                            onReciterSelected(reciter)
-                            dismiss()
+                            if isReciterAvailable(reciter) {
+                                onReciterSelected(reciter)
+                                dismiss()
+                            }
                         }) {
                             HStack {
                                 VStack(alignment: .leading) {
                                     Text(reciter.translatedName ?? "")
                                         .font(.system(size: 17, weight: .regular))
-                                        .foregroundColor(Color.textBody)
+                                        .foregroundColor(isReciterAvailable(reciter) ? Color.textBody : Color.textBodySubtle)
                                     Text(reciter.style ?? "")
                                         .font(.system(size: 15, weight: .regular))
                                         .foregroundColor(Color.textBodySubtle)
@@ -30,6 +46,9 @@ struct RecitersListView: View {
                                 if reciter.id == selectedReciter?.id {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(Color.primaryNormal)
+                                } else if !isReciterAvailable(reciter) {
+                                    Image(systemName: "lock.fill")
+                                        .foregroundColor(Color.textBodySubtle)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -42,6 +61,7 @@ struct RecitersListView: View {
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(PlainButtonStyle())
+                        .disabled(!isReciterAvailable(reciter))
 
                         Divider()
                             .background(Color.stroke1)
@@ -59,6 +79,39 @@ struct RecitersListView: View {
                     }
                     .font(.system(size: 17, weight: .regular))
                     .foregroundColor(Color.primaryNormal)
+                }
+
+                if !storeManager.isSubscribed {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Upgrade") {
+                            showingPremiumCard = true
+                        }
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(Color.primaryNormal)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingPremiumCard) {
+                NavigationView {
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            PremiumSubscriptionCard()
+                            ComingSoonCard()
+                        }
+                        .padding()
+                    }
+                    .background(Color.background1)
+                    .navigationTitle("Premium")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingPremiumCard = false
+                            }
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color.primaryNormal)
+                        }
+                    }
                 }
             }
         }

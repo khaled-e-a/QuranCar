@@ -4,10 +4,11 @@ import StoreKit
 class StoreManager: ObservableObject {
     static let shared = StoreManager()
 
-    @Published private(set) var supportProduct: Product?
+    @Published private(set) var premiumProduct: Product?
     @Published private(set) var isSubscribed = false
+    @Published private(set) var isTrialEligible = true
 
-    private let productID = "elm.qurancar.subscription.support"
+    private let productID = "elm.qurancar.premiummonthly"
     private var updates: Task<Void, Never>? = nil
 
     init() {
@@ -26,7 +27,7 @@ class StoreManager: ObservableObject {
         updates?.cancel()
     }
 
-    // Fetch support product
+    // Fetch premium product
     func fetchProduct() async {
         do {
             Logger.debug("StoreManager: Fetching subscription product for ID: \(productID)")
@@ -39,13 +40,13 @@ class StoreManager: ObservableObject {
             }
 
             await MainActor.run {
-                self.supportProduct = products.first { product in
+                self.premiumProduct = products.first { product in
                     // Verify it's our subscription product
-                    product.id == productID && product.type == .nonRenewable
+                    product.id == productID && product.type == .autoRenewable
                 }
 
-                if let product = self.supportProduct {
-                    Logger.debug("StoreManager: Loaded support product: \(product.displayName) - \(product.displayPrice)")
+                if let product = self.premiumProduct {
+                    Logger.debug("StoreManager: Loaded premium product: \(product.displayName) - \(product.displayPrice)")
                 } else {
                     Logger.debug("StoreManager: No matching product found for ID: \(productID)")
                 }
@@ -56,9 +57,9 @@ class StoreManager: ObservableObject {
         }
     }
 
-    // Purchase support
+    // Purchase premium subscription
     func purchase() async {
-        guard let product = supportProduct else {
+        guard let product = premiumProduct else {
             Logger.debug("StoreManager: No product available")
             return
         }
@@ -71,8 +72,6 @@ class StoreManager: ObservableObject {
                 if let transaction = try? verification.payloadValue {
                     // Update subscription status
                     isSubscribed = true
-                    // Save purchase date
-                    UserDefaults.standard.set(transaction.purchaseDate, forKey: "support_purchase_date")
                     // Finish the transaction
                     await transaction.finish()
                 }
@@ -95,8 +94,6 @@ class StoreManager: ObservableObject {
                 if let transaction = try? verification.payloadValue {
                     // Update subscription status
                     isSubscribed = true
-                    // Save purchase date
-                    UserDefaults.standard.set(transaction.purchaseDate, forKey: "support_purchase_date")
                     // Finish the transaction
                     await transaction.finish()
                 }
@@ -106,9 +103,19 @@ class StoreManager: ObservableObject {
 
     // Check subscription status
     private func checkSubscriptionStatus() async {
-        // For non-renewing subscriptions, we'll consider them "subscribed" if they've ever purchased
-        if let _ = UserDefaults.standard.object(forKey: "support_purchase_date") {
-            isSubscribed = true
+        for await result in await Transaction.currentEntitlements {
+            if let transaction = try? result.payloadValue {
+                if transaction.productID == productID {
+                    isSubscribed = true
+                    break
+                }
+            }
+        }
+
+        // Check if user is eligible for trial
+        if let product = premiumProduct,
+           let subscription = product.subscription {
+            isTrialEligible = await subscription.isEligibleForIntroOffer
         }
     }
 }
