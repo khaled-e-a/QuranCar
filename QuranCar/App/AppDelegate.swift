@@ -7,13 +7,18 @@
 
 import UIKit
 import CarPlay
+import GoogleMobileAds
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // Initialize Google Mobile Ads SDK
+        // MobileAds.shared.start(completionHandler: nil)
+        MobileAds.shared.start { status in
+            print("Google Mobile Ads SDK initialized. Status: \(status.adapterStatusesByClassName)")
+        }
 
         return true
     }
-
 
     func application(
         _ application: UIApplication,

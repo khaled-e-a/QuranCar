@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import Combine
+import GoogleMobileAds
 
 
 struct BookView: View {
@@ -49,33 +50,7 @@ struct BookView: View {
 
     var body: some View {
         ZStack {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    mainContent
-                }
-                .padding(24)
-            }
-            .background(Color.background1)
-            .blur(radius: showingNumberSelector ? 3 : 0)
-            .onChange(of: viewModel.selectedVerseText) { verseText in
-                Logger.debug("BookView: Detected verse text change to: \(verseText)")
-            }
-            .onChange(of: viewModel.selectedChapter) { chapter in
-                Logger.debug("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
-                if let chapter = chapter {
-                    Task {
-                        Logger.debug("BookView: Updating UI for new chapter")
-                        await viewModel.loadQuranData()
-
-                        if let firstVerse = viewModel.currentVerses.first,
-                           let text = firstVerse.textUthmani {
-                            viewModel.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
-                            Logger.debug("BookView: Updated selected verse to: \(viewModel.selectedVerseText)")
-                        }
-                    }
-                }
-            }
-
+            mainScrollView
             numberSelectorOverlay
         }
         .navigationTitle("Memorize")
@@ -121,6 +96,35 @@ struct BookView: View {
         .onChange(of: showingNumberSelector) { show in
             withAnimation(.easeInOut(duration: 0.2)) {
                 numberSelectorOpacity = show ? 1 : 0
+            }
+        }
+    }
+
+    private var mainScrollView: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) {
+                mainContent
+            }
+            .padding(24)
+        }
+        .background(Color.background1)
+        .blur(radius: showingNumberSelector ? 3 : 0)
+        .onChange(of: viewModel.selectedVerseText) { verseText in
+            Logger.debug("BookView: Detected verse text change to: \(verseText)")
+        }
+        .onChange(of: viewModel.selectedChapter) { chapter in
+            Logger.debug("BookView: Detected chapter change to: \(chapter?.nameSimple ?? "None")")
+            if let chapter = chapter {
+                Task {
+                    Logger.debug("BookView: Updating UI for new chapter")
+                    await viewModel.loadQuranData()
+
+                    if let firstVerse = viewModel.currentVerses.first,
+                       let text = firstVerse.textUthmani {
+                        viewModel.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
+                        Logger.debug("BookView: Updated selected verse to: \(viewModel.selectedVerseText)")
+                    }
+                }
             }
         }
     }
@@ -267,6 +271,11 @@ extension BookView {
                 }
                 Spacer()
             }
+
+            // Add banner ad after number selector
+            BannerAdViewWrapper()
+                .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
+                .padding(.top, 20)
         }
     }
 
@@ -788,4 +797,14 @@ enum QuranError: LocalizedError {
 
 #Preview {
     BookView()
+}
+
+struct BannerAdViewWrapper: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> BannerAdView {
+        return BannerAdView()
+    }
+
+    func updateUIViewController(_ uiViewController: BannerAdView, context: Context) {
+        // No updates needed
+    }
 }
