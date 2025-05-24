@@ -119,7 +119,7 @@ struct PremiumSubscriptionCard: View {
                 .multilineTextAlignment(.center)
 
             // Description
-            Text("Get access to all reciters and unlock the full potential of Quran Car")
+            Text("Get access to all reciters, remove ads, and unlock the full potential of Quran Car")
                 .font(.system(size: 17))
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)

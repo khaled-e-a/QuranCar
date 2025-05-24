@@ -46,6 +46,7 @@
 		2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99F2D736BC500BEA2CD /* RecitersListView.swift */; };
 		2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */; };
 		2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */; };
+		28E7D46B2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +111,7 @@
 		2894A99F2D736BC500BEA2CD /* RecitersListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecitersListView.swift; sourceTree = "<group>"; };
 		2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GoogleMobileAdsConsentManager.swift; path = QuranCar/Managers/GoogleMobileAdsConsentManager.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +144,7 @@
 		2811BABD2D66DF3100A39CA3 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */,
 				2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */,
 				2811BAD12D66E48A00A39CA3 /* TokenManager.swift */,
 			);
@@ -550,6 +553,7 @@
 				284E55552D546C1C00AE2A23 /* CarView.swift in Sources */,
 				2894A99E2D70DD5C00BEA2CD /* NumberSelectorView.swift in Sources */,
 				2894A99B2D70D6E900BEA2CD /* ChaptersListView.swift in Sources */,
+				28E7D46B2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -732,7 +736,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -767,7 +771,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

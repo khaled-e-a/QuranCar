@@ -6,6 +6,7 @@ import GoogleMobileAds
 
 struct BookView: View {
     @StateObject private var viewModel = BookViewModel.shared
+    @StateObject private var storeManager = StoreManager.shared
     @State private var showingVersesList = false
     @State private var showingChaptersList = false
     @State private var showingNumberSelector = false
@@ -221,7 +222,7 @@ extension BookView {
                 showingVersesList = true
             }) {
                 HStack {
-                    Text(viewModel.selectedVerseText)
+                    Text(viewModel.selectedVerseText.truncated(to: 50))
                         .font(.system(size: 17, weight: .regular))
                         .foregroundColor(Color.infoNormal)
                         .lineLimit(1)
@@ -272,10 +273,12 @@ extension BookView {
                 Spacer()
             }
 
-            // Add banner ad after number selector
-            BannerAdViewWrapper()
-                .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
-                .padding(.top, 20)
+            // Add banner ad only for non-premium users
+            if !storeManager.isSubscribed {
+                BannerAdViewWrapper()
+                    .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
+                    .padding(.top, 20)
+            }
         }
     }
 
@@ -290,8 +293,10 @@ extension BookView {
                         .font(.subheadline)
                         .foregroundColor(Color.textBodySubtle)
 
-                    Text(viewModel.selectedVerseText)
+                    Text(viewModel.selectedVerseText.truncated(to: 50))
                         .font(.title3)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .environment(\.layoutDirection, .rightToLeft)
@@ -305,8 +310,10 @@ extension BookView {
                         .font(.subheadline)
                         .foregroundColor(Color.textBodySubtle)
 
-                    Text(toVerse)
+                    Text(toVerse.truncated(to: 50))
                         .font(.title3)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .environment(\.layoutDirection, .rightToLeft)
@@ -801,10 +808,16 @@ enum QuranError: LocalizedError {
 
 struct BannerAdViewWrapper: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> BannerAdView {
-        return BannerAdView()
+        let bannerAdView = BannerAdView()
+        // Ensure the view controller is properly presented
+        bannerAdView.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50)
+        return bannerAdView
     }
 
     func updateUIViewController(_ uiViewController: BannerAdView, context: Context) {
-        // No updates needed
+        // Force view to appear if needed
+        if !uiViewController.isViewDidAppearCalled {
+            uiViewController.viewDidAppear(false)
+        }
     }
 }

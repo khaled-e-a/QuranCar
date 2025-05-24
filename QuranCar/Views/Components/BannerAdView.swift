@@ -1,62 +1,166 @@
-import SwiftUI
+import UIKit
 import GoogleMobileAds
 
 class BannerAdView: UIViewController, BannerViewDelegate {
-    private var bannerView: BannerView!
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+  private var bannerView: BannerView!
+  private var adInspectorButton: UIBarButtonItem!
 
-        // Create banner view programmatically
-        bannerView = BannerView()
-        bannerView.delegate = self
-        bannerView.adUnitID = "ca-app-pub-4062866077093549/9858278336"
-        bannerView.rootViewController = self
+  private var isMobileAdsStartCalled = false
+  var isViewDidAppearCalled = false  // Changed from private to internal
+  private var isSDKInitialized = false  // New flag to track SDK initialization
 
-        // Add banner view to view hierarchy
-        view.addSubview(bannerView)
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bannerView.topAnchor.constraint(equalTo: view.topAnchor),
-            bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    print("viewDidLoad called")
 
-        bannerView.load(Request())
+    // Create and configure banner view
+    bannerView = BannerView()
+    bannerView.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(bannerView)
+
+    // Set up constraints
+    NSLayoutConstraint.activate([
+      bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+    ])
+
+    adInspectorButton = UIBarButtonItem(
+      title: "Ad Inspector",
+      style: .plain,
+      target: self,
+      action: #selector(adInspectorTapped)
+    )
+
+    // Add buttons to navigation bar
+    navigationItem.rightBarButtonItems = [adInspectorButton]
+
+    // Replace this ad unit ID with your own ad unit ID.
+    // bannerView.adUnitID = "ca-app-pub-4062866077093549/9858278336"
+    bannerView.adUnitID = "/1092393/320x50_QuranCar:DriveandMemorize"
+    bannerView.rootViewController = self
+    bannerView.delegate = self
+
+    // Initialize SDK immediately instead of async
+    startGoogleMobileAdsSDK()
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    print("viewDidAppear called")
+    isViewDidAppearCalled = true
+    print("isViewDidAppearCalled set to true")
+
+    // Load ad if SDK is initialized
+    if isSDKInitialized {
+      print("SDK already initialized, loading banner ad")
+      loadBannerAd()
+    } else {
+      print("SDK not yet initialized, waiting for initialization")
+    }
+  }
+
+  override func viewWillTransition(
+    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    coordinator.animate(alongsideTransition: { _ in
+      self.loadBannerAd()
+    })
+  }
+
+  /// Handle ad inspector launch.
+  @objc private func adInspectorTapped(_ sender: UIBarButtonItem) {
+    Task {
+      do {
+        try await MobileAds.shared.presentAdInspector(from: self)
+      } catch {
+        // There was an issue and the inspector was not displayed.
+        let alertController = UIAlertController(
+          title: error.localizedDescription, message: "Please try again later.",
+          preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .cancel))
+        present(alertController, animated: true)
+      }
+    }
+  }
+
+  private func startGoogleMobileAdsSDK() {
+    print("startGoogleMobileAdsSDK called")
+    guard !isMobileAdsStartCalled else {
+      print("SDK already started, returning")
+      return
     }
 
-    // MARK: - GADBannerViewDelegate
+    isMobileAdsStartCalled = true
+    print("isMobileAdsStartCalled set to true")
 
-    // Called when an ad request loaded an ad.
-    func adViewDidReceiveAd(_ bannerView: BannerView) {
-        print(#function)
-    }
+    // Initialize the Google Mobile Ads SDK.
+    MobileAds.shared.start { [weak self] status in
+      guard let self = self else { return }
+      print("Google Mobile Ads SDK initialized. Status: \(status.adapterStatusesByClassName)")
+      self.isSDKInitialized = true
+      print("isViewDidAppearCalled: \(self.isViewDidAppearCalled)")
 
-    // Called when an ad request failed.
-    func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
-        print("\(#function): \(error.localizedDescription)")
+      // Load ad if viewDidAppear has been called
+      if self.isViewDidAppearCalled {
+        print("loading banner ad")
+        self.loadBannerAd()
+      } else {
+        print("viewDidAppear not yet called, waiting for it")
+      }
     }
+  }
 
-    // Called just before presenting the user a full screen view, such as a browser, in response to
-    // clicking on an ad.
-    func bannerViewWillPresentScreen(_ bannerView: BannerView) {
-        print(#function)
-    }
+  func loadBannerAd() {
+    let viewWidth = view.frame.inset(by: view.safeAreaInsets).width
 
-    // Called just before dismissing a full screen view.
-    func bannerViewWillDismissScreen(_ bannerView: BannerView) {
-        print(#function)
-    }
+    // Here the current interface orientation is used. Use
+    // GADLandscapeAnchoredAdaptiveBannerAdSizeWithWidth or
+    // GADPortraitAnchoredAdaptiveBannerAdSizeWithWidth if you prefer to load an ad of a
+    // particular orientation
+    bannerView.adSize = currentOrientationAnchoredAdaptiveBanner(width: viewWidth)
 
-    // Called just after dismissing a full screen view.
-    func bannerViewDidDismissScreen(_ bannerView: BannerView) {
-        print(#function)
-    }
+    print("bannerView.adSize: \(bannerView.adSize)")
 
-    // Called just before the application will background or exit because the user clicked on an
-    // ad that will launch another application (such as the App Store).
-    func adViewWillLeaveApplication(_ bannerView: BannerView) {
-        print(#function)
-    }
+    let request = Request()
+
+    print("request: \(request)")
+
+    bannerView.load(request)
+
+    print("loaded banner ad")
+
+  }
+
+  // MARK: - GADBannerViewDelegate methods
+
+  func bannerViewDidReceiveAd(_ bannerView: BannerView) {
+    print(#function)
+  }
+
+  func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
+    print(#function + ": " + error.localizedDescription)
+  }
+
+  func bannerViewDidRecordClick(_ bannerView: BannerView) {
+    print(#function)
+  }
+
+  func bannerViewDidRecordImpression(_ bannerView: BannerView) {
+    print(#function)
+  }
+
+  func bannerViewWillPresentScreen(_ bannerView: BannerView) {
+    print(#function)
+  }
+
+  func bannerViewWillDismissScreen(_ bannerView: BannerView) {
+    print(#function)
+  }
+
+  func bannerViewDidDismissScreen(_ bannerView: BannerView) {
+    print(#function)
+  }
+
 }
