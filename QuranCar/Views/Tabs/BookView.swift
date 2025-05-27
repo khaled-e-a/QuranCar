@@ -278,6 +278,10 @@ extension BookView {
                 BannerAdViewWrapper()
                     .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
                     .padding(.top, 20)
+                Text("Ads by Muslim Ad Network")
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
         }
     }
