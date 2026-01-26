@@ -47,6 +47,7 @@
 		2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */; };
 		2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */; };
 		28E7D46B2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */; };
+		28FDE8642F26FFDA00116368 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28FDE8632F26FFDA00116368 /* NotificationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +113,7 @@
 		2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GoogleMobileAdsConsentManager.swift; path = QuranCar/Managers/GoogleMobileAdsConsentManager.swift; sourceTree = SOURCE_ROOT; };
+		28FDE8632F26FFDA00116368 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NotificationManager.swift; path = QuranCar/Managers/NotificationManager.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 		2811BABD2D66DF3100A39CA3 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				28FDE8632F26FFDA00116368 /* NotificationManager.swift */,
 				28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */,
 				2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */,
 				2811BAD12D66E48A00A39CA3 /* TokenManager.swift */,
@@ -545,6 +548,7 @@
 				2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */,
 				2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */,
 				281957802DDB94E100A0D6E6 /* BannerAdView.swift in Sources */,
+				28FDE8642F26FFDA00116368 /* NotificationManager.swift in Sources */,
 				282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */,
 				2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */,
 				2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */,
