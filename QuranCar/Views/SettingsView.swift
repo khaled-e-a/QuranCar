@@ -16,24 +16,32 @@ struct SettingsView: View {
                 // Premium Subscription Section
                 VStack(spacing: 24) {
                     PremiumSubscriptionCard()
-                    ComingSoonCard()
                 }
                 .padding(.horizontal)
 
                 // Notifications Section
                 VStack(spacing: 0) {
-                    HStack {
-                        Image(systemName: "bell")
-                            .foregroundColor(Color.textBodySubtle)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Reminder Notifications")
-                                .font(.system(size: 17, weight: .regular))
-                                .foregroundColor(Color.textBody)
-                            Text("Get reminded to continue your memorization")
-                                .font(.system(size: 13))
+                    ZStack(alignment: .trailing) {
+                        // Text content that fills available width
+                        HStack(spacing: 12) {
+                            Image(systemName: "bell")
                                 .foregroundColor(Color.textBodySubtle)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Reminder Notifications")
+                                    .font(.system(size: 17, weight: .regular))
+                                    .foregroundColor(Color.textBody)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Text("Get reminded to continue your memorization")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(Color.textBodySubtle)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer(minLength: 60) // Reserve space for toggle
                         }
-                        Spacer()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        // Toggle positioned on the right
                         Toggle("", isOn: Binding(
                             get: { notificationManager.isNotificationEnabled },
                             set: { newValue in
@@ -138,6 +146,12 @@ struct SettingsView: View {
                     .buttonStyle(PlainButtonStyle())
                 }
                 .cornerRadius(10)
+                .padding(.horizontal)
+
+                // Coming Soon Section
+                VStack(spacing: 24) {
+                    ComingSoonCard()
+                }
                 .padding(.horizontal)
             }
             .padding(.vertical, 24)

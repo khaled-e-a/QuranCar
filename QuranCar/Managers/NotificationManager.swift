@@ -36,8 +36,16 @@ class NotificationManager: ObservableObject {
     }
 
     private init() {
-        // Load saved preference
-        self.isNotificationEnabled = defaults.bool(forKey: UserDefaultsKeys.notificationsEnabled)
+        // Load saved preference, default to true if not set
+        let savedValue = defaults.object(forKey: UserDefaultsKeys.notificationsEnabled)
+        if savedValue == nil {
+            // First time - default to enabled
+            self.isNotificationEnabled = true
+            defaults.set(true, forKey: UserDefaultsKeys.notificationsEnabled)
+        } else {
+            // Use saved value
+            self.isNotificationEnabled = defaults.bool(forKey: UserDefaultsKeys.notificationsEnabled)
+        }
 
         // Check current authorization status
         Task {
