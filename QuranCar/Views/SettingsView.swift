@@ -1,10 +1,13 @@
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     @StateObject private var storeManager = StoreManager.shared
+    @StateObject private var notificationManager = NotificationManager.shared
     @State private var showingThankYou = false
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = true
     @State private var showingOnboarding = false
+    @State private var showingPermissionAlert = false
     @Binding var selectedTab: Tab
 
     var body: some View {
@@ -17,8 +20,69 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal)
 
-                // Tutorial Section
+                // Notifications Section
                 VStack(spacing: 0) {
+                    HStack {
+                        Image(systemName: "bell")
+                            .foregroundColor(Color.textBodySubtle)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Reminder Notifications")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
+                            Text("Get reminded to continue your memorization")
+                                .font(.system(size: 13))
+                                .foregroundColor(Color.textBodySubtle)
+                        }
+                        Spacer()
+                        Toggle("", isOn: Binding(
+                            get: { notificationManager.isNotificationEnabled },
+                            set: { newValue in
+                                if newValue {
+                                    Task {
+                                        let granted = await notificationManager.enableNotifications()
+                                        if !granted {
+                                            showingPermissionAlert = true
+                                        }
+                                    }
+                                } else {
+                                    notificationManager.disableNotifications()
+                                }
+                            }
+                        ))
+                        .tint(Color.primaryNormal)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 16)
+                    .background(Color.background2)
+                    .contentShape(Rectangle())
+
+                    // Permission status
+                    if notificationManager.authorizationStatus == .denied {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(Color.warningNormal)
+                            Text("Notifications are disabled in Settings")
+                                .font(.system(size: 13))
+                                .foregroundColor(Color.textBodySubtle)
+                            Spacer()
+                            Button("Open Settings") {
+                                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                                    UIApplication.shared.open(settingsUrl)
+                                }
+                            }
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Color.primaryNormal)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .background(Color.background2)
+                    }
+
+                    Divider()
+                        .background(Color.stroke1)
+
+                    // Tutorial Section
                     Button(action: {
                         if hasSeenOnboarding {
                             selectedTab = .memorize
@@ -86,6 +150,21 @@ struct SettingsView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text("Thank you for subscribing to Quran Car Premium! You now have access to all reciters.")
+        }
+        .alert("Notification Permission Required", isPresented: $showingPermissionAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Open Settings") {
+                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsUrl)
+                }
+            }
+        } message: {
+            Text("Please enable notifications in Settings to receive reminders about your memorization journey.")
+        }
+        .onAppear {
+            Task {
+                await notificationManager.checkAuthorizationStatus()
+            }
         }
         .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView(showOnboarding: $showingOnboarding) {

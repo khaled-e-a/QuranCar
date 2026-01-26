@@ -55,6 +55,12 @@ struct ContentView: View {
         .task {
             // Get token when app launches
             await QuranAuthManager.shared.refreshTokenIfNeeded()
+
+            // Request notification authorization if not already determined
+            await NotificationManager.shared.checkAuthorizationStatus()
+            if NotificationManager.shared.authorizationStatus == .notDetermined {
+                _ = await NotificationManager.shared.requestAuthorization()
+            }
         }
     }
 }
