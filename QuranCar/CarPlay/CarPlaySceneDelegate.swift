@@ -47,11 +47,18 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
         Task {
             try? await bookViewModel?.loadQuranData()
 
-            // Update local state from BookViewModel
-            if let firstVerse = bookViewModel?.currentVerses.first,
-               let text = firstVerse.textUthmani {
-                bookViewModel?.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
-                bookViewModel?.currentVerseNumber = Int(firstVerse.verseNumber)
+            // Update verse text to match saved verse number, not always first verse
+            guard let viewModel = bookViewModel else { return }
+            let savedVerseNumber = viewModel.currentVerseNumber
+            
+            if let verse = viewModel.currentVerses.first(where: { $0.verseNumber == savedVerseNumber }),
+               let text = verse.textUthmani {
+                viewModel.selectedVerseText = "\(verse.verseNumber). \(text)"
+            } else if let firstVerse = viewModel.currentVerses.first,
+                      let text = firstVerse.textUthmani {
+                // Only fallback to first verse if saved verse not found
+                viewModel.selectedVerseText = "\(firstVerse.verseNumber). \(text)"
+                viewModel.currentVerseNumber = Int(firstVerse.verseNumber)
             }
         }
 
