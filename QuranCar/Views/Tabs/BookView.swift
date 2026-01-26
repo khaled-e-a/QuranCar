@@ -273,16 +273,17 @@ extension BookView {
                 Spacer()
             }
 
-            // Add banner ad only for non-premium users
-            if !storeManager.isSubscribed {
-                BannerAdViewWrapper()
-                    .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
-                    .padding(.top, 20)
-                Text("Ads by Muslim Ad Network")
-                    .font(.caption2)
-                    .foregroundColor(.gray)
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
+            // Disable banner ad
+//            // Add banner ad only for non-premium users
+//            if !storeManager.isSubscribed {
+//                BannerAdViewWrapper()
+//                    .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
+//                    .padding(.top, 20)
+//                Text("Ads by Muslim Ad Network")
+//                    .font(.caption2)
+//                    .foregroundColor(.gray)
+//                    .frame(maxWidth: .infinity, alignment: .center)
+//            }
         }
     }
 
