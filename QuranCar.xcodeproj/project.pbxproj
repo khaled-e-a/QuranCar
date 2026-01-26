@@ -45,6 +45,7 @@
 		2894A99E2D70DD5C00BEA2CD /* NumberSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */; };
 		2894A9A12D736BC600BEA2CD /* RecitersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A99F2D736BC500BEA2CD /* RecitersListView.swift */; };
 		2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */; };
+		2894A9A82D73AD3800BEA2CD /* Error+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A92D73AD3800BEA2CD /* Error+Extensions.swift */; };
 		2894A9A72D73BF3B00BEA2CD /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */; };
 		28E7D46B2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */; };
 		28FDE8642F26FFDA00116368 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28FDE8632F26FFDA00116368 /* NotificationManager.swift */; };
@@ -111,6 +112,7 @@
 		2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberSelectorView.swift; sourceTree = "<group>"; };
 		2894A99F2D736BC500BEA2CD /* RecitersListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecitersListView.swift; sourceTree = "<group>"; };
 		2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		2894A9A92D73AD3800BEA2CD /* Error+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+Extensions.swift"; sourceTree = "<group>"; };
 		2894A9A52D73BF3B00BEA2CD /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GoogleMobileAdsConsentManager.swift; path = QuranCar/Managers/GoogleMobileAdsConsentManager.swift; sourceTree = SOURCE_ROOT; };
 		28FDE8632F26FFDA00116368 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NotificationManager.swift; path = QuranCar/Managers/NotificationManager.swift; sourceTree = SOURCE_ROOT; };
@@ -368,6 +370,7 @@
 			isa = PBXGroup;
 			children = (
 				2894A9A22D73AD3800BEA2CD /* String+Extensions.swift */,
+				2894A9A92D73AD3800BEA2CD /* Error+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 			files = (
 				282C40B52D86429C00E531FD /* CarPlayConnectionManager.swift in Sources */,
 				2894A9A42D73AD3800BEA2CD /* String+Extensions.swift in Sources */,
+				2894A9A82D73AD3800BEA2CD /* Error+Extensions.swift in Sources */,
 				282C40C32D86A7A300E531FD /* StoreManager.swift in Sources */,
 				286A9AD92D7A0149003600D9 /* SplashView.swift in Sources */,
 				2811BFBC2D6EA5AE00A39CA3 /* QuranViewController.swift in Sources */,

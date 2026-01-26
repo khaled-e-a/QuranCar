@@ -127,7 +127,10 @@ class BookViewModel: ObservableObject {
                 await loadAudioFiles()
             }
         } catch {
-            self.error = error
+            // Suppress socket idle errors from being shown to users
+            if !error.isSocketIdleError() {
+                self.error = error
+            }
         }
 
         isLoading = false
@@ -166,7 +169,10 @@ class BookViewModel: ObservableObject {
                 }
             }
         } catch {
-            self.error = error
+            // Suppress socket idle errors from being shown to users
+            if !error.isSocketIdleError() {
+                self.error = error
+            }
         }
 
         isLoading = false
@@ -220,7 +226,10 @@ class BookViewModel: ObservableObject {
                 self.currentVerses = localVerses
             }
         } catch {
-            self.error = error
+            // Suppress socket idle errors from being shown to users
+            if !error.isSocketIdleError() {
+                self.error = error
+            }
         }
 
         isLoading = false
@@ -253,7 +262,10 @@ class BookViewModel: ObservableObject {
                 }
             }
         } catch {
-            self.error = error
+            // Suppress socket idle errors from being shown to users
+            if !error.isSocketIdleError() {
+                self.error = error
+            }
         }
 
         isLoading = false
@@ -294,7 +306,10 @@ class BookViewModel: ObservableObject {
                 self.currentAudioFiles = localAudioFiles
             }
         } catch {
-            self.error = error
+            // Suppress socket idle errors from being shown to users
+            if !error.isSocketIdleError() {
+                self.error = error
+            }
         }
 
         isLoading = false
@@ -363,7 +378,10 @@ class BookViewModel: ObservableObject {
                         numberOfVerses: 1
                     )
                 } catch {
-                    self.error = error
+                    // Suppress socket idle errors from being shown to users
+                    if !error.isSocketIdleError() {
+                        self.error = error
+                    }
                     Logger.debug("Error during previous verse playback: \(error)")
                 }
             }
@@ -391,7 +409,10 @@ class BookViewModel: ObservableObject {
                         numberOfVerses: 1
                     )
                 } catch {
-                    self.error = error
+                    // Suppress socket idle errors from being shown to users
+                    if !error.isSocketIdleError() {
+                        self.error = error
+                    }
                     Logger.debug("Error during next verse playback: \(error)")
                 }
             }
@@ -441,7 +462,10 @@ class BookViewModel: ObservableObject {
                 }
             } catch {
                 Logger.error("Error restoring saved state: \(error)")
-                self.error = error
+                // Suppress socket idle errors from being shown to users
+                if !error.isSocketIdleError() {
+                    self.error = error
+                }
             }
         }
     }
