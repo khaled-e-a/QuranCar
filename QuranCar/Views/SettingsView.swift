@@ -3,7 +3,7 @@ import UserNotifications
 
 struct SettingsView: View {
     @StateObject private var storeManager = StoreManager.shared
-    @StateObject private var notificationManager = NotificationManager.shared
+    @EnvironmentObject var notificationManager: NotificationManager
     @State private var showingThankYou = false
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = true
     @State private var showingOnboarding = false
@@ -32,7 +32,7 @@ struct SettingsView: View {
                                     .font(.system(size: 17, weight: .regular))
                                     .foregroundColor(Color.textBody)
                                     .fixedSize(horizontal: false, vertical: true)
-                                Text("Get reminded to continue your memorization")
+                                Text("Get reminded to continue your memorization if you've been away for 3 days.")
                                     .font(.system(size: 13))
                                     .foregroundColor(Color.textBodySubtle)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -48,7 +48,7 @@ struct SettingsView: View {
                                 if newValue {
                                     Task {
                                         let granted = await notificationManager.enableNotifications()
-                                        if !granted {
+                                        if !granted && notificationManager.authorizationStatus == .denied {
                                             showingPermissionAlert = true
                                         }
                                     }
@@ -64,6 +64,31 @@ struct SettingsView: View {
                     .padding(.horizontal, 16)
                     .background(Color.background2)
                     .contentShape(Rectangle())
+
+                    // Test Notification Button
+                    if notificationManager.isNotificationEnabled && notificationManager.authorizationStatus == .authorized {
+                        Divider()
+                            .padding(.leading, 52)
+                        
+                        Button(action: {
+                            Task {
+                                await notificationManager.scheduleTestNotification()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "bell.badge")
+                                    .foregroundColor(Color.primaryNormal)
+                                    .frame(width: 24)
+                                Text("Send Test Notification (5s)")
+                                    .font(.system(size: 17))
+                                    .foregroundColor(Color.primaryNormal)
+                                Spacer()
+                            }
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .background(Color.background2)
+                        }
+                    }
 
                     // Permission status
                     if notificationManager.authorizationStatus == .denied {

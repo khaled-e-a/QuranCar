@@ -7,9 +7,10 @@
 
 import Foundation
 import UserNotifications
+import UIKit
 
 @MainActor
-class NotificationManager: ObservableObject {
+class NotificationManager: NSObject, ObservableObject {
     static let shared = NotificationManager()
 
     private let notificationCenter = UNUserNotificationCenter.current()
@@ -25,6 +26,8 @@ class NotificationManager: ObservableObject {
     private let notificationHour = 14 // 2 PM
     private let notificationMinute = 0
 
+    @Published var selectedTab: Tab = .memorize
+    @Published var showingSoftPrompt = false
     @Published var authorizationStatus: UNAuthorizationStatus = .notDetermined
     @Published var isNotificationEnabled: Bool {
         didSet {
@@ -35,22 +38,28 @@ class NotificationManager: ObservableObject {
         }
     }
 
-    private init() {
-        // Load saved preference, default to true if not set
+    private override init() {
+        // Initialize published properties before calling super.init()
         let savedValue = defaults.object(forKey: UserDefaultsKeys.notificationsEnabled)
         if savedValue == nil {
-            // First time - default to enabled
             self.isNotificationEnabled = true
             defaults.set(true, forKey: UserDefaultsKeys.notificationsEnabled)
         } else {
-            // Use saved value
             self.isNotificationEnabled = defaults.bool(forKey: UserDefaultsKeys.notificationsEnabled)
         }
+
+        super.init()
 
         // Check current authorization status
         Task {
             await checkAuthorizationStatus()
         }
+        
+        setupNotificationDelegate()
+    }
+
+    private func setupNotificationDelegate() {
+        notificationCenter.delegate = self
     }
 
     // MARK: - Authorization
@@ -76,8 +85,11 @@ class NotificationManager: ObservableObject {
     func trackAppUsage() {
         let currentTimestamp = Date().timeIntervalSince1970
         defaults.set(currentTimestamp, forKey: UserDefaultsKeys.lastAppUsageTimestamp)
-        Logger.debug("NotificationManager: Tracked app usage at \(Date())")
+        print("LOGGING: NotificationManager -> Tracking app usage (Resetting badge and canceling)")
 
+        // Reset badge count
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         // Cancel any scheduled notifications since user is now active
         cancelScheduledNotifications()
     }
@@ -99,7 +111,7 @@ class NotificationManager: ObservableObject {
     func scheduleNotificationIfNeeded() {
         // Only schedule if notifications are enabled
         guard isNotificationEnabled else {
-            Logger.debug("NotificationManager: Notifications are disabled, skipping scheduling")
+            print("LOGGING: NotificationManager -> Notifications disabled in settings")
             return
         }
 
@@ -108,18 +120,11 @@ class NotificationManager: ObservableObject {
             await checkAuthorizationStatus()
 
             guard authorizationStatus == .authorized else {
-                Logger.debug("NotificationManager: Notifications not authorized, skipping scheduling")
+                print("LOGGING: NotificationManager -> Notifications NOT authorized (\(authorizationStatus))")
                 return
             }
 
-            // Check if user has been inactive for the threshold period
-            guard let timeSinceLastUsage = timeSinceLastUsage(),
-                  timeSinceLastUsage >= inactivityThreshold else {
-                Logger.debug("NotificationManager: User has been active recently, no notification needed")
-                return
-            }
-
-            // Schedule notification for tomorrow at 2 PM
+            // Always schedule a notification for 3 days in the future.
             await scheduleNotification()
         }
     }
@@ -135,25 +140,23 @@ class NotificationManager: ObservableObject {
         content.sound = .default
         content.badge = 1
 
-        // Schedule for next 2 PM (today if before 2 PM, tomorrow if after 2 PM)
+        // Schedule for 3 days from now at 2 PM
         let calendar = Calendar.current
         let now = Date()
-        var targetComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: now)
+        
+        // Add 3 days
+        guard let threeDaysFromNow = calendar.date(byAdding: .day, value: 3, to: now) else {
+            print("LOGGING: NotificationManager -> ERROR: Failed to calculate 3 days from now")
+            return
+        }
+        
+        var targetComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: threeDaysFromNow)
         targetComponents.hour = notificationHour
         targetComponents.minute = notificationMinute
 
-        guard var triggerDate = calendar.date(from: targetComponents) else {
-            Logger.error("NotificationManager: Failed to create trigger date")
+        guard let triggerDate = calendar.date(from: targetComponents) else {
+            print("LOGGING: NotificationManager -> ERROR: Failed to create trigger date")
             return
-        }
-
-        // If 2 PM today has already passed, schedule for tomorrow
-        if triggerDate <= now {
-            guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: triggerDate) else {
-                Logger.error("NotificationManager: Failed to calculate tomorrow's date")
-                return
-            }
-            triggerDate = tomorrow
         }
 
         // Create trigger
@@ -170,28 +173,51 @@ class NotificationManager: ObservableObject {
         // Schedule notification
         do {
             try await notificationCenter.add(request)
-            Logger.debug("NotificationManager: Scheduled notification for \(triggerDate)")
+            print("LOGGING: NotificationManager -> SUCCESS: Scheduled reminder for \(triggerDate)")
         } catch {
-            Logger.error("NotificationManager: Failed to schedule notification: \(error)")
+            print("LOGGING: NotificationManager -> ERROR: Failed to schedule: \(error)")
         }
     }
 
     func cancelScheduledNotifications() {
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
-        Logger.debug("NotificationManager: Cancelled scheduled notifications")
+        print("LOGGING: NotificationManager -> Cancelled scheduled reminders")
+    }
+
+    func scheduleTestNotification() async {
+        // Create notification content
+        let content = UNMutableNotificationContent()
+        content.title = "Test Notification"
+        content.body = "This is a test notification from QuranCar. It works!"
+        content.sound = .default
+        content.badge = 1
+
+        // Create trigger for 5 seconds from now
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+
+        // Create request
+        let request = UNNotificationRequest(
+            identifier: notificationIdentifier + "_test",
+            content: content,
+            trigger: trigger
+        )
+
+        // Schedule notification
+        do {
+            try await notificationCenter.add(request)
+            Logger.debug("NotificationManager: Scheduled test notification for in 5 seconds")
+        } catch {
+            Logger.error("NotificationManager: Failed to schedule test notification: \(error)")
+        }
     }
 
     // MARK: - Helper Methods
 
     func enableNotifications() async -> Bool {
         if authorizationStatus == .notDetermined {
-            let granted = await requestAuthorization()
-            if granted {
-                isNotificationEnabled = true
-                return true
-            }
-            return false
+            showingSoftPrompt = true
+            return false // Will be handled by soft prompt
         } else if authorizationStatus == .authorized {
             isNotificationEnabled = true
             return true
@@ -204,5 +230,35 @@ class NotificationManager: ObservableObject {
     func disableNotifications() {
         isNotificationEnabled = false
         cancelScheduledNotifications()
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+
+extension NotificationManager: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        Logger.debug("NotificationManager: User tapped notification")
+        
+        // Switch to the Memorize tab
+        DispatchQueue.main.async {
+            self.selectedTab = .memorize
+            // Reset badge count on interaction
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
+        
+        completionHandler()
+    }
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show notification even if app is in foreground
+        completionHandler([.banner, .sound, .badge])
     }
 }

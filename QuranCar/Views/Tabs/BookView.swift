@@ -5,7 +5,8 @@ import GoogleMobileAds
 
 
 struct BookView: View {
-    @StateObject private var viewModel = BookViewModel.shared
+    @EnvironmentObject var viewModel: BookViewModel
+    @EnvironmentObject var notificationManager: NotificationManager
     @StateObject private var storeManager = StoreManager.shared
     @State private var showingVersesList = false
     @State private var showingChaptersList = false
@@ -15,10 +16,6 @@ struct BookView: View {
     @State private var isLooping: Bool = true
     @State private var currentPlaybackTask: Task<Void, Never>?
     @StateObject private var carPlayManager = CarPlayConnectionManager.shared
-
-    init() {
-        Logger.debug("BookView: BookViewModel instance: \(ObjectIdentifier(viewModel))")
-    }
 
     private var toVerse: String {
         let currentVerseNumber = Int(viewModel.selectedVerseText.split(separator: ".").first ?? "1") ?? 1
@@ -568,6 +565,15 @@ extension BookView {
 extension BookView {
     private func handleChapterSelection(_ chapter: ChapterEntity) {
         Logger.debug("BookView: Selecting chapter: \(chapter.nameSimple)")
+        
+        // Trigger soft prompt for notifications if never asked
+        Task { @MainActor in
+            await NotificationManager.shared.checkAuthorizationStatus()
+            if NotificationManager.shared.authorizationStatus == .notDetermined {
+                NotificationManager.shared.showingSoftPrompt = true
+            }
+        }
+
         Task {
             Logger.debug("BookView: Setting selectedChapter")
             viewModel.selectedChapter = chapter

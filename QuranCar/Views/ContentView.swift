@@ -31,13 +31,6 @@ struct ContentView: View {
                     // When onboarding completes, show coach marks and set hasSeenOnboarding
                     hasSeenOnboarding = true
                     showingCoachMarks = true
-                    // Request notification authorization after onboarding
-                    Task {
-                        await NotificationManager.shared.checkAuthorizationStatus()
-                        if NotificationManager.shared.authorizationStatus == .notDetermined {
-                            _ = await NotificationManager.shared.requestAuthorization()
-                        }
-                    }
                 }
                 .transition(.opacity)
             } else {
@@ -47,15 +40,6 @@ struct ContentView: View {
                         // Mark MainView as ready after a brief delay to ensure all views are laid out
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             mainViewReady = true
-                        }
-                        // Request notification authorization if user skipped onboarding
-                        if hasSeenOnboarding {
-                            Task {
-                                await NotificationManager.shared.checkAuthorizationStatus()
-                                if NotificationManager.shared.authorizationStatus == .notDetermined {
-                                    _ = await NotificationManager.shared.requestAuthorization()
-                                }
-                            }
                         }
                     }
                     .overlay {

@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var selectedTab = Tab.memorize
     @State private var showingCoachMarks = false
+    @EnvironmentObject var notificationManager: NotificationManager
 
     var body: some View {
         NavigationView {
@@ -11,17 +11,17 @@ struct MainView: View {
                 CarPlayStatusBar()
 
                 // Custom Tab Bar
-                CustomTabBar(selectedTab: $selectedTab)
+                CustomTabBar(selectedTab: $notificationManager.selectedTab)
 
                 // Content
-                TabView(selection: $selectedTab) {
+                TabView(selection: $notificationManager.selectedTab) {
                     BookView()
                         .tag(Tab.memorize)
                         .onAppear {
                             Logger.debug("MainView: BookView tab appeared")
                         }
 
-                    SettingsView(selectedTab: $selectedTab)
+                    SettingsView(selectedTab: $notificationManager.selectedTab)
                         .tag(Tab.settings)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -33,9 +33,13 @@ struct MainView: View {
                     CoachMarkView(showCoachMarks: $showingCoachMarks)
                 }
             }
+            .sheet(isPresented: $notificationManager.showingSoftPrompt) {
+                SoftPromptView()
+            }
         }
         .navigationViewStyle(.stack)  // Prevent split view on iPad
         .onReceive(NotificationCenter.default.publisher(for: .showCoachMarks)) { _ in
+            notificationManager.selectedTab = .memorize
             showingCoachMarks = true
         }
     }
