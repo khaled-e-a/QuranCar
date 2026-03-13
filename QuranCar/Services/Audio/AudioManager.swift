@@ -1,11 +1,18 @@
 import AVFoundation
 import Foundation
 
+@MainActor
 class AudioManager: NSObject, ObservableObject {
     @Published var isPlaying = false
     @Published var isLoading = false
     @Published var currentVerseIndex = 0
     @Published var downloadProgress: Double = 0
+    @Published var playbackSpeed: Float {
+        didSet {
+            UserDefaults.standard.set(playbackSpeed, forKey: "preferredPlaybackSpeed")
+            applyPlaybackSpeed()
+        }
+    }
 
     private var player: AVPlayer?
     private var playerItems: [AVPlayerItem] = []
@@ -15,6 +22,10 @@ class AudioManager: NSObject, ObservableObject {
     private var timeObserver: Any?
 
     override init() {
+        // Load persisted speed or default to 1.0
+        let savedSpeed = UserDefaults.standard.float(forKey: "preferredPlaybackSpeed")
+        self.playbackSpeed = savedSpeed > 0 ? savedSpeed : 1.0
+        
         super.init()
         setupAudioSession()
         setupNotificationObservers()
@@ -53,8 +64,12 @@ class AudioManager: NSObject, ObservableObject {
             return lastComponent1 < lastComponent2
         }
 
-        // Create player items
-        self.playerItems = sortedUrls.map { AVPlayerItem(url: $0) }
+        // Create player items with pitch correction
+        self.playerItems = sortedUrls.map { url in
+            let item = AVPlayerItem(url: url)
+            item.audioTimePitchAlgorithm = .timeDomain
+            return item
+        }
         Logger.debug("AudioManager: Created \(playerItems.count) player items")
 
         // Create player with first item
@@ -77,17 +92,30 @@ class AudioManager: NSObject, ObservableObject {
     }
 
     func startPlayback() {
-        Logger.debug("AudioManager: Starting playback")
-        Logger.debug("AudioManager: Current player item: \(String(describing: player?.currentItem))")
-        Logger.debug("AudioManager: Total items in queue: \(playerItems.count)")
+        let effectiveSpeed = StoreManager.shared.isPremiumActive ? playbackSpeed : 1.0
+        Logger.debug("AudioManager: Starting playback at speed \(effectiveSpeed)")
         isPlaying = true
         player?.play()
+        player?.rate = effectiveSpeed
     }
 
     func stopPlayback() {
         Logger.debug("AudioManager: Stopping playback")
         isPlaying = false
         player?.pause()
+    }
+
+    func setPlaybackSpeed(_ speed: Float) {
+        playbackSpeed = speed
+    }
+
+    private func applyPlaybackSpeed() {
+        // Enforce 1.0x for non-premium users
+        let effectiveSpeed = StoreManager.shared.isPremiumActive ? playbackSpeed : 1.0
+        
+        if isPlaying {
+            player?.rate = effectiveSpeed
+        }
     }
 
     private func downloadAudioFiles(urls: [String]) async throws -> [URL] {
@@ -259,6 +287,9 @@ class AudioManager: NSObject, ObservableObject {
         if let nextItem = playerItems[safe: currentVerseIndex] {
             player?.replaceCurrentItem(with: nextItem)
             player?.play()
+            
+            let effectiveSpeed = StoreManager.shared.isPremiumActive ? playbackSpeed : 1.0
+            player?.rate = effectiveSpeed
 
             if let urlAsset = nextItem.asset as? AVURLAsset {
                 Logger.debug("AudioManager: Now playing: \(urlAsset.url.lastPathComponent)")
@@ -321,8 +352,8 @@ class AudioManager: NSObject, ObservableObject {
         }
     }
 
-    deinit {
-        cleanupCurrentPlayer()
+    nonisolated deinit {
+        // We can't call @MainActor methods from deinit anymore
         NotificationCenter.default.removeObserver(self)
     }
 }

@@ -7,7 +7,7 @@ import GoogleMobileAds
 struct BookView: View {
     @EnvironmentObject var viewModel: BookViewModel
     @EnvironmentObject var notificationManager: NotificationManager
-    @StateObject private var storeManager = StoreManager.shared
+    @EnvironmentObject private var storeManager: StoreManager
     @State private var showingVersesList = false
     @State private var showingChaptersList = false
     @State private var showingNumberSelector = false
@@ -272,7 +272,7 @@ extension BookView {
 
             // Disable banner ad
 //            // Add banner ad only for non-premium users
-//            if !storeManager.isSubscribed {
+//            if !storeManager.isPremiumActive {
 //                BannerAdViewWrapper()
 //                    .frame(height: UIDevice.current.orientation.isPortrait ? 50 : 32)
 //                    .padding(.top, 20)

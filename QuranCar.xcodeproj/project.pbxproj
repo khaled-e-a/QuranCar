@@ -20,7 +20,6 @@
 		2811BFCC2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2811BFCA2D6EABCF00A39CA3 /* QuranModel.xcdatamodeld */; };
 		2819577E2DDB8DF400A0D6E6 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 2819577D2DDB8DF400A0D6E6 /* GoogleMobileAds */; };
 		281957802DDB94E100A0D6E6 /* BannerAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2819577F2DDB94E100A0D6E6 /* BannerAdView.swift */; };
-		282C50012D892E0F00E531FD /* SoftPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C50002D892E0F00E531FD /* SoftPromptView.swift */; };
 		282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 282C40A62D7A9FFE00E531FD /* Config.xcconfig */; };
 		282C40AD2D7CBF9C00E531FD /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 282C40AC2D7CBF9C00E531FD /* Colors.xcassets */; };
 		282C40B12D7CEDA700E531FD /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40AF2D7CEDA700E531FD /* CarPlaySceneDelegate.swift */; };
@@ -30,6 +29,8 @@
 		282C40C72D87740500E531FD /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C52D87740500E531FD /* OnboardingView.swift */; };
 		282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40C82D8775A400E531FD /* CoachMarkView.swift */; };
 		282C40CF2D892E0F00E531FD /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C40CD2D892E0F00E531FD /* Logger.swift */; };
+		282C50012D892E0F00E531FD /* SoftPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C50002D892E0F00E531FD /* SoftPromptView.swift */; };
+		282C60012D892E0F00E531FD /* HadiyaConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282C60002D892E0F00E531FD /* HadiyaConfirmationSheet.swift */; };
 		283678E02D910A1900120137 /* PremiumCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283678DF2D910A1900120137 /* PremiumCards.swift */; };
 		283B7A8A2D54617A00E7E6E6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B7A892D54617A00E7E6E6 /* ContentView.swift */; };
 		284E55552D546C1C00AE2A23 /* CarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284E55522D546C1B00AE2A23 /* CarView.swift */; };
@@ -82,7 +83,6 @@
 		2811BFC72D6EAAAA00A39CA3 /* BookViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookViewModel.swift; sourceTree = "<group>"; };
 		2811BFCB2D6EABCF00A39CA3 /* QuranModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QuranModel.xcdatamodel; sourceTree = "<group>"; };
 		2819577F2DDB94E100A0D6E6 /* BannerAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerAdView.swift; sourceTree = "<group>"; };
-		282C50002D892E0F00E531FD /* SoftPromptView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoftPromptView.swift; sourceTree = "<group>"; };
 		282C40A62D7A9FFE00E531FD /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		282C40AC2D7CBF9C00E531FD /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = Resources/Colors.xcassets; sourceTree = "<group>"; };
 		282C40AE2D7CED1D00E531FD /* QuranCar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuranCar.entitlements; sourceTree = "<group>"; };
@@ -94,6 +94,8 @@
 		282C40C52D87740500E531FD /* OnboardingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		282C40C82D8775A400E531FD /* CoachMarkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoachMarkView.swift; sourceTree = "<group>"; };
 		282C40CD2D892E0F00E531FD /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		282C50002D892E0F00E531FD /* SoftPromptView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoftPromptView.swift; sourceTree = "<group>"; };
+		282C60002D892E0F00E531FD /* HadiyaConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HadiyaConfirmationSheet.swift; sourceTree = "<group>"; };
 		283678DF2D910A1900120137 /* PremiumCards.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PremiumCards.swift; sourceTree = "<group>"; };
 		283B7A892D54617A00E7E6E6 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		284E55522D546C1B00AE2A23 /* CarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarView.swift; sourceTree = "<group>"; };
@@ -357,6 +359,7 @@
 				283678DF2D910A1900120137 /* PremiumCards.swift */,
 				2894A99C2D70DD5C00BEA2CD /* NumberSelectorView.swift */,
 				282C50002D892E0F00E531FD /* SoftPromptView.swift */,
+				282C60002D892E0F00E531FD /* HadiyaConfirmationSheet.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				2811BFB42D6D82CE00A39CA3 /* QuranCarApp.swift in Sources */,
 				281957802DDB94E100A0D6E6 /* BannerAdView.swift in Sources */,
 				282C50012D892E0F00E531FD /* SoftPromptView.swift in Sources */,
+				282C60012D892E0F00E531FD /* HadiyaConfirmationSheet.swift in Sources */,
 				28FDE8642F26FFDA00116368 /* NotificationManager.swift in Sources */,
 				282C40C92D8775A500E531FD /* CoachMarkView.swift in Sources */,
 				2811BAEE2D6D4B0400A39CA3 /* MainView.swift in Sources */,
@@ -748,7 +752,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -783,7 +787,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = 1.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = elm.QuranCar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

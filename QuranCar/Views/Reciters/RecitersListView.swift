@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RecitersListView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var storeManager = StoreManager.shared
+    @EnvironmentObject private var storeManager: StoreManager
     @State private var showingPremiumCard = false
     let reciters: [ReciterEntity]
     let selectedReciter: ReciterEntity?
@@ -16,7 +16,7 @@ struct RecitersListView: View {
                 return true
             }
             // All reciters are available for premium users
-            return storeManager.isSubscribed
+            return storeManager.isPremiumActive
         }
     }
 
@@ -81,7 +81,7 @@ struct RecitersListView: View {
                     .foregroundColor(Color.primaryNormal)
                 }
 
-                if !storeManager.isSubscribed {
+                if !storeManager.isPremiumActive {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button("Upgrade") {
                             showingPremiumCard = true
@@ -96,7 +96,7 @@ struct RecitersListView: View {
                     ScrollView {
                         VStack(spacing: 24) {
                             PremiumSubscriptionCard()
-                            ComingSoonCard()
+                            // ComingSoonCard()
                         }
                         .padding()
                     }

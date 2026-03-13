@@ -2,12 +2,14 @@ import SwiftUI
 import UserNotifications
 
 struct SettingsView: View {
-    @StateObject private var storeManager = StoreManager.shared
+    @EnvironmentObject var storeManager: StoreManager
     @EnvironmentObject var notificationManager: NotificationManager
+    @EnvironmentObject var audioManager: AudioManager
     @State private var showingThankYou = false
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = true
     @State private var showingOnboarding = false
     @State private var showingPermissionAlert = false
+    @State private var showingPremiumSheet = false
     @Binding var selectedTab: Tab
 
     var body: some View {
@@ -65,31 +67,6 @@ struct SettingsView: View {
                     .background(Color.background2)
                     .contentShape(Rectangle())
 
-                    // Test Notification Button
-                    if notificationManager.isNotificationEnabled && notificationManager.authorizationStatus == .authorized {
-                        Divider()
-                            .padding(.leading, 52)
-                        
-                        Button(action: {
-                            Task {
-                                await notificationManager.scheduleTestNotification()
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: "bell.badge")
-                                    .foregroundColor(Color.primaryNormal)
-                                    .frame(width: 24)
-                                Text("Send Test Notification (5s)")
-                                    .font(.system(size: 17))
-                                    .foregroundColor(Color.primaryNormal)
-                                Spacer()
-                            }
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 16)
-                            .background(Color.background2)
-                        }
-                    }
-
                     // Permission status
                     if notificationManager.authorizationStatus == .denied {
                         HStack {
@@ -111,6 +88,70 @@ struct SettingsView: View {
                         .padding(.horizontal, 16)
                         .background(Color.background2)
                     }
+
+                    Divider()
+                        .background(Color.stroke1)
+
+                    // Playback Speed Section
+                    Button(action: {
+                        if !storeManager.isPremiumActive {
+                            showingPremiumSheet = true
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "speedometer")
+                                .foregroundColor(Color.textBodySubtle)
+                                .frame(width: 24)
+
+                            Text("Playback Speed")
+                                .font(.system(size: 17, weight: .regular))
+                                .foregroundColor(Color.textBody)
+
+                            if !storeManager.isPremiumActive {
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color.textBodySubtle)
+                            }
+
+                            Spacer()
+
+                            if storeManager.isPremiumActive {
+                                Menu {
+                                    ForEach([0.5, 0.75, 1.0, 1.25, 1.5, 2.0], id: \.self) { speed in
+                                        Button(action: {
+                                            audioManager.setPlaybackSpeed(Float(speed))
+                                        }) {
+                                            HStack {
+                                                Text(String(format: "%.2fx", speed))
+                                                if Float(speed) == audioManager.playbackSpeed {
+                                                    Image(systemName: "checkmark")
+                                                }
+                                            }
+                                        }
+                                    }
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Text(String(format: "%.2fx", audioManager.playbackSpeed))
+                                            .font(.system(size: 17, weight: .medium))
+                                            .foregroundColor(Color.primaryNormal)
+                                        Image(systemName: "chevron.up.chevron.down")
+                                            .font(.system(size: 13))
+                                            .foregroundColor(Color.textBodySubtle)
+                                    }
+                                }
+                            } else {
+                                Text(String(format: "%.2fx", audioManager.playbackSpeed))
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(Color.textBodySubtle)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(Color.background2)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
 
                     Divider()
                         .background(Color.stroke1)
@@ -173,11 +214,11 @@ struct SettingsView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
 
-                // Coming Soon Section
-                VStack(spacing: 24) {
-                    ComingSoonCard()
-                }
-                .padding(.horizontal)
+//                // Coming Soon Section
+//                VStack(spacing: 24) {
+//                    ComingSoonCard()
+//                }
+//                .padding(.horizontal)
             }
             .padding(.vertical, 24)
             .padding(.bottom, 20)
@@ -200,6 +241,29 @@ struct SettingsView: View {
         } message: {
             Text("Please enable notifications in Settings to receive reminders about your memorization journey.")
         }
+        .sheet(isPresented: $showingPremiumSheet) {
+            NavigationView {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        PremiumSubscriptionCard()
+                        // ComingSoonCard()
+                    }
+                    .padding()
+                }
+                .background(Color.background1)
+                .navigationTitle("Premium")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") {
+                            showingPremiumSheet = false
+                        }
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(Color.primaryNormal)
+                    }
+                }
+            }
+        }
         .onAppear {
             Task {
                 await notificationManager.checkAuthorizationStatus()
@@ -220,13 +284,14 @@ struct SettingsView: View {
 }
 
 struct PremiumSubscriptionCard: View {
-    @ObservedObject private var storeManager = StoreManager.shared
+    @EnvironmentObject private var storeManager: StoreManager
     @State private var isRetrying = false
+    @State private var showingHadiyaSheet = false
 
     var body: some View {
         VStack(spacing: 16) {
             // Icon
-            Image(systemName: "crown.fill")
+            Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 44))
                 .foregroundColor(.white)
 
@@ -237,43 +302,79 @@ struct PremiumSubscriptionCard: View {
                 .multilineTextAlignment(.center)
 
             // Description
-            Text("Get access to all reciters, remove ads, and unlock the full potential of Quran Car")
+            Text("Support the development of this app, get access to all reciters, and unlock the full potential of Quran Car")
                 .font(.system(size: 17))
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
                 .padding(.bottom, 8)
 
             if let product = storeManager.premiumProduct {
-                if storeManager.isSubscribed {
-                    Text("Premium Active")
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
-                        .background(Color.white.opacity(0.15))
-                        .cornerRadius(8)
-                } else {
-                    Button {
-                        Task {
-                            await storeManager.purchase()
+                if storeManager.isPremiumActive {
+                    VStack(spacing: 8) {
+                        Text("Premium Active")
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(8)
+
+                        if let expiry = storeManager.hadiyaExpiryDate {
+                            Text("Gift period ends \(expiry.formatted(date: .long, time: .omitted))")
+                                .font(.system(size: 13))
+                                .foregroundColor(.white.opacity(0.7))
                         }
-                    } label: {
-                        HStack {
-                            Text(storeManager.isTrialEligible ? "Start 7-Day Free Trial" : "Subscribe Now")
-                                .font(.system(size: 17, weight: .medium))
-                                .foregroundColor(.white)
-                            Spacer()
-                            Text(product.displayPrice)
-                                .font(.system(size: 17, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
-                        .background(Color.white.opacity(0.15))
-                        .cornerRadius(8)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                } else {
+                    VStack(spacing: 16) {
+                        Button {
+                            Task {
+                                await storeManager.purchase()
+                            }
+                        } label: {
+                            HStack {
+                                Text(storeManager.isTrialEligible ? "Start 7-Day Free Trial" : "Subscribe Now")
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Text(product.displayPrice)
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                        Button {
+                            showingHadiyaSheet = true
+                        } label: {
+                            VStack(spacing: 2) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "gift.fill")
+                                        .font(.system(size: 14))
+                                    Text("Hadiya (Gift) Program")
+                                        .font(.system(size: 16, weight: .semibold))
+                                }
+                                Text("For those who cannot afford to pay")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .opacity(0.8)
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 54)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
                 }
             } else {
                 if isRetrying {
@@ -310,6 +411,9 @@ struct PremiumSubscriptionCard: View {
         )
         .cornerRadius(12)
         .shadow(radius: 8, y: 2)
+        .sheet(isPresented: $showingHadiyaSheet) {
+            HadiyaConfirmationSheet()
+        }
         .onAppear {
             if storeManager.premiumProduct == nil {
                 Task {

@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class BookViewModel: ObservableObject {
     static let shared = BookViewModel()
 
@@ -60,9 +61,9 @@ class BookViewModel: ObservableObject {
     }
     @Published var isPreparingAudio = false  // Add new state for audio preparation
 
+    public let audioManager = AudioManager()
     private let apiService: QuranAPIService
     private let dataStore: QuranDataStore
-    private let audioManager = AudioManager()
     private var cancellables = Set<AnyCancellable>()
 
     init(apiService: QuranAPIService = QuranAPIService(

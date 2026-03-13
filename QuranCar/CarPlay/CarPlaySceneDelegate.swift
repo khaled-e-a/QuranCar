@@ -3,6 +3,7 @@ import SwiftUI
 import Combine
 import MediaPlayer
 
+@MainActor
 class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var interfaceController: CPInterfaceController?
     private var nowPlayingTemplate: CPNowPlayingTemplate?
@@ -244,6 +245,22 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
                 item.handler = { [weak self] _, _ in
                     self?.showReciterSelection()
                 }
+            },
+
+            // Playback Speed
+            CPListItem(
+                text: "Playback Speed",
+                detailText: String(format: "%.2fx", bookViewModel?.audioManager.playbackSpeed ?? 1.0),
+                image: UIImage(systemName: "speedometer"),
+                accessoryImage: !StoreManager.shared.isPremiumActive ? UIImage(systemName: "lock.fill") : nil,
+                accessoryType: .none
+            ).then { item in
+                // Only enable speed selection if premium is active
+                item.isEnabled = StoreManager.shared.isPremiumActive
+                
+                item.handler = { [weak self] _, _ in
+                    self?.showPlaybackSpeedSelection()
+                }
             }
         ])
 
@@ -414,6 +431,36 @@ class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
 
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: "Reciter", sections: [section])
+
+        interfaceController?.pushTemplate(template, animated: true)
+    }
+
+    private func showPlaybackSpeedSelection() {
+        guard let audioManager = bookViewModel?.audioManager else { return }
+
+        let speeds: [Float] = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
+        let items = speeds.map { speed in
+            CPListItem(
+                text: String(format: "%.2fx", speed),
+                detailText: nil,
+                image: UIImage(systemName: "speedometer"),
+                accessoryImage: speed == audioManager.playbackSpeed ? UIImage(systemName: "checkmark") : nil,
+                accessoryType: .none
+            ).then { item in
+                item.isEnabled = true // Always enable speed selection
+                item.handler = { [weak self] _, _ in
+                    audioManager.setPlaybackSpeed(speed)
+                    self?.interfaceController?.popTemplate(animated: true) { _, _ in
+                        Task { @MainActor in
+                            await self?.updateRootTemplate()
+                        }
+                    }
+                }
+            }
+        }
+
+        let section = CPListSection(items: items)
+        let template = CPListTemplate(title: "Playback Speed", sections: [section])
 
         interfaceController?.pushTemplate(template, animated: true)
     }

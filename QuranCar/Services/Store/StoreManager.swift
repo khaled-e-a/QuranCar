@@ -7,11 +7,27 @@ class StoreManager: ObservableObject {
     @Published private(set) var premiumProduct: Product?
     @Published private(set) var isSubscribed = false
     @Published private(set) var isTrialEligible = true
+    @Published private(set) var hadiyaExpiryDate: Date?
+
+    var isPremiumActive: Bool {
+        return isSubscribed || (hadiyaExpiryDate != nil && hadiyaExpiryDate! > Date())
+    }
 
     private let productID = "elm.qurancar.premiummonthly"
     private var updates: Task<Void, Never>? = nil
+    private let defaults = UserDefaults.standard
+
+    private enum UserDefaultsKeys {
+        static let hadiyaGrantDate = "hadiyaGrantDate"
+        static let hadiyaExpiryDate = "hadiyaExpiryDate"
+    }
 
     init() {
+        // Load Hadiya status
+        if let expiryTime = defaults.object(forKey: UserDefaultsKeys.hadiyaExpiryDate) as? Double {
+            self.hadiyaExpiryDate = Date(timeIntervalSince1970: expiryTime)
+        }
+
         // Start transaction updates
         updates = observeTransactionUpdates()
 
@@ -20,11 +36,38 @@ class StoreManager: ObservableObject {
             Logger.debug("StoreManager: Starting initial product fetch")
             await fetchProduct()
             await checkSubscriptionStatus()
+            await checkHadiyaStatus()
         }
     }
 
     deinit {
         updates?.cancel()
+    }
+
+    // MARK: - Hadiya Program
+
+    func grantHadiyaSubscription() {
+        let now = Date()
+        let calendar = Calendar.current
+        guard let expiryDate = calendar.date(byAdding: .year, value: 1, to: now) else {
+            Logger.error("StoreManager: Failed to calculate Hadiya expiry date")
+            return
+        }
+
+        defaults.set(now.timeIntervalSince1970, forKey: UserDefaultsKeys.hadiyaGrantDate)
+        defaults.set(expiryDate.timeIntervalSince1970, forKey: UserDefaultsKeys.hadiyaExpiryDate)
+        
+        self.hadiyaExpiryDate = expiryDate
+        Logger.info("StoreManager: Hadiya granted until \(expiryDate)")
+    }
+
+    func checkHadiyaStatus() async {
+        if let expiryDate = hadiyaExpiryDate, expiryDate <= Date() {
+            Logger.info("StoreManager: Hadiya has expired")
+            await MainActor.run {
+                self.hadiyaExpiryDate = nil
+            }
+        }
     }
 
     // Fetch premium product
