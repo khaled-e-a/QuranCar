@@ -123,12 +123,12 @@ struct OnboardingPageView: View {
             }
 
             VStack(spacing: 16) {
-                Text(page.title)
+                Text(NSLocalizedString(page.title, comment: "Onboarding page title"))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(Color.textTitle)
                     .multilineTextAlignment(.center)
 
-                Text(page.description)
+                Text(NSLocalizedString(page.description, comment: "Onboarding page description"))
                     .font(.system(size: 17))
                     .foregroundColor(Color.textBodySubtle)
                     .multilineTextAlignment(.center)

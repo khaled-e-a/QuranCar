@@ -87,7 +87,7 @@ struct TabButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(title)
+            Text(NSLocalizedString(title, comment: "Tab label"))
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(isSelected ? Color.textTitle : Color.textBodySubtle)
         }

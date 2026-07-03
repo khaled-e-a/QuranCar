@@ -140,11 +140,11 @@ struct CoachMarkBubble: View {
             }
 
             VStack(spacing: 8) {
-                Text(title)
+                Text(NSLocalizedString(title, comment: "Coach mark title"))
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(.white)
 
-                Text(description)
+                Text(NSLocalizedString(description, comment: "Coach mark description"))
                     .font(.system(size: 15))
                     .foregroundColor(.white.opacity(0.9))
                     .multilineTextAlignment(.center)
@@ -180,11 +180,11 @@ struct CarPlayInstructionBubble: View {
                 .foregroundColor(.white)
 
             VStack(spacing: 16) {
-                Text(title)
+                Text(NSLocalizedString(title, comment: "Coach mark title"))
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.white)
 
-                Text(description)
+                Text(NSLocalizedString(description, comment: "Coach mark description"))
                     .font(.system(size: 17))
                     .foregroundColor(.white.opacity(0.9))
                     .multilineTextAlignment(.leading)

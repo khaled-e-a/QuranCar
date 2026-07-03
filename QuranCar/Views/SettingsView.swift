@@ -5,6 +5,7 @@ struct SettingsView: View {
     @EnvironmentObject var storeManager: StoreManager
     @EnvironmentObject var notificationManager: NotificationManager
     @EnvironmentObject var audioManager: AudioManager
+    @EnvironmentObject var languageManager: LanguageManager
     @State private var showingThankYou = false
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = true
     @State private var showingOnboarding = false
@@ -152,6 +153,49 @@ struct SettingsView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
+
+                    Divider()
+                        .background(Color.stroke1)
+
+                    // Language Section
+                    HStack(spacing: 12) {
+                        Image(systemName: "globe")
+                            .foregroundColor(Color.textBodySubtle)
+                            .frame(width: 24)
+
+                        Text("Language")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color.textBody)
+
+                        Spacer()
+
+                        Menu {
+                            ForEach(AppLanguage.allCases) { lang in
+                                Button(action: { languageManager.selectedLanguage = lang }) {
+                                    HStack {
+                                        Text(lang.displayName)
+                                        if languageManager.selectedLanguage == lang {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(languageManager.selectedLanguage.displayName)
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(Color.primaryNormal)
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(Color.textBodySubtle)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 16)
+                    .background(Color.background2)
+                    .contentShape(Rectangle())
 
                     Divider()
                         .background(Color.stroke1)
@@ -427,5 +471,6 @@ struct PremiumSubscriptionCard: View {
 #Preview {
     NavigationView {
         SettingsView(selectedTab: .constant(.memorize))
+            .environmentObject(LanguageManager.shared)
     }
 }

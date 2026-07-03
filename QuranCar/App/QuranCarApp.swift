@@ -18,6 +18,7 @@ struct QuranCarApp: App {
     @StateObject private var bookViewModel = BookViewModel.shared
     @StateObject private var notificationManager = NotificationManager.shared
     @StateObject private var storeManager = StoreManager.shared
+    @StateObject private var languageManager = LanguageManager.shared
 
     init() {
         // We'll move the authentication to be user-triggered
@@ -30,6 +31,9 @@ struct QuranCarApp: App {
                 .environmentObject(notificationManager)
                 .environmentObject(storeManager)
                 .environmentObject(bookViewModel.audioManager)
+                .environmentObject(languageManager)
+                .environment(\.locale, languageManager.locale)
+                .environment(\.layoutDirection, languageManager.layoutDirection)
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {

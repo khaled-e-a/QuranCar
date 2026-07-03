@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var languageManager: LanguageManager
     @State private var showingSplash = true
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @State private var showingOnboarding = false
@@ -35,6 +36,9 @@ struct ContentView: View {
                 .transition(.opacity)
             } else {
                 MainView()
+                    // Rebuild the whole main UI when the language changes so every
+                    // Text re-resolves against the swapped bundle (without replaying splash).
+                    .id(languageManager.effectiveCode)
                     .transition(.opacity)
                     .onAppear {
                         // Mark MainView as ready after a brief delay to ensure all views are laid out
@@ -61,4 +65,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(LanguageManager.shared)
 }

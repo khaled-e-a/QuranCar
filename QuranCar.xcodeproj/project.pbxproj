@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		280C48E12FF72E1000DB2938 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 280C48E02FF72E1000DB2938 /* Localizable.xcstrings */; };
+		280C48E32FF72E6400DB2938 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280C48E22FF72E6400DB2938 /* LanguageManager.swift */; };
 		2811BACD2D66E27D00A39CA3 /* BookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BACC2D66E27D00A39CA3 /* BookView.swift */; };
 		2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */; };
 		2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2811BAD12D66E48A00A39CA3 /* TokenManager.swift */; };
@@ -71,6 +73,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		280C48E02FF72E1000DB2938 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		280C48E22FF72E6400DB2938 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LanguageManager.swift; path = QuranCar/Managers/LanguageManager.swift; sourceTree = SOURCE_ROOT; };
 		2811BACC2D66E27D00A39CA3 /* BookView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookView.swift; sourceTree = "<group>"; };
 		2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QuranAuthManager.swift; path = QuranCar/Managers/QuranAuthManager.swift; sourceTree = SOURCE_ROOT; };
 		2811BAD12D66E48A00A39CA3 /* TokenManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TokenManager.swift; path = QuranCar/Managers/TokenManager.swift; sourceTree = SOURCE_ROOT; };
@@ -152,6 +156,7 @@
 		2811BABD2D66DF3100A39CA3 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				280C48E22FF72E6400DB2938 /* LanguageManager.swift */,
 				28FDE8632F26FFDA00116368 /* NotificationManager.swift */,
 				28E7D46A2DE12D3F004AAD52 /* GoogleMobileAdsConsentManager.swift */,
 				2811BAD02D66E48A00A39CA3 /* QuranAuthManager.swift */,
@@ -291,6 +296,7 @@
 		287A0B932D52F2090049E06D /* QuranCar */ = {
 			isa = PBXGroup;
 			children = (
+				280C48E02FF72E1000DB2938 /* Localizable.xcstrings */,
 				282C40CE2D892E0F00E531FD /* Utilities */,
 				282C40B02D7CEDA700E531FD /* CarPlay */,
 				282C40AE2D7CED1D00E531FD /* QuranCar.entitlements */,
@@ -508,6 +514,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				287A0B9C2D52F20C0049E06D /* Preview Assets.xcassets in Resources */,
+				280C48E12FF72E1000DB2938 /* Localizable.xcstrings in Resources */,
 				282C40AD2D7CBF9C00E531FD /* Colors.xcassets in Resources */,
 				282C40A72D7A9FFE00E531FD /* Config.xcconfig in Resources */,
 				287A0B992D52F20C0049E06D /* Assets.xcassets in Resources */,
@@ -550,6 +557,7 @@
 				2811BAD32D66E48A00A39CA3 /* TokenManager.swift in Sources */,
 				282C40CF2D892E0F00E531FD /* Logger.swift in Sources */,
 				282C40C72D87740500E531FD /* OnboardingView.swift in Sources */,
+				280C48E32FF72E6400DB2938 /* LanguageManager.swift in Sources */,
 				2811BAD22D66E48A00A39CA3 /* QuranAuthManager.swift in Sources */,
 				286A9ADF2D7A8FF7003600D9 /* Configuration.swift in Sources */,
 				282C40B12D7CEDA700E531FD /* CarPlaySceneDelegate.swift in Sources */,

@@ -1,0 +1,820 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "%d. %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$d. %2$@"
+          }
+        }
+      }
+    },
+    "%lld" : {},
+    "1. Connect your iPhone to CarPlay\n2. Find Quran Car in CarPlay\n3. Use steering wheel controls:\n   • Next/Previous: Change memorization loop\n   • Play/Pause: Control memorization\n4. Audio will automatically loop to help memorization" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "١. وصّل جهاز iPhone بـ CarPlay\n٢. ابحث عن Quran Car في CarPlay\n٣. استخدم أزرار المقود:\n   • التالي/السابق: تغيير حلقة الحفظ\n   • تشغيل/إيقاف: التحكم في الحفظ\n٤. يتكرّر الصوت تلقائيًا لمساعدتك على الحفظ"
+          }
+        }
+      }
+    },
+    "Ads by Muslim Ad Network" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعلانات من Muslim Ad Network"
+          }
+        }
+      }
+    },
+    "And more to come..." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "والمزيد قادم…"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء"
+          }
+        }
+      }
+    },
+    "Car Mode" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وضع السيّارة"
+          }
+        }
+      }
+    },
+    "CarPlay Ready!" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاهز لـ CarPlay!"
+          }
+        }
+      }
+    },
+    "Choose Reciter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر القارئ"
+          }
+        }
+      }
+    },
+    "Choose your starting verse from the selected Surah" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر آية البداية من السورة المحدّدة."
+          }
+        }
+      }
+    },
+    "Connected to CarPlay" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متّصل بـ CarPlay"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم"
+          }
+        }
+      }
+    },
+    "Enable Reminders" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفعيل التذكيرات"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ"
+          }
+        }
+      }
+    },
+    "For those who cannot afford to pay" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لمن لا يستطيعون الدفع"
+          }
+        }
+      }
+    },
+    "From" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "من"
+          }
+        }
+      }
+    },
+    "Get Started" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ"
+          }
+        }
+      }
+    },
+    "Get reminded to continue your memorization if you've been away for 3 days." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "احصل على تذكير لمواصلة حفظك إذا انقطعت لمدة 3 أيام."
+          }
+        }
+      }
+    },
+    "Gift period ends %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنتهي فترة الهدية في %@"
+          }
+        }
+      }
+    },
+    "Hadiya (Gift) Program" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برنامج الهديّة"
+          }
+        }
+      }
+    },
+    "I am unable to pay, thank you" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا أستطيع الدفع، شكرًا لكم"
+          }
+        }
+      }
+    },
+    "Keep your journey alive" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أبقِ رحلتك مستمرّة"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اللغة"
+          }
+        }
+      }
+    },
+    "Loading..." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جارٍ التحميل…"
+          }
+        }
+      }
+    },
+    "Maybe Later" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ربما لاحقًا"
+          }
+        }
+      }
+    },
+    "Memorization Loop" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حلقة الحفظ"
+          }
+        }
+      }
+    },
+    "Memorize" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحفظ"
+          }
+        }
+      }
+    },
+    "Memorize while you drive" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "احفظ القرآن وأنت تقود"
+          }
+        }
+      }
+    },
+    "More" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المزيد"
+          }
+        }
+      }
+    },
+    "More Features Coming Soon!" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المزيد من الميزات قريبًا!"
+          }
+        }
+      }
+    },
+    "Next" : {},
+    "Notification Permission Required" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يلزم إذن الإشعارات"
+          }
+        }
+      }
+    },
+    "Notifications are disabled in Settings" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإشعارات معطّلة في الإعدادات"
+          }
+        }
+      }
+    },
+    "Number of Verses" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عدد الآيات"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حسنًا"
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فتح الإعدادات"
+          }
+        }
+      }
+    },
+    "Play, pause, or navigate between verses. The audio will automatically loop to help with memorization" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شغّل أو أوقف أو تنقّل بين الآيات. يتكرّر الصوت تلقائيًا لمساعدتك على الحفظ."
+          }
+        }
+      }
+    },
+    "Playback Controls" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أزرار التشغيل"
+          }
+        }
+      }
+    },
+    "Playback Speed" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سرعة التشغيل"
+          }
+        }
+      }
+    },
+    "Please enable notifications in Settings to receive reminders about your memorization journey." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى تفعيل الإشعارات في الإعدادات لتلقّي تذكيرات حول رحلة حفظك."
+          }
+        }
+      }
+    },
+    "Please try again later." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى المحاولة لاحقًا."
+          }
+        }
+      }
+    },
+    "Premium" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "النسخة المميّزة"
+          }
+        }
+      }
+    },
+    "Premium Active" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "النسخة المميّزة مُفعّلة"
+          }
+        }
+      }
+    },
+    "Privacy Policy" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سياسة الخصوصية"
+          }
+        }
+      }
+    },
+    "Quran Car" : {},
+    "Quran Car Premium" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quran Car المميّزة"
+          }
+        }
+      }
+    },
+    "Quran Car can remind you to continue your memorization if you've been away for a few days." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يمكن لـ Quran Car تذكيرك بمواصلة حفظك إذا انقطعت لبضعة أيام."
+          }
+        }
+      }
+    },
+    "Ready to Connect" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاهز للاتصال"
+          }
+        }
+      }
+    },
+    "Reciter" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القارئ"
+          }
+        }
+      }
+    },
+    "Reminder Notifications" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إشعارات التذكير"
+          }
+        }
+      }
+    },
+    "Restart Tutorial" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة الشرح التوضيحي"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة المحاولة"
+          }
+        }
+      }
+    },
+    "Retry Loading" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة تحميل"
+          }
+        }
+      }
+    },
+    "Save memorization loops" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حفظ حلقات الحفظ"
+          }
+        }
+      }
+    },
+    "Select Reciter" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر القارئ"
+          }
+        }
+      }
+    },
+    "Select Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر السورة"
+          }
+        }
+      }
+    },
+    "Select Verse" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر الآية"
+          }
+        }
+      }
+    },
+    "Select a Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر سورة"
+          }
+        }
+      }
+    },
+    "Select how many verses you want to memorize at once" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر عدد الآيات التي تريد حفظها في المرة الواحدة."
+          }
+        }
+      }
+    },
+    "Select your preferred Quran reciter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر القارئ المفضّل لديك."
+          }
+        }
+      }
+    },
+    "Set Up Your Memorization" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جهّز حفظك"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإعدادات"
+          }
+        }
+      }
+    },
+    "Share with friends" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المشاركة مع الأصدقاء"
+          }
+        }
+      }
+    },
+    "Start 7-Day Free Trial" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ تجربة مجانية 7 أيام"
+          }
+        }
+      }
+    },
+    "Starting Verse" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آية البداية"
+          }
+        }
+      }
+    },
+    "Subscribe Now" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشترك الآن"
+          }
+        }
+      }
+    },
+    "Support the development of this app, get access to all reciters, and unlock the full potential of Quran Car" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادعم تطوير هذا التطبيق، واحصل على وصول إلى جميع القرّاء، واستفد من كامل إمكانات Quran Car."
+          }
+        }
+      }
+    },
+    "System default" : {
+      "comment" : "Language option: follow device language",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لغة النظام الافتراضية"
+          }
+        }
+      }
+    },
+    "Tap anywhere to finish" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضغط في أي مكان للإنهاء"
+          }
+        }
+      }
+    },
+    "Tap here to choose which chapter of the Quran you want to memorize" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضغط هنا لاختيار السورة التي تريد حفظها."
+          }
+        }
+      }
+    },
+    "Thank You!" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شكرًا لك!"
+          }
+        }
+      }
+    },
+    "Thank you for subscribing to Quran Car Premium! You now have access to all reciters." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شكرًا لاشتراكك في Quran Car المميّزة! أصبح لديك الآن وصول إلى جميع القرّاء."
+          }
+        }
+      }
+    },
+    "This program is based on trust. Please only use it if you are unable to pay." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يقوم هذا البرنامج على الثقة. يرجى استخدامه فقط إذا كنت غير قادر على الدفع."
+          }
+        }
+      }
+    },
+    "To" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلى"
+          }
+        }
+      }
+    },
+    "Track your progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتبّع تقدّمك"
+          }
+        }
+      }
+    },
+    "Try Again" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة المحاولة"
+          }
+        }
+      }
+    },
+    "Upgrade" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترقية"
+          }
+        }
+      }
+    },
+    "Use the app to configure your memorization settings.\n\nThen connect to CarPlay to start memorizing while you drive." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدم التطبيق لضبط إعدادات الحفظ.\n\nثم اتصل بـ CarPlay لتبدأ الحفظ أثناء القيادة."
+          }
+        }
+      }
+    },
+    "We believe everyone should have access to the Quran. If you truly cannot afford the subscription, we are honored to gift you one year of Premium access." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نؤمن أن الجميع يستحقّون الوصول إلى القرآن. إذا كنت حقًّا لا تستطيع تحمّل تكلفة الاشتراك، يشرّفنا أن نهديك سنة كاملة من الوصول المميّز."
+          }
+        }
+      }
+    },
+    "Welcome to Quran Car" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرحبًا بك في Quran Car"
+          }
+        }
+      }
+    },
+    "Your companion for memorizing Quran while driving.\n\nDesigned specifically for safe and distraction-free use with CarPlay." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رفيقك لحفظ القرآن أثناء القيادة.\n\nمُصمّم خصيصًا للاستخدام الآمن وبدون تشتيت مع CarPlay."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
