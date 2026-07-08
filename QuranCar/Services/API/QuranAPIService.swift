@@ -170,8 +170,8 @@ class QuranAPIService {
         }
     }
 
-    func fetchReciters() async throws -> [Reciter] {
-        let url = URL(string: "\(baseURL)/resources/recitations")!
+    func fetchReciters(language: String) async throws -> [Reciter] {
+        let url = URL(string: "\(baseURL)/resources/recitations?language=\(language)")!
         var request = URLRequest(url: url)
 
         request.httpMethod = "GET"

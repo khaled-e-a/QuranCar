@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%@ (%@)" : {
       "localizations" : {
         "en" : {
@@ -21,7 +24,9 @@
         }
       }
     },
-    "%lld" : {},
+    "%lld" : {
+
+    },
     "1. Connect your iPhone to CarPlay\n2. Find Quran Car in CarPlay\n3. Use steering wheel controls:\n   • Next/Previous: Change memorization loop\n   • Play/Pause: Control memorization\n4. Audio will automatically loop to help memorization" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -168,22 +173,22 @@
         }
       }
     },
-    "Get Started" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ابدأ"
-          }
-        }
-      }
-    },
     "Get reminded to continue your memorization if you've been away for 3 days." : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "احصل على تذكير لمواصلة حفظك إذا انقطعت لمدة 3 أيام."
+          }
+        }
+      }
+    },
+    "Get Started" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ"
           }
         }
       }
@@ -309,7 +314,16 @@
         }
       }
     },
-    "Next" : {},
+    "Next" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التالي"
+          }
+        }
+      }
+    },
     "Notification Permission Required" : {
       "localizations" : {
         "ar" : {
@@ -443,16 +457,8 @@
         }
       }
     },
-    "Quran Car" : {},
-    "Quran Car Premium" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quran Car المميّزة"
-          }
-        }
-      }
+    "Quran Car" : {
+
     },
     "Quran Car can remind you to continue your memorization if you've been away for a few days." : {
       "localizations" : {
@@ -460,6 +466,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "يمكن لـ Quran Car تذكيرك بمواصلة حفظك إذا انقطعت لبضعة أيام."
+          }
+        }
+      }
+    },
+    "Quran Car Premium" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quran Car المميّزة"
           }
         }
       }
@@ -535,6 +551,27 @@
         }
       }
     },
+    "Select a Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر سورة"
+          }
+        }
+      }
+    },
+    "Select how many verses you want to memorize at once" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر عدد الآيات التي تريد حفظها في المرة الواحدة."
+          }
+        }
+      }
+    },
     "Select Reciter" : {
       "localizations" : {
         "ar" : {
@@ -561,27 +598,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اختر الآية"
-          }
-        }
-      }
-    },
-    "Select a Surah" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اختر سورة"
-          }
-        }
-      }
-    },
-    "Select how many verses you want to memorize at once" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اختر عدد الآيات التي تريد حفظها في المرة الواحدة."
           }
         }
       }
@@ -701,22 +717,22 @@
         }
       }
     },
-    "Thank You!" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "شكرًا لك!"
-          }
-        }
-      }
-    },
     "Thank you for subscribing to Quran Car Premium! You now have access to all reciters." : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "شكرًا لاشتراكك في Quran Car المميّزة! أصبح لديك الآن وصول إلى جميع القرّاء."
+          }
+        }
+      }
+    },
+    "Thank You!" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شكرًا لك!"
           }
         }
       }

@@ -19,6 +19,7 @@ class BookViewModel: ObservableObject {
         static let selectedVerseNumber = "selectedVerseNumber"
         static let numberOfVerses = "numberOfVerses"
         static let selectedReciterId = "selectedReciterId"
+        static let recitersLanguage = "recitersLanguage"
     }
 
     @Published var selectedChapter: ChapterEntity? {
@@ -242,24 +243,50 @@ class BookViewModel: ObservableObject {
         error = nil
 
         do {
-            // Try to fetch from local storage first
+            // Reciter names (translated_name) are localized by the API, so the
+            // cache is only valid for the language it was fetched in.
+            let currentLanguage = LanguageManager.shared.effectiveCode
+            let cachedLanguage = defaults.string(forKey: UserDefaultsKeys.recitersLanguage)
             let localReciters = try await dataStore.fetchReciters()
 
-            if localReciters.isEmpty {
-                // If no local data, fetch from API
-                let apiReciters = try await apiService.fetchReciters()
-                try await dataStore.saveReciters(apiReciters)
-                // Fetch again from local storage to get managed objects
-                self.reciters = try await dataStore.fetchReciters()
-                // Set first reciter as default if none selected
-                if selectedReciter == nil {
-                    selectedReciter = reciters.first
-                }
-            } else {
-                // Use local data
+            // Show whatever we have cached immediately, so the picker is never
+            // empty just because a localization refresh fails.
+            if !localReciters.isEmpty {
                 self.reciters = localReciters
-                if selectedReciter == nil {
-                    selectedReciter = reciters.first
+                bindSelectedReciter()
+            }
+
+            // A cache saved before we tracked language is English by default.
+            let effectiveCachedLanguage = cachedLanguage ?? (localReciters.isEmpty ? nil : "en")
+
+            // Only hit the network when we have no data or the language changed.
+            if localReciters.isEmpty || effectiveCachedLanguage != currentLanguage {
+                do {
+                    var loadedLanguage = currentLanguage
+                    var apiReciters = try await apiService.fetchReciters(language: currentLanguage)
+
+                    // Defensive: if the localized list comes back empty (e.g. the
+                    // language isn't honored), fall back to the default list so the
+                    // picker still works instead of wiping it.
+                    if apiReciters.isEmpty && currentLanguage != "en" {
+                        loadedLanguage = "en"
+                        apiReciters = try await apiService.fetchReciters(language: "en")
+                    }
+
+                    if apiReciters.isEmpty {
+                        // Never overwrite a usable cache with nothing.
+                        Logger.error("BookViewModel: Reciters API returned empty; keeping existing list")
+                    } else {
+                        try await dataStore.saveReciters(apiReciters)
+                        defaults.set(loadedLanguage, forKey: UserDefaultsKeys.recitersLanguage)
+                        self.reciters = try await dataStore.fetchReciters()
+                        bindSelectedReciter()
+                    }
+                } catch {
+                    // Refresh failed — keep the cached list we already displayed.
+                    if !error.isSocketIdleError() {
+                        Logger.error("BookViewModel: Failed to refresh reciters for \(currentLanguage): \(error)")
+                    }
                 }
             }
         } catch {
@@ -270,6 +297,17 @@ class BookViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+
+    /// Binds `selectedReciter` to the currently loaded entities: prefers the
+    /// saved reciter id, otherwise defaults to the first when nothing is selected.
+    private func bindSelectedReciter() {
+        let savedReciterId = defaults.integer(forKey: UserDefaultsKeys.selectedReciterId)
+        if savedReciterId > 0, let match = reciters.first(where: { $0.id == savedReciterId }) {
+            selectedReciter = match
+        } else if selectedReciter == nil {
+            selectedReciter = reciters.first
+        }
     }
 
     func loadAudioFiles() async {
